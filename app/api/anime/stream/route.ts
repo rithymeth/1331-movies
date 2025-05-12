@@ -1,8 +1,38 @@
 import { NextResponse } from 'next/server';
 
 const ANILIST_API = 'https://graphql.anilist.co';
+const JIKAN_API = 'https://api.jikan.moe/v4';
 
-async function getAnimeDetails(title: string) {
+interface AnimeTitle {
+  romaji?: string;
+  english?: string;
+  native?: string;
+}
+
+interface AnimeDetails {
+  id?: number;
+  idMal?: number;
+  title?: AnimeTitle;
+  episodes?: number;
+}
+
+async function searchJikan(title: string): Promise<number | null> {
+  try {
+    const response = await fetch(
+      `${JIKAN_API}/anime?q=${encodeURIComponent(title)}&limit=1`,
+      { cache: 'no-store' }
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    return data.data?.[0]?.mal_id || null;
+  } catch {
+    return null;
+  }
+}
+
+async function getAnimeDetails(title: string): Promise<AnimeDetails | null> {
   const query = `
     query ($search: String) {
       Media(search: $search, type: ANIME) {
@@ -14,29 +44,54 @@ async function getAnimeDetails(title: string) {
           native
         }
         episodes
+        synonyms
       }
     }
   `;
 
-  const response = await fetch(ANILIST_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      variables: { search: title }
-    }),
-    cache: 'no-store'
-  });
+  try {
+    const response = await fetch(ANILIST_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables: { search: title }
+      }),
+      cache: 'no-store'
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch anime details');
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    return data.data?.Media || null;
+  } catch {
+    return null;
+  }
+}
+
+async function tryGetMalId(title: string, animeDetails: AnimeDetails | null): Promise<number | null> {
+  // First try from AniList details
+  if (animeDetails?.idMal) {
+    return animeDetails.idMal;
   }
 
-  const data = await response.json();
-  return data.data?.Media;
+  // Try searching with different title variations
+  const titleVariations = [
+    title,
+    animeDetails?.title?.english,
+    animeDetails?.title?.romaji,
+    animeDetails?.title?.native
+  ].filter(Boolean) as string[];
+
+  for (const titleVariation of titleVariations) {
+    const malId = await searchJikan(titleVariation);
+    if (malId) return malId;
+  }
+
+  return null;
 }
 
 export async function GET(request: Request) {
@@ -50,31 +105,45 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Title and episode are required' }, { status: 400 });
     }
 
-    // Get anime details from AniList
+    // Get anime details and try to find MAL ID
     const animeDetails = await getAnimeDetails(title);
-    
-    if (!animeDetails) {
-      return NextResponse.json({ error: 'Anime not found' }, { status: 404 });
-    }
+    const malId = await tryGetMalId(title, animeDetails);
 
-    if (!animeDetails.idMal) {
-      return NextResponse.json({ error: 'MAL ID not found' }, { status: 404 });
+    if (!malId) {
+      return NextResponse.json({ error: 'Anime not found' }, { status: 404 });
     }
 
     // Validate episode number
     const episodeNum = parseInt(episode);
-    if (animeDetails.episodes && episodeNum > animeDetails.episodes) {
+    if (animeDetails?.episodes && episodeNum > animeDetails.episodes) {
       return NextResponse.json({ error: 'Episode not found' }, { status: 404 });
     }
 
-    // Generate vidsrc.cc embed URL
-    const embedUrl = `https://vidsrc.cc/v2/embed/anime/${animeDetails.idMal}/${episodeNum}/${type}`;
+    // Generate embed URLs for different providers as fallbacks
+    const embedUrls = [
+      `https://vidsrc.cc/v2/embed/anime/${malId}/${episodeNum}/${type}`,
+      `https://vidsrc.to/embed/anime/${malId}/${episodeNum}`,
+      `https://rapid-cloud.co/embed-6/anime?id=${malId}&episode=${episodeNum}`,
+      `https://anihdplay.com/streaming.php?id=${malId}&ep=${episodeNum}`,
+      `https://gogoplay.io/streaming.php?id=${malId}&ep=${episodeNum}`,
+      `https://animixplay.to/v1/${malId}/${episodeNum}`,
+    ];
+
+    // Add dub-specific sources if dub is requested
+    if (type === 'dub') {
+      embedUrls.push(
+        `https://animedub.tv/embed/${malId}/${episodeNum}`,
+        `https://dubhappy.net/embed/${malId}/${episodeNum}`
+      );
+    }
 
     return NextResponse.json({
-      embedUrl,
-      title: animeDetails.title,
-      totalEpisodes: animeDetails.episodes,
-      currentEpisode: episodeNum
+      embedUrl: embedUrls[0], // Primary source
+      fallbackUrls: embedUrls.slice(1), // Backup sources
+      title: animeDetails?.title || { romaji: title },
+      totalEpisodes: animeDetails?.episodes,
+      currentEpisode: episodeNum,
+      malId
     });
   } catch (error) {
     console.error('Error fetching stream:', error);
