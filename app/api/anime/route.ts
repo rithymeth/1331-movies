@@ -35,9 +35,18 @@ export async function POST(request: Request) {
               status
               averageScore
               genres
+              streamingEpisodes {
+                title
+                thumbnail
+                url
+              }
               nextAiringEpisode {
                 episode
                 timeUntilAiring
+              }
+              externalLinks {
+                url
+                site
               }
             }
           }
@@ -66,11 +75,11 @@ export async function POST(request: Request) {
     // Transform the response to include streaming URLs
     if (data.data?.Media) {
       const anime = data.data.Media;
-      anime.streamingUrl = `https://aniwave.to/watch/${anime.id}`;
+      anime.streamingUrl = `https://9anime.gs/watch/${anime.idMal}`;
     } else if (data.data?.Page?.media) {
       data.data.Page.media = data.data.Page.media.map((anime: any) => ({
         ...anime,
-        streamingUrl: `https://aniwave.to/watch/${anime.id}`
+        streamingUrl: anime.idMal ? `https://9anime.gs/watch/${anime.idMal}` : null
       }));
     }
 

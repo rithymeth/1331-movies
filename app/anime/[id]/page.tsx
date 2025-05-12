@@ -10,16 +10,31 @@ interface AnimeDetails {
   title: {
     romaji: string;
     english: string;
+    native: string;
   };
   description: string;
   coverImage: {
     large: string;
+    extraLarge: string;
   };
   bannerImage: string;
   episodes: number;
   status: string;
   averageScore: number;
   genres: string[];
+  streamingEpisodes: Array<{
+    title: string;
+    thumbnail: string;
+    url: string;
+  }>;
+  externalLinks: Array<{
+    url: string;
+    site: string;
+  }>;
+  nextAiringEpisode?: {
+    episode: number;
+    timeUntilAiring: number;
+  };
 }
 
 interface Props {
@@ -31,6 +46,43 @@ interface Props {
 export default function AnimePage({ params }: Props) {
   const [anime, setAnime] = useState<AnimeDetails | null>(null);
   const [selectedEpisode, setSelectedEpisode] = useState<number>(1);
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [subType, setSubType] = useState<'sub' | 'dub'>('sub');
+
+  const loadEpisode = async (episode: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const title = anime?.title.romaji;
+      if (!title) {
+        throw new Error('Anime title not found');
+      }
+
+      const response = await fetch(`/api/anime/stream?title=${encodeURIComponent(title)}&episode=${episode}&type=${subType}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setEmbedUrl(data.embedUrl);
+      } else {
+        setError(data.error || 'Failed to load episode');
+        setEmbedUrl(null);
+      }
+    } catch (error) {
+      console.error('Error loading episode:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load episode. Please try again later.');
+      setEmbedUrl(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (anime && selectedEpisode) {
+      loadEpisode(selectedEpisode);
+    }
+  }, [selectedEpisode, anime]);
 
   useEffect(() => {
     const fetchAnimeDetails = async () => {
@@ -151,31 +203,126 @@ export default function AnimePage({ params }: Props) {
             />
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold text-white">Watch Episode</h2>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {Array.from({ length: anime.episodes }, (_, i) => i + 1).map((ep) => (
-                  <button
-                    key={ep}
-                    onClick={() => setSelectedEpisode(ep)}
-                    className={`px-4 py-2 rounded-lg ${
-                      selectedEpisode === ep
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Episode {ep}
-                  </button>
-                ))}
-              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-white">Watch Episode</h3>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setSubType(subType === 'sub' ? 'dub' : 'sub')}
+                      className={`px-4 py-2 rounded ${subType === 'sub' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-200'}`}
+                    >
+                      SUB
+                    </button>
+                    <button
+                      onClick={() => setSubType(subType === 'sub' ? 'dub' : 'sub')}
+                    >
+                      DUB
+                    </button>
+                  </div>
+                </div>
 
-              <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden shadow-xl">
-                <iframe
-                  src={`https://9anime.gs/watch/${anime.idMal}?ep=${selectedEpisode}`}
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  style={{ border: 'none' }}
-                />
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                  {Array.from({ length: anime.episodes || 0 }, (_, i) => i + 1).map((ep) => (
+                    <button
+                      key={ep}
+                      onClick={() => {
+                        setSelectedEpisode(ep);
+                        loadEpisode(ep);
+                      }}
+                      className={`p-2 text-sm rounded-lg transition-colors ${selectedEpisode === ep
+                        ? 'bg-blue-600 text-white ring-2 ring-blue-400'
+                        : 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                      }`}
+                    >
+                      EP {ep}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden shadow-xl relative">
+                  {isLoading ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+                        <p className="text-white text-lg">Loading episode...</p>
+                      </div>
+                    </div>
+                  ) : embedUrl ? (
+                    <div className="relative w-full h-full">
+                      <iframe
+                        src={embedUrl}
+                        className="w-full h-full"
+                        allowFullScreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        style={{ border: 'none' }}
+                      />
+                      <div className="absolute top-4 right-4 z-10">
+                        <button
+                          onClick={() => loadEpisode(selectedEpisode)}
+                          className="px-3 py-1 bg-blue-600/80 hover:bg-blue-700 text-white text-sm rounded-full transition-colors"
+                          title="Refresh video"
+                        >
+                          ↻ Refresh
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 bg-gray-900/50 backdrop-blur-sm">
+                      {error ? (
+                        <>
+                          <p className="text-red-500 text-lg text-center px-4 max-w-lg">{error}</p>
+                          <button
+                            onClick={() => loadEpisode(selectedEpisode)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                          >
+                            <span>↻</span>
+                            <span>Try Again</span>
+                          </button>
+                        </>
+                      ) : (
+                        <p className="text-white text-lg">Select an episode to watch</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {anime.streamingEpisodes && anime.streamingEpisodes.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">Official Streaming Links</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {anime.streamingEpisodes.map((ep, index) => (
+                        <a
+                          key={index}
+                          href={ep.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition-colors"
+                        >
+                          Episode {index + 1}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {anime.externalLinks && anime.externalLinks.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">External Links</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {anime.externalLinks.map((link, index) => (
+                        <a
+                          key={index}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm transition-colors"
+                        >
+                          {link.site}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
