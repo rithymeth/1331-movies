@@ -33,10 +33,11 @@ interface Video {
 interface EpisodeListProps {
   seasons: Season[];
   showId: string;
+  imdbId: string;
   episodeVideos: { [key: string]: Video[] };
 }
 
-export default function EpisodeList({ seasons, showId, episodeVideos }: EpisodeListProps) {
+export default function EpisodeList({ seasons, showId, imdbId, episodeVideos }: EpisodeListProps) {
   const [selectedSeason, setSelectedSeason] = useState(seasons[0]);
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,15 +85,13 @@ export default function EpisodeList({ seasons, showId, episodeVideos }: EpisodeL
             {selectedEpisode.name}
           </h3>
           <div className="aspect-video w-full bg-gray-900 rounded-lg overflow-hidden">
-            {episodeVideos[`${selectedEpisode.season_number}_${selectedEpisode.episode_number}`] ? (
-              <VideoPlayer
-                videoKey={episodeVideos[`${selectedEpisode.season_number}_${selectedEpisode.episode_number}`][0].key}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                Episode content not available for streaming
-              </div>
-            )}
+            <VideoPlayer
+              type="vidsrc"
+              videoKey=""
+              imdbId={imdbId}
+              season={selectedEpisode.season_number}
+              episode={selectedEpisode.episode_number}
+            />
           </div>
           <p className="text-gray-300">{selectedEpisode.overview}</p>
         </div>

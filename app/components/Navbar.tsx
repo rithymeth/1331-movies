@@ -58,24 +58,32 @@ const Navbar = () => {
           </div>
         </form>
         <div className="space-x-6">
-          <Link
-            href="/"
-            className={`hover:text-blue-400 transition-colors duration-300 ${pathname === '/' ? 'text-blue-400' : 'text-gray-300'}`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/movies"
-            className={`hover:text-blue-400 transition-colors duration-300 ${pathname === '/movies' ? 'text-blue-400' : 'text-gray-300'}`}
-          >
-            Movies
-          </Link>
-          <Link
-            href="/tv-shows"
-            className={`hover:text-blue-400 transition-colors duration-300 ${pathname === '/tv-shows' ? 'text-blue-400' : 'text-gray-300'}`}
-          >
-            TV Shows
-          </Link>
+          <div className="flex items-center space-x-6">
+            <Link
+              href="/"
+              className={`text-lg hover:text-blue-400 transition-colors ${pathname === '/' ? 'text-blue-400' : 'text-gray-300'}`}
+            >
+              Home
+            </Link>
+            <Link
+              href="/movies"
+              className={`text-lg hover:text-blue-400 transition-colors ${pathname === '/movies' ? 'text-blue-400' : 'text-gray-300'}`}
+            >
+              Movies
+            </Link>
+            <Link
+              href="/tv-shows"
+              className={`text-lg hover:text-blue-400 transition-colors ${pathname === '/tv-shows' ? 'text-blue-400' : 'text-gray-300'}`}
+            >
+              TV Shows
+            </Link>
+            <Link
+              href="/anime"
+              className={`text-lg hover:text-blue-400 transition-colors ${pathname === '/anime' ? 'text-blue-400' : 'text-gray-300'}`}
+            >
+              Anime
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

@@ -24,7 +24,7 @@ interface Season {
 }
 
 interface TVShowDetails {
-  id: string;
+  id: number;
   name: string;
   overview: string;
   poster_path: string;
@@ -36,6 +36,9 @@ interface TVShowDetails {
   vote_count: number;
   genres: { id: number; name: string }[];
   seasons: Season[];
+  external_ids: {
+    imdb_id: string;
+  };
 }
 
 interface Video {
@@ -59,22 +62,24 @@ type Props = {
 }
 
 async function getTVShowDetails(id: string): Promise<{ show: TVShowDetails; cast: CastMember[]; videos: Video[]; episodeVideos: { [key: string]: Video[] } }> {
-  const [showRes, creditsRes, videosRes, seasonsRes] = await Promise.all([
+  const [showRes, creditsRes, videosRes, seasonsRes, externalIdsRes] = await Promise.all([
     fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
     fetch(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
     fetch(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
-    fetch(`https://api.themoviedb.org/3/tv/${id}/season/1?api_key=${process.env.TMDB_API_KEY}&language=en-US`)
+    fetch(`https://api.themoviedb.org/3/tv/${id}/season/1?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
+    fetch(`https://api.themoviedb.org/3/tv/${id}/external_ids?api_key=${process.env.TMDB_API_KEY}`)
   ]);
 
-  if (!showRes.ok || !creditsRes.ok || !videosRes.ok || !seasonsRes.ok) {
+  if (!showRes.ok || !creditsRes.ok || !videosRes.ok || !seasonsRes.ok || !externalIdsRes.ok) {
     throw new Error('Failed to fetch TV show data');
   }
 
-  const [showData, credits, videos, firstSeasonData] = await Promise.all([
+  const [showData, credits, videos, firstSeasonData, externalIds] = await Promise.all([
     showRes.json(),
     creditsRes.json(),
     videosRes.json(),
-    seasonsRes.json()
+    seasonsRes.json(),
+    externalIdsRes.json()
   ]);
 
   // Filter for YouTube trailers and teasers for the show
@@ -110,7 +115,7 @@ async function getTVShowDetails(id: string): Promise<{ show: TVShowDetails; cast
   );
 
   return {
-    show: { ...showData, seasons: seasonsWithEpisodes },
+    show: { ...showData, seasons: seasonsWithEpisodes, external_ids: externalIds },
     cast: credits.cast.slice(0, 6),
     videos: filteredVideos,
     episodeVideos
@@ -185,7 +190,12 @@ export default async function TVShowPage({ params }: Props) {
 
             <div className="mt-8">
               <h2 className="text-xl font-semibold text-white mb-4">Episodes</h2>
-              <EpisodeList seasons={show.seasons} showId={id} episodeVideos={episodeVideos} />
+              <EpisodeList 
+                seasons={show.seasons} 
+                showId={id} 
+                imdbId={show.external_ids.imdb_id}
+                episodeVideos={episodeVideos} 
+              />
             </div>
 
             <div>

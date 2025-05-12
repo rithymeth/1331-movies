@@ -149,25 +149,27 @@ export default async function MoviePage({ params }: Props) {
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">Watch Movie</h2>
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
-                <iframe
-                  src={`https://vidsrc.to/embed/movie/${movie.imdb_id}`}
-                  allowFullScreen
-                  className="w-full h-full"
-                  style={{ border: 'none' }}
+                <VideoPlayer
+                  type="vidsrc"
+                  videoKey=""
+                  imdbId={movie.imdb_id}
                 />
               </div>
-            </div>
-
-            {videos.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Trailer</h2>
-                <VideoPlayer videoKey={videos[0].key} />
-              </div>
-            )}
-
-            <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Overview</h2>
-              <p className="text-gray-300">{movie.overview}</p>
+              {videos.length > 0 && (
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold text-white mb-4">Trailers & Clips</h2>
+                  <div className="space-y-4">
+                    {videos.map((video) => (
+                      <div key={video.id} className="space-y-2">
+                        <h3 className="text-lg font-medium text-white">
+                          {video.name}
+                        </h3>
+                        <VideoPlayer type="youtube" videoKey={video.key} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>

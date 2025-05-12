@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['image.tmdb.org'],
+    domains: [
+      'image.tmdb.org',
+      's4.anilist.co',
+      'img1.ak.crunchyroll.com',
+    ],
   },
 }
 
