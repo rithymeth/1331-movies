@@ -15,6 +15,14 @@ interface MovieDetails {
   genres: { id: number; name: string }[];
 }
 
+interface Video {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+}
+
 interface CastMember {
   id: number;
   name: string;
@@ -27,35 +35,45 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-async function getMovieDetails(id: string): Promise<{ movie: MovieDetails; cast: CastMember[] }> {
-  const [movieRes, externalIdsRes, creditsRes] = await Promise.all([
+async function getMovieDetails(id: string): Promise<{ movie: MovieDetails; cast: CastMember[]; videos: Video[] }> {
+  const [movieRes, externalIdsRes, creditsRes, videosRes] = await Promise.all([
     fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
     fetch(`https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=${process.env.TMDB_API_KEY}`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.TMDB_API_KEY}&language=en-US`)
+    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
+    fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${process.env.TMDB_API_KEY}&language=en-US`)
   ]);
 
-  if (!movieRes.ok || !externalIdsRes.ok || !creditsRes.ok) {
+  if (!movieRes.ok || !externalIdsRes.ok || !creditsRes.ok || !videosRes.ok) {
     throw new Error('Failed to fetch movie data');
   }
 
-  const [movieData, externalIds, credits] = await Promise.all([
+  const [movieData, externalIds, credits, videos] = await Promise.all([
     movieRes.json(),
     externalIdsRes.json(),
-    creditsRes.json()
+    creditsRes.json(),
+    videosRes.json()
   ]);
+
+  // Filter for YouTube trailers and teasers
+  const filteredVideos = videos.results.filter(
+    (video: Video) => video.site === 'YouTube' && ['Trailer', 'Teaser'].includes(video.type)
+  );
 
   return {
     movie: {
       ...movieData,
       imdb_id: externalIds.imdb_id,
     },
-    cast: credits.cast.slice(0, 6)
+    cast: credits.cast.slice(0, 6),
+    videos: filteredVideos
   };
 }
 
+import VideoPlayer from '../../components/VideoPlayer';
+
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
-  const { movie, cast } = await getMovieDetails(id);
+  const { movie, cast, videos } = await getMovieDetails(id);
 
   if (!movie.imdb_id) {
     return (
@@ -140,8 +158,15 @@ export default async function MoviePage({ params }: Props) {
               </div>
             </div>
 
+            {videos.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-white mb-4">Trailer</h2>
+                <VideoPlayer videoKey={videos[0].key} />
+              </div>
+            )}
+
             <div>
-              <h2 className="text-2xl font-semibold mb-4">About the Movie</h2>
+              <h2 className="text-xl font-semibold text-white mb-2">Overview</h2>
               <p className="text-gray-300">{movie.overview}</p>
             </div>
 

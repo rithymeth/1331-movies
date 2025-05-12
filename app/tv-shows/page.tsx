@@ -1,5 +1,5 @@
 import React from 'react';
-import MovieCard from '../components/MovieCard';
+import TVShowCard from '../components/TVShowCard';
 import Image from 'next/image';
 
 interface TVShow {
@@ -61,12 +61,12 @@ export default async function TVShowsPage() {
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Popular TV Shows</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {popular.map((show: TVShow) => (
-              <MovieCard
+              <TVShowCard
                 key={show.id}
                 id={show.id.toString()}
-                title={show.name}
-                poster={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : ''}
-                year={show.first_air_date?.split('-')[0]}
+                name={show.name}
+                poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
+                year={new Date(show.first_air_date).getFullYear().toString()}
                 rating={show.vote_average}
                 voteCount={show.vote_count}
                 overview={show.overview}
@@ -80,12 +80,12 @@ export default async function TVShowsPage() {
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Top Rated TV Shows</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {topRated.map((show: TVShow) => (
-              <MovieCard
+              <TVShowCard
                 key={show.id}
                 id={show.id.toString()}
-                title={show.name}
-                poster={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : ''}
-                year={show.first_air_date?.split('-')[0]}
+                name={show.name}
+                poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
+                year={new Date(show.first_air_date).getFullYear().toString()}
                 rating={show.vote_average}
                 voteCount={show.vote_count}
                 overview={show.overview}
@@ -99,12 +99,12 @@ export default async function TVShowsPage() {
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Airing Today</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {airingToday.map((show: TVShow) => (
-              <MovieCard
+              <TVShowCard
                 key={show.id}
                 id={show.id.toString()}
-                title={show.name}
-                poster={show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : ''}
-                year={show.first_air_date?.split('-')[0]}
+                name={show.name}
+                poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
+                year={new Date(show.first_air_date).getFullYear().toString()}
                 rating={show.vote_average}
                 voteCount={show.vote_count}
                 overview={show.overview}
