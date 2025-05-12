@@ -75,15 +75,15 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link href="/" className={navLinkClass('/')}>
+            {/* <Link href="/" className={navLinkClass('/')}>
               Movies
-            </Link>
-            <Link href="/tv-shows" className={navLinkClass('/tv-shows')}>
+            </Link> */}
+            {/* <Link href="/tv-shows" className={navLinkClass('/tv-shows')}>
               TV Shows
             </Link>
             <Link href="/anime" className={navLinkClass('/anime')}>
               Anime
-            </Link>
+            </Link> */}
           </div>
 
           {/* Desktop Search */}
