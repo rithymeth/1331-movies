@@ -78,7 +78,7 @@ const Navbar = () => {
             <Link href="/" className={navLinkClass('/')}>
               Movies
             </Link>
-            <Link href="/tv-show" className={navLinkClass('/tv-show')}>
+            <Link href="/tv-shows" className={navLinkClass('/tv-shows')}>
               TV Shows
             </Link>
             <Link href="/anime" className={navLinkClass('/anime')}>
@@ -127,8 +127,8 @@ const Navbar = () => {
                 Movies
               </Link>
               <Link
-                href="/tv-show"
-                className={`px-2 py-1 rounded ${navLinkClass('/tv-show')}`}
+                href="/tv-shows"
+                className={`px-2 py-1 rounded ${navLinkClass('/tv-shows')}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 TV Shows

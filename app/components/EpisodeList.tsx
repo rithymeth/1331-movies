@@ -34,10 +34,11 @@ interface EpisodeListProps {
   seasons: Season[];
   showId: string;
   imdbId: string;
+  tmdbId: string;
   episodeVideos: { [key: string]: Video[] };
 }
 
-export default function EpisodeList({ seasons, showId, imdbId, episodeVideos }: EpisodeListProps) {
+export default function EpisodeList({ seasons, showId, imdbId, tmdbId, episodeVideos }: EpisodeListProps) {
   const [selectedSeason, setSelectedSeason] = useState(seasons[0]);
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,11 +87,19 @@ export default function EpisodeList({ seasons, showId, imdbId, episodeVideos }: 
           </h3>
           <div className="aspect-video w-full bg-gray-900 rounded-lg overflow-hidden">
             <VideoPlayer
-              type="vidsrc"
-              videoKey=""
-              imdbId={imdbId}
-              season={selectedEpisode.season_number}
-              episode={selectedEpisode.episode_number}
+              embedUrl={`https://vidsrc.cc/v2/embed/tv/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`}
+              fallbackUrls={[
+                `https://vidsrc.to/embed/tv/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`,
+                `https://2embed.org/embed/series?tmdb=${tmdbId}&s=${selectedSeason.season_number}&e=${selectedEpisode.episode_number}`,
+                `https://streamtape.com/e/tv/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`,
+                `https://rapid-cloud.co/embed-6/tv?id=${imdbId}&s=${selectedSeason.season_number}&e=${selectedEpisode.episode_number}`,
+                `https://multiembed.mov/directstream.php?video_id=${imdbId}&s=${selectedSeason.season_number}&e=${selectedEpisode.episode_number}`,
+                `https://www.2embed.cc/embedtv/${imdbId}&s=${selectedSeason.season_number}&e=${selectedEpisode.episode_number}`,
+                `https://dbgo.fun/tv-imdb/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`,
+                `https://gomo.to/show/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`,
+                `https://fsapi.xyz/tv-imdb/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`,
+                `https://moviehab.com/embed/${imdbId}/${selectedSeason.season_number}/${selectedEpisode.episode_number}`
+              ]}
             />
           </div>
           <p className="text-gray-300">{selectedEpisode.overview}</p>

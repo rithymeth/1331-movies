@@ -150,9 +150,13 @@ export default async function MoviePage({ params }: Props) {
               <h2 className="text-2xl font-semibold">Watch Movie</h2>
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <VideoPlayer
-                  type="vidsrc"
-                  videoKey=""
-                  imdbId={movie.imdb_id}
+                  embedUrl={`https://vidsrc.cc/v2/embed/movie/${movie.imdb_id}`}
+                  fallbackUrls={[
+                    `https://vidsrc.to/embed/movie/${movie.imdb_id}`,
+                    `https://2embed.org/embed/${movie.imdb_id}`,
+                    `https://streamtape.com/e/${movie.imdb_id}`,
+                    `https://rapid-cloud.co/embed-6/movie?id=${movie.imdb_id}`
+                  ]}
                 />
               </div>
               {videos.length > 0 && (
@@ -164,7 +168,10 @@ export default async function MoviePage({ params }: Props) {
                         <h3 className="text-lg font-medium text-white">
                           {video.name}
                         </h3>
-                        <VideoPlayer type="youtube" videoKey={video.key} />
+                        <VideoPlayer
+                          embedUrl={`https://www.youtube.com/embed/${video.key}?autoplay=0&controls=1&modestbranding=1`}
+                          fallbackUrls={[]}
+                        />
                       </div>
                     ))}
                   </div>
@@ -188,6 +195,10 @@ export default async function MoviePage({ params }: Props) {
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center">
                           <span className="text-gray-400 text-3xl">?</span>
+                          <VideoPlayer
+                            embedUrl={`https://www.youtube.com/embed/${videos[0].key}?autoplay=0&controls=1&modestbranding=1`}
+                            fallbackUrls={[]}
+                          />
                         </div>
                       )}
                     </div>

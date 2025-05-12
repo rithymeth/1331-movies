@@ -16,7 +16,7 @@ interface TVShowCardProps {
 
 const TVShowCard = ({ id, name, poster, year, rating = 0, voteCount = 0, overview = '' }: TVShowCardProps) => {
   return (
-    <Link href={`/tv-show/${id}`} className="group">
+    <Link href={`/tv-shows/${id}`} className="block">
       <div className="relative overflow-hidden rounded-lg bg-gray-800/50 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:bg-gray-800/80 border border-gray-700/50 group-hover:border-blue-500/50 shadow-lg hover:shadow-blue-500/20">
         <div className="aspect-[2/3] relative">
           {poster ? (

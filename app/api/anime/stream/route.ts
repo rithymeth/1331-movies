@@ -121,19 +121,43 @@ export async function GET(request: Request) {
 
     // Generate embed URLs for different providers as fallbacks
     const embedUrls = [
+      // Primary sources
       `https://vidsrc.cc/v2/embed/anime/${malId}/${episodeNum}/${type}`,
       `https://vidsrc.to/embed/anime/${malId}/${episodeNum}`,
       `https://rapid-cloud.co/embed-6/anime?id=${malId}&episode=${episodeNum}`,
+      
+      // Additional sources
       `https://anihdplay.com/streaming.php?id=${malId}&ep=${episodeNum}`,
       `https://gogoplay.io/streaming.php?id=${malId}&ep=${episodeNum}`,
       `https://animixplay.to/v1/${malId}/${episodeNum}`,
+      `https://animepahe.ru/play/${malId}/${episodeNum}`,
+      `https://9anime.pl/watch/${malId}/ep-${episodeNum}`,
+      `https://aniwatch.to/watch/${malId}/episode-${episodeNum}`,
+      `https://zoro.to/watch/${malId}/ep-${episodeNum}`,
+      `https://animension.to/watch/${malId}/${episodeNum}`,
+      `https://animeflix.live/watch?id=${malId}&ep=${episodeNum}`,
+      `https://kaido.to/embed/${malId}/${episodeNum}`,
+      `https://aniwave.to/watch/${malId}/ep-${episodeNum}`,
+      `https://animeowl.net/anime/${malId}/episode-${episodeNum}`,
+      `https://animesuge.to/anime/${malId}/ep-${episodeNum}`,
+      `https://yugen.to/watch/${malId}/${episodeNum}`,
+      `https://animefox.tv/watch/${malId}/episode-${episodeNum}`,
+      `https://animetake.tv/${malId}/${episodeNum}`,
     ];
 
     // Add dub-specific sources if dub is requested
     if (type === 'dub') {
       embedUrls.push(
         `https://animedub.tv/embed/${malId}/${episodeNum}`,
-        `https://dubhappy.net/embed/${malId}/${episodeNum}`
+        `https://dubhappy.net/embed/${malId}/${episodeNum}`,
+        `https://dubbedanime.net/anime/${malId}/episode-${episodeNum}`,
+        `https://animedubbed.me/watch/${malId}/episode-${episodeNum}`,
+        `https://dubbed.watch/anime/${malId}/episode/${episodeNum}`,
+        `https://animedao.to/watch/${malId}-dub/episode-${episodeNum}`,
+        `https://animefrenzy.net/watch/${malId}-dub/episode-${episodeNum}`,
+        `https://simplyaweeb.to/watch/dub/${malId}/episode-${episodeNum}`,
+        `https://animekisa.tv/dubbed/${malId}-episode-${episodeNum}`,
+        `https://gogoanime.tel/${malId}-dub-episode-${episodeNum}`
       );
     }
 
