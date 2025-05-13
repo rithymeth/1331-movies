@@ -1,110 +1,238 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
+import TVShowCard from '../components/TVShowCard';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-async function searchMovies(query: string) {
-  const res = await fetch(
-    `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1`,
-    { cache: 'no-store' }
-  );
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch search results');
-  }
-
-  const data = await res.json();
-  return data.results.map((movie: any) => ({
-    id: movie.id,
-    title: movie.title,
-    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A'
-  }));
+interface SearchResult {
+  id: number;
+  title?: string;
+  name?: string;
+  poster_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average: number;
+  vote_count: number;
+  overview: string;
+  media_type: 'movie' | 'tv';
 }
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const query = searchParams.q || '';
-  const movies = query ? await searchMovies(query) : [];
+export default function SearchPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
+  const type = searchParams.get('type') || 'all';
+  const genre = searchParams.get('genre') || '';
+  const sort = searchParams.get('sort') || 'popularity.desc';
+
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const [movieGenres, tvGenres] = await Promise.all([
+          fetch('/api/genres/movie').then(res => res.json()),
+          fetch('/api/genres/tv').then(res => res.json())
+        ]);
+        
+        // Combine and deduplicate genres
+        const allGenres = [...movieGenres, ...tvGenres];
+        const uniqueGenres = Array.from(new Map(allGenres.map(g => [g.id, g])).values());
+        setGenres(uniqueGenres);
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
+  useEffect(() => {
+    const searchContent = async () => {
+      if (!query) {
+        setResults([]);
+        return;
+      }
+
+      setIsLoading(true);
+      setError('');
+
+      try {
+        const searchTypes = type === 'all' ? ['movie', 'tv'] : [type];
+        const searchPromises = searchTypes.map(mediaType =>
+          fetch(`/api/search/${mediaType}?query=${encodeURIComponent(query)}&genre=${genre}&sort=${sort}`)
+            .then(res => res.json())
+        );
+
+        const responses = await Promise.all(searchPromises);
+        const combinedResults = responses.flatMap((response, index) =>
+          response.results.map((item: SearchResult) => ({
+            ...item,
+            media_type: searchTypes[index] as 'movie' | 'tv'
+          }))
+        );
+
+        // Sort combined results if needed
+        const sortedResults = combinedResults.sort((a, b) => {
+          if (sort === 'popularity.desc') return b.vote_count - a.vote_count;
+          if (sort === 'rating.desc') return b.vote_average - a.vote_average;
+          if (sort === 'date.desc') {
+            const dateA = a.release_date || a.first_air_date || '';
+            const dateB = b.release_date || b.first_air_date || '';
+            return dateB.localeCompare(dateA);
+          }
+          return 0;
+        });
+
+        setResults(sortedResults);
+      } catch (error) {
+        console.error('Error searching:', error);
+        setError('Failed to fetch search results. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    searchContent();
+  }, [query, type, genre, sort]);
+
+  const updateSearchParams = (params: { [key: string]: string }) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) {
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
+      }
+    });
+    router.push(`/search?${newParams.toString()}`);
+  };
 
   return (
-    <div className="pt-24 min-h-screen">
+    <div className="pt-24 min-h-screen bg-gray-900">
       <div className="container mx-auto px-4">
-        <section className="space-y-8">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
-              {query ? `Search Results for "${query}"` : 'Search Movies'}
-            </h1>
-            {movies.length > 0 && (
-              <span className="text-gray-400 text-lg">
-                {movies.length} {movies.length === 1 ? 'result' : 'results'} found
-              </span>
-            )}
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-6">
+            {query ? `Search Results for "${query}"` : 'Search'}
+          </h1>
 
-          {movies.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {movies.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  id={movie.id}
-                  title={movie.title}
-                  poster={movie.poster}
-                  year={movie.year}
-                  rating={movie.rating}
-                  voteCount={movie.voteCount}
-                  overview={movie.overview}
-                />
+          {/* Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-800 p-4 rounded-lg">
+            <select
+              value={type}
+              onChange={(e) => updateSearchParams({ type: e.target.value })}
+              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Types</option>
+              <option value="movie">Movies</option>
+              <option value="tv">TV Shows</option>
+            </select>
+
+            <select
+              value={genre}
+              onChange={(e) => updateSearchParams({ genre: e.target.value })}
+              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Genres</option>
+              {genres.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
               ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16 space-y-4">
-              {query ? (
-                <>
-                  <svg
-                    className="w-16 h-16 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z"
-                    />
-                  </svg>
-                  <p className="text-xl text-gray-400">
-                    No movies found for "{query}"
-                  </p>
-                  <p className="text-gray-500">
-                    Try searching with different keywords
-                  </p>
-                </>
+            </select>
+
+            <select
+              value={sort}
+              onChange={(e) => updateSearchParams({ sort: e.target.value })}
+              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="popularity.desc">Most Popular</option>
+              <option value="rating.desc">Highest Rated</option>
+              <option value="date.desc">Latest Release</option>
+            </select>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center py-12">{error}</div>
+        ) : results.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {results.map((item) => (
+              item.media_type === 'movie' ? (
+                <MovieCard
+                  key={`${item.media_type}-${item.id}`}
+                  id={item.id.toString()}
+                  title={item.title || ''}
+                  poster={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null}
+                  year={item.release_date ? new Date(item.release_date).getFullYear().toString() : 'N/A'}
+                  rating={item.vote_average}
+                  voteCount={item.vote_count}
+                  overview={item.overview}
+                />
               ) : (
-                <>
-                  <svg
-                    className="w-16 h-16 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                  <p className="text-xl text-gray-400">
-                    Enter a search term to find movies
-                  </p>
-                </>
-              )}
-            </div>
-          )}
-        </section>
+                <TVShowCard
+                  key={`${item.media_type}-${item.id}`}
+                  id={item.id.toString()}
+                  name={item.name || ''}
+                  poster={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null}
+                  year={item.first_air_date ? new Date(item.first_air_date).getFullYear().toString() : 'N/A'}
+                  rating={item.vote_average}
+                  voteCount={item.vote_count}
+                  overview={item.overview}
+                />
+              )
+            ))}
+          </div>
+        ) : query ? (
+          <div className="flex flex-col items-center justify-center py-16 space-y-4">
+            <svg
+              className="w-16 h-16 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z"
+              />
+            </svg>
+            <p className="text-xl text-gray-400">
+              No results found for "{query}"
+            </p>
+            <p className="text-gray-500">
+              Try searching with different keywords or filters
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 space-y-4">
+            <svg
+              className="w-16 h-16 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <p className="text-xl text-gray-400">
+              Enter a search term to find movies and TV shows
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
