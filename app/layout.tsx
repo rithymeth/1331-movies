@@ -8,8 +8,63 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'MovieStream - Watch Movies Online',
-  description: 'Watch your favorite movies and TV shows online',
+  metadataBase: new URL('https://1331-movies.netlify.app'),
+  title: {
+    default: 'MovieStream - Watch Movies & TV Shows Online Free',
+    template: '%s | MovieStream'
+  },
+  description: 'Watch the latest movies and TV shows online for free in HD quality. Stream your favorite content anytime, anywhere.',
+  keywords: ['movies', 'tv shows', 'streaming', 'watch online', 'free movies', 'HD movies', 'latest movies', 'series'],
+  authors: [{ name: 'MovieStream Team' }],
+  creator: 'MovieStream',
+  publisher: 'MovieStream',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://1331-movies.netlify.app',
+    title: 'MovieStream - Watch Movies & TV Shows Online Free',
+    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream your favorite content anytime, anywhere.',
+    siteName: 'MovieStream',
+    images: [{
+      url: '/og-image.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'MovieStream - Watch Movies & TV Shows Online',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MovieStream - Watch Movies & TV Shows Online Free',
+    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream your favorite content anytime, anywhere.',
+    images: ['/og-image.jpg'],
+    creator: '@moviestream',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  category: 'entertainment',
   other: {
     'google-adsense-account': 'ca-pub-1318099833166063',
   },
