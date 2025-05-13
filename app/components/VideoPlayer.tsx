@@ -85,12 +85,12 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
                           id.includes('mal') ? id.replace('mal', '') :
                           id.startsWith('tmdb') ? id : `tmdb${id}`;
         return `https://vidsrc.cc/v2/embed/anime/${prefixedId}/${episode}/${type}?autoPlay=${autoPlay}&autoSkipIntro=${autoSkipIntro}`;
-      } else if (url.pathname.includes('/tv/')) {
+      } else if (url.pathname.includes('/tv')) {
         // TV show episode
-        const [, , , id, season, episode] = url.pathname.split('/');
-        // Add tt prefix for IMDB IDs if not present
-        const tvId = id.startsWith('tt') ? id : id.match(/^\d+$/) ? id : `tt${id}`;
-        return `https://vidsrc.cc/v2/embed/tv/${tvId}/${season}/${episode}?autoPlay=${autoPlay}&poster=${poster}`;
+        const tmdbId = params.get('tmdb');
+        const season = params.get('season');
+        const episode = params.get('episode');
+        return `https://vidsrc.cc/v2/embed/tv/${tmdbId}/${season}/${episode}?autoPlay=${autoPlay}&poster=${poster}`;
       } else {
         // Movie
         const [, , , id] = url.pathname.split('/');
