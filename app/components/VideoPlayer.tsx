@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface VideoPlayerProps {
   embedUrl: string;
@@ -12,6 +13,7 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
   const [sourceIndex, setSourceIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [autoSwitch, setAutoSwitch] = useState(true);
+  const [showSources, setShowSources] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const allSources = [embedUrl, ...fallbackUrls];
 
@@ -112,46 +114,71 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
       <iframe
         ref={iframeRef}
         src={currentUrl}
-        className="w-full h-full"
+        className="w-full h-full absolute inset-0"
         allowFullScreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         onLoad={handleIframeLoad}
         onError={handleIframeError}
       />
-      <div className="absolute top-4 right-4 flex flex-wrap gap-2 max-w-full p-2 bg-black/50 rounded-lg">
-        <div className="flex items-center space-x-2 mr-4">
-          <label className="text-sm text-white">
-            <input
-              type="checkbox"
-              checked={autoSwitch}
-              onChange={(e) => setAutoSwitch(e.target.checked)}
-              className="mr-2"
-            />
-            Auto-switch
-          </label>
+      <div className="absolute bottom-0 left-0 right-0 flex flex-col p-3 bg-gradient-to-t from-black/80 to-transparent">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowSources(!showSources)}
+              className="flex items-center gap-1 px-3 py-1 rounded text-sm bg-gray-700/80 text-gray-200 hover:bg-gray-600"
+            >
+              Source {sourceIndex + 1}
+              {showSources ? (
+                <ChevronDownIcon className="w-4 h-4" />
+              ) : (
+                <ChevronUpIcon className="w-4 h-4" />
+              )}
+            </button>
+            <button
+              onClick={() => handleSourceChange(sourceIndex)}
+              className="px-3 py-1 rounded text-sm bg-gray-700/80 text-gray-200 hover:bg-gray-600"
+              title="Retry current source"
+            >
+              ↻
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <label className="text-sm text-white flex items-center">
+              <input
+                type="checkbox"
+                checked={autoSwitch}
+                onChange={(e) => setAutoSwitch(e.target.checked)}
+                className="mr-2"
+              />
+              Auto-switch
+            </label>
+          </div>
         </div>
-        {allSources.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handleSourceChange(index)}
-            className={`px-3 py-1 rounded text-sm ${sourceIndex === index ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'}`}
-          >
-            Source {index + 1}
-          </button>
-        ))}
-        <button
-          onClick={() => handleSourceChange(sourceIndex)}
-          className="px-3 py-1 rounded text-sm bg-gray-700 text-gray-200 hover:bg-gray-600"
-          title="Retry current source"
-        >
-          ↻
-        </button>
+
+        {/* Source dropdown */}
+        {showSources && (
+          <div className="mt-2 grid grid-cols-3 sm:grid-cols-5 gap-2">
+            {allSources.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  handleSourceChange(index);
+                  setShowSources(false);
+                }}
+                className={`px-3 py-1 rounded text-sm ${sourceIndex === index ? 'bg-blue-600 text-white' : 'bg-gray-700/80 text-gray-200 hover:bg-gray-600'}`}
+              >
+                Source {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {sourceIndex > 0 && (
+          <div className="mt-2 text-sm text-gray-400">
+            Using backup source {sourceIndex + 1}
+          </div>
+        )}
       </div>
-      {sourceIndex > 0 && (
-        <div className="absolute bottom-4 left-4 text-sm text-gray-400 bg-black/50 px-3 py-1 rounded-lg">
-          Using backup source {sourceIndex + 1}
-        </div>
-      )}
     </div>
   );
 }
