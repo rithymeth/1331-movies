@@ -5,6 +5,7 @@ import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
 import FilterButton from '../components/FilterButton';
 import GoogleAdsense from '../components/GoogleAdsense';
+import AdSenseDropdown from '../components/AdSenseDropdown';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -110,8 +111,11 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="pt-24 min-h-screen bg-gray-900">
-      <div className="container mx-auto px-4">
+    <main className="min-h-screen bg-gray-900 text-white">
+      {/* Dropdown Ad */}
+      <AdSenseDropdown format="fluid" layout="in-article" />
+
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-6">
             {type === 'all' ? 'All Content' : type === 'movie' ? 'Movies' : 'TV Shows'}
@@ -249,6 +253,6 @@ export default function SearchPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

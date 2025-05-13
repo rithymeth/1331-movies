@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
 import GoogleAdsense from '../../components/GoogleAdsense';
+import AdSenseDropdown from '../../components/AdSenseDropdown';
 
 interface MovieDetails {
   id: string;
@@ -78,6 +79,12 @@ export default async function MoviePage({ params }: Props) {
   if (!movie.imdb_id) {
     return (
       <div className="max-w-6xl mx-auto text-center py-12">
+        {movie && (
+          <div className="container mx-auto px-4 py-8">
+            {/* Dropdown Ad */}
+            <AdSenseDropdown format="fluid" layout="in-article" />
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-red-500">Movie Not Available</h1>
         <p className="text-gray-400 mt-2">
           Sorry, this movie is not available for streaming.

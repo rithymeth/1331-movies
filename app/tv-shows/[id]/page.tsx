@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
 import GoogleAdsense from '../../components/GoogleAdsense';
+import AdSenseDropdown from '../../components/AdSenseDropdown';
 
 interface TVShowDetails {
   id: number;
@@ -253,6 +254,9 @@ export default function TVShowPage({ params }: Props) {
       )}
 
       <div className="container mx-auto px-4 py-8">
+        {/* Dropdown Ad */}
+        <AdSenseDropdown format="fluid" layout="in-article" />
+
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
             <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
