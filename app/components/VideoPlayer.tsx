@@ -70,21 +70,33 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
     if (embedUrl.includes('youtube')) {
       return embedUrl;
     } else if (embedUrl.includes('vidsrc')) {
-      if (embedUrl.includes('ani')) {
+      const url = new URL(embedUrl);
+      const params = new URLSearchParams(url.search);
+      const autoPlay = params.get('autoPlay') || 'true';
+      const poster = params.get('poster') || 'true';
+      const autoSkipIntro = params.get('autoSkipIntro') || 'false';
+
+      if (url.pathname.includes('/anime/')) {
         // Anime episode
-        const aniId = embedUrl.split('id=')[1].split('&')[0];
-        // Using gogoanime as the source for anime
-        return `https://gogoplay4.com/streaming.php?id=${aniId}&ep=1`;
-      } else if (embedUrl.includes('tv')) {
+        const [, , , id, episode, type] = url.pathname.split('/');
+        // Add proper prefix based on the source
+        const prefixedId = id.startsWith('tt') ? `imdb${id}` : 
+                          id.startsWith('ani') ? id :
+                          id.includes('mal') ? id.replace('mal', '') :
+                          id.startsWith('tmdb') ? id : `tmdb${id}`;
+        return `https://vidsrc.cc/v2/embed/anime/${prefixedId}/${episode}/${type}?autoPlay=${autoPlay}&autoSkipIntro=${autoSkipIntro}`;
+      } else if (url.pathname.includes('/tv/')) {
         // TV show episode
-        const tvId = embedUrl.split('tv/')[1].split('/')[0];
-        const season = embedUrl.split('tv/')[1].split('/')[1];
-        const episode = embedUrl.split('tv/')[1].split('/')[2];
-        return `https://vidsrc.cc/v2/embed/tv/${tvId}/${season}/${episode}`;
+        const [, , , id, season, episode] = url.pathname.split('/');
+        // Add tt prefix for IMDB IDs if not present
+        const tvId = id.startsWith('tt') ? id : id.match(/^\d+$/) ? id : `tt${id}`;
+        return `https://vidsrc.cc/v2/embed/tv/${tvId}/${season}/${episode}?autoPlay=${autoPlay}&poster=${poster}`;
       } else {
         // Movie
-        const movieId = embedUrl.split('movie/')[1];
-        return `https://vidsrc.cc/v2/embed/movie/${movieId}`;
+        const [, , , id] = url.pathname.split('/');
+        // Add tt prefix for IMDB IDs if not present
+        const movieId = id.startsWith('tt') ? id : id.match(/^\d+$/) ? id : `tt${id}`;
+        return `https://vidsrc.cc/v2/embed/movie/${movieId}?autoPlay=${autoPlay}&poster=${poster}`;
       }
     }
     return '';

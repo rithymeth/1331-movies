@@ -1,0 +1,166 @@
+Movie Endpoint
+{version}/embed/movie/{id}
+Valid parameters:
+- {version} required determines embed version - v2 or v3.
+
+- {id} required - from imdb.com or themoviedb.org , imdb id must have tt prefix.
+
+Customization Parameters:
+- poster: Determines if the poster image is shown.
+
+- autoPlay: Controls whether the media starts playing automatically.
+
+Examples
+https://vidsrc.cc/v2/embed/movie/533535
+
+https://vidsrc.cc/v2/embed/movie/tt6263850
+
+https://vidsrc.cc/v3/embed/movie/533535?autoPlay=false
+
+
+tv shows Endpoint
+{version}/embed/tv/{id}
+Valid parameters:
+- {version} required determines embed version - v2 or v3.
+
+- {id} required - from imdb.com or themoviedb.org , imdb id must have tt prefix.
+
+Customization Parameters:
+- poster: Determines if the poster image is shown.
+
+- autoPlay: Controls whether the media starts playing automatically.
+
+Examples
+https://vidsrc.cc/v2/embed/tv/1399
+
+https://vidsrc.cc/v2/embed/tv/tt0944947
+
+https://vidsrc.cc/v3/embed/tv/tt0944947?autoPlay=false
+
+
+
+tv shows season Endpoint
+{version}/embed/tv/{id}/{season}
+Valid parameters:
+- {version} required determines embed version - v2 or v3.
+
+- {id} required - from imdb.com or themoviedb.org , imdb id must have tt prefix.
+
+- {season} required - the season number.
+
+Customization Parameters:
+- poster: Determines if the poster image is shown.
+
+- autoPlay: Controls whether the media starts playing automatically.
+
+Examples
+https://vidsrc.cc/v2/embed/tv/1399/1
+
+https://vidsrc.cc/v2/embed/tv/tt0944947/1
+
+https://vidsrc.cc/v3/embed/tv/tt0944947/1?autoPlay=false
+
+
+
+tv shows episode Endpoint
+{version}/embed/tv/{id}/{season}/{episode}
+Valid parameters:
+- {version} required determines embed version - v2 or v3.
+
+- {id} required - from imdb.com or themoviedb.org , imdb id must have tt prefix.
+
+- {season} required - the season number.
+
+- {episode} required - the episode number.
+
+Customization Parameters:
+- poster: Determines if the poster image is shown.
+
+- autoPlay: Controls whether the media starts playing automatically.
+
+Examples
+https://vidsrc.cc/v2/embed/tv/1399/1/2
+
+https://vidsrc.cc/v2/embed/tv/tt0944947/1/2
+
+https://vidsrc.cc/v3/embed/tv/tt0944947/1/3?autoPlay=false
+
+
+
+anime Endpoint
+v2/embed/anime/{id}/{episode}/{type}
+Valid parameters:
+- {id} required - from anilist.co , myanimelist.net , imdb.com or themoviedb.org.
+
+- anilist id must have ani prefix
+
+- imdb id must have imdb prefix
+
+- tmdb id must have tmdb prefix
+
+- {episode} required - the episode number.
+
+- {type} required - sub or dub.
+
+Customization Parameters:
+- autoPlay: Controls whether the media starts playing automatically.
+
+- autoSkipIntro: Determines skip intro or outro.
+
+Examples
+https://vidsrc.cc/v2/embed/anime/21/2/sub
+
+
+
+movies list Endpoint
+api/list/movie
+Examples
+https://vidsrc.cc/api/list/movie
+
+
+
+tv shows list Endpoint
+api/list/tv
+Examples
+https://vidsrc.cc/api/list/tv
+
+
+
+
+Player events
+
+Listen to player events to track user interactions. Events are sent via postMessage to the parent window.
+
+Available Events:
+- play Triggered when video starts playing
+
+- pause Triggered when video is paused
+
+- time Triggered periodically every five seconds
+
+- complete Triggered when video ends
+
+Event Data Structure:
+  {
+    type: "PLAYER_EVENT",
+    data: {
+      event: "play" | "pause" | "time" | "complete",
+      tmdbId: number,
+      duration: number,
+      currentTime: number,
+      mediaType: "movie" | "tv",
+      season?: number,
+      episode?: number
+    }
+  }
+Implementation Example:
+  window.addEventListener('message', (event) => {
+    if (event.origin !== 'https://vidsrc.cc') return;
+                              
+    if (event.data && event.data.type === 'PLAYER_EVENT') {
+    const { event: eventType, currentTime, duration } = event.data.data;
+    // Handle the event
+    console.log(`Player ${eventType} at ${currentTime}s of ${duration}s`);
+    }
+  })
+                          

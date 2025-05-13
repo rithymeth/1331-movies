@@ -58,22 +58,24 @@ export default function AnimePage({ params }: Props) {
     setError(null);
     setCurrentUrlIndex(0);
     try {
-      const title = anime?.title.romaji;
-      if (!title) {
-        throw new Error('Anime title not found');
+      if (!anime) {
+        throw new Error('Anime details not found');
       }
 
-      const response = await fetch(`/api/anime/stream?title=${encodeURIComponent(title)}&episode=${episode}&type=${subType}`);
-      const data = await response.json();
-      
-      if (response.ok) {
-        setEmbedUrl(data.embedUrl);
-        setFallbackUrls(data.fallbackUrls || []);
-      } else {
-        setError(data.error || 'Failed to load episode');
-        setEmbedUrl(null);
-        setFallbackUrls([]);
+      // Determine the ID prefix based on the source
+      let animeId = params.id;
+      if (animeId.startsWith('mal')) {
+        // MyAnimeList ID - remove 'mal' prefix
+        animeId = animeId.replace('mal', '');
+      } else if (!animeId.startsWith('ani') && !animeId.startsWith('tt') && !animeId.startsWith('tmdb')) {
+        // Default to TMDB if no prefix
+        animeId = `tmdb${animeId}`;
       }
+
+      // Construct the embed URL according to the API documentation
+      const embedUrl = `https://vidsrc.cc/v2/embed/anime/${animeId}/${episode}/${subType}?autoPlay=true&autoSkipIntro=true`;
+      setEmbedUrl(embedUrl);
+      setFallbackUrls([]);
     } catch (error) {
       console.error('Error loading episode:', error);
       setError(error instanceof Error ? error.message : 'Failed to load episode. Please try again later.');
