@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
+import FilterButton from '../components/FilterButton';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -52,19 +53,14 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-    const searchContent = async () => {
-      if (!query) {
-        setResults([]);
-        return;
-      }
-
+    const fetchContent = async () => {
       setIsLoading(true);
       setError('');
 
       try {
         const searchTypes = type === 'all' ? ['movie', 'tv'] : [type];
         const searchPromises = searchTypes.map(mediaType =>
-          fetch(`/api/search/${mediaType}?query=${encodeURIComponent(query)}&genre=${genre}&sort=${sort}`)
+          fetch(`/api/discover/${mediaType}?genre=${genre}&sort=${sort}`)
             .then(res => res.json())
         );
 
@@ -90,15 +86,15 @@ export default function SearchPage() {
 
         setResults(sortedResults);
       } catch (error) {
-        console.error('Error searching:', error);
-        setError('Failed to fetch search results. Please try again.');
+        console.error('Error fetching content:', error);
+        setError('Failed to fetch content. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    searchContent();
-  }, [query, type, genre, sort]);
+    fetchContent();
+  }, [type, genre, sort]);
 
   const updateSearchParams = (params: { [key: string]: string }) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -117,43 +113,50 @@ export default function SearchPage() {
       <div className="container mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-6">
-            {query ? `Search Results for "${query}"` : 'Search'}
+            {type === 'all' ? 'All Content' : type === 'movie' ? 'Movies' : 'TV Shows'}
           </h1>
 
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-800 p-4 rounded-lg">
-            <select
-              value={type}
-              onChange={(e) => updateSearchParams({ type: e.target.value })}
-              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Types</option>
-              <option value="movie">Movies</option>
-              <option value="tv">TV Shows</option>
-            </select>
+          <div className="space-y-4 bg-gray-800 p-4 rounded-lg">
+            {/* Type and Sort Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select
+                value={type}
+                onChange={(e) => updateSearchParams({ type: e.target.value })}
+                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Types</option>
+                <option value="movie">Movies</option>
+                <option value="tv">TV Shows</option>
+              </select>
 
-            <select
-              value={genre}
-              onChange={(e) => updateSearchParams({ genre: e.target.value })}
-              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Genres</option>
+              <select
+                value={sort}
+                onChange={(e) => updateSearchParams({ sort: e.target.value })}
+                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="popularity.desc">Most Popular</option>
+                <option value="rating.desc">Highest Rated</option>
+                <option value="date.desc">Latest Release</option>
+              </select>
+            </div>
+
+            {/* Genre Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <FilterButton
+                label="All Genres"
+                isActive={!genre}
+                onClick={() => updateSearchParams({ genre: '' })}
+              />
               {genres.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}
-                </option>
+                <FilterButton
+                  key={g.id}
+                  label={g.name}
+                  isActive={genre === g.id.toString()}
+                  onClick={() => updateSearchParams({ genre: g.id.toString() })}
+                />
               ))}
-            </select>
-
-            <select
-              value={sort}
-              onChange={(e) => updateSearchParams({ sort: e.target.value })}
-              className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="popularity.desc">Most Popular</option>
-              <option value="rating.desc">Highest Rated</option>
-              <option value="date.desc">Latest Release</option>
-            </select>
+            </div>
           </div>
         </div>
 
