@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'MovieStream - Watch Movies Online',
   description: 'Watch your favorite movies and TV shows online',
+  other: {
+    'google-adsense-account': 'ca-pub-1318099833166063',
+  },
 };
 
 export default function RootLayout({
@@ -19,6 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1318099833166063"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body 
         className={`${inter.className} bg-gray-900 text-white min-h-screen flex flex-col`}
         suppressHydrationWarning={true}

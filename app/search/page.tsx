@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
 import FilterButton from '../components/FilterButton';
+import GoogleAdsense from '../components/GoogleAdsense';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -158,6 +159,11 @@ export default function SearchPage() {
               ))}
             </div>
           </div>
+
+          {/* Top Ad */}
+          <div className="my-8">
+            <GoogleAdsense />
+          </div>
         </div>
 
         {isLoading ? (
@@ -193,6 +199,12 @@ export default function SearchPage() {
                 />
               )
             ))}
+            {/* Middle Ad */}
+            {results.length > 10 && (
+              <div className="my-8">
+                <GoogleAdsense />
+              </div>
+            )}
           </div>
         ) : query ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">

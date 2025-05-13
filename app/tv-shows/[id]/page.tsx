@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
+import GoogleAdsense from '../../components/GoogleAdsense';
 
 interface TVShowDetails {
   id: number;
@@ -314,6 +315,10 @@ export default function TVShowPage({ params }: Props) {
           </div>
         ) : embedUrl ? (
           <div className="mt-8 space-y-4">
+            {/* Ad before video */}
+            <div className="mb-4">
+              <GoogleAdsense />
+            </div>
             <VideoPlayer embedUrl={embedUrl} fallbackUrls={fallbackUrls} />
             <div className="flex justify-center gap-4">
               <button
@@ -356,6 +361,11 @@ export default function TVShowPage({ params }: Props) {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Ad between video and episodes */}
+        <div className="mt-8">
+          <GoogleAdsense />
         </div>
 
         <div className="mt-8">

@@ -1,5 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
+import VideoPlayer from '../../components/VideoPlayer';
+import GoogleAdsense from '../../components/GoogleAdsense';
 
 interface MovieDetails {
   id: string;
@@ -68,8 +70,6 @@ async function getMovieDetails(id: string): Promise<{ movie: MovieDetails; cast:
     videos: filteredVideos
   };
 }
-
-import VideoPlayer from '../../components/VideoPlayer';
 
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
@@ -148,6 +148,12 @@ export default async function MoviePage({ params }: Props) {
 
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">Watch Movie</h2>
+              
+              {/* Ad before video */}
+              <div className="mb-4">
+                <GoogleAdsense />
+              </div>
+
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <VideoPlayer
                   embedUrl={`https://vidsrc.cc/v2/embed/movie/${movie.imdb_id}`}
@@ -159,6 +165,16 @@ export default async function MoviePage({ params }: Props) {
                   ]}
                 />
               </div>
+
+              {/* Ad after video */}
+              <div className="mt-4">
+                <GoogleAdsense />
+              </div>
+              {/* Ad before trailers */}
+              <div className="mt-8 mb-4">
+                <GoogleAdsense />
+              </div>
+
               {videos.length > 0 && (
                 <div className="mt-8">
                   <h2 className="text-xl font-semibold text-white mb-4">Trailers & Clips</h2>
@@ -177,6 +193,11 @@ export default async function MoviePage({ params }: Props) {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Ad before cast */}
+            <div className="mt-8 mb-4">
+              <GoogleAdsense />
             </div>
 
             <div>
