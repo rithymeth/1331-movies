@@ -81,9 +81,9 @@ const Navbar = () => {
             <Link href="/tv-shows" className={navLinkClass('/tv-shows')}>
               TV Shows
             </Link>
-            <Link href="/anime" className={navLinkClass('/anime')}>
+            {/* <Link href="/anime" className={navLinkClass('/anime')}>
               Anime
-            </Link>
+            </Link> */}
           </div>
 
           {/* Desktop Search */}
