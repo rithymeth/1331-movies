@@ -60,10 +60,12 @@ export default function SearchPage() {
 
       try {
         const searchTypes = type === 'all' ? ['movie', 'tv'] : [type];
-        const searchPromises = searchTypes.map(mediaType =>
-          fetch(`/api/discover/${mediaType}?genre=${genre}&sort=${sort}`)
-            .then(res => res.json())
-        );
+        const searchPromises = searchTypes.map(mediaType => {
+          const endpoint = query 
+            ? `/api/search/${mediaType}?query=${encodeURIComponent(query)}&genre=${genre}&sort=${sort}`
+            : `/api/discover/${mediaType}?genre=${genre}&sort=${sort}`;
+          return fetch(endpoint).then(res => res.json());
+        });
 
         const responses = await Promise.all(searchPromises);
         const combinedResults = responses.flatMap((response, index) =>
@@ -95,7 +97,7 @@ export default function SearchPage() {
     };
 
     fetchContent();
-  }, [type, genre, sort]);
+  }, [query, type, genre, sort]);
 
   const updateSearchParams = (params: { [key: string]: string }) => {
     const newParams = new URLSearchParams(searchParams.toString());
