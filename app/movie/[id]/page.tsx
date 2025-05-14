@@ -156,7 +156,7 @@ export default async function MoviePage({ params }: Props) {
               
               {/* Ad before video */}
               <div className="mb-4">
-                <AdcashAd zoneId="m0ek2galiy" />
+                <AdcashAd zoneId="lxlvor92mg" />
               </div>
 
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
@@ -173,11 +173,11 @@ export default async function MoviePage({ params }: Props) {
 
               {/* Ad after video */}
               <div className="mt-4">
-                <AdcashAd zoneId="m0ek2galiy" />
+                <AdcashAd zoneId="lxlvor92mg" />
               </div>
               {/* Ad before trailers */}
               <div className="mt-8 mb-4">
-                <AdcashAd zoneId="m0ek2galiy" />
+                <AdcashAd zoneId="lxlvor92mg" />
               </div>
 
               {videos.length > 0 && (

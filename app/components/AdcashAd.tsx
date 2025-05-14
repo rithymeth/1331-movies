@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Script from 'next/script';
 
 interface AdcashAdProps {
   zoneId: string;
@@ -35,5 +36,13 @@ export default function AdcashAd({ zoneId }: AdcashAdProps) {
     };
   }, [zoneId]);
 
-  return <div className="adcash-ad-container" data-zone={zoneId}></div>;
+  return (
+    <>
+      <Script
+        src={`https://adcash.com/apu.php?zoneid=${zoneId}`}
+        strategy="beforeInteractive"
+      />
+      <div className="adcash-ad-container" data-zone={zoneId}></div>
+    </>
+  );
 }
