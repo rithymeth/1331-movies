@@ -2,6 +2,7 @@ import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -85,11 +86,10 @@ export default function RootLayout({
         />
       </head>
       <body 
-        className={`${inter.className} bg-gray-900 text-white min-h-screen flex flex-col`}
-        suppressHydrationWarning={true}
+        className={`${inter.className} bg-black text-white min-h-screen flex flex-col`}
       >
         <Navbar />
-        <main className="container mx-auto px-4 py-8 flex-grow">
+        <main className="container mx-auto px-4 py-8 flex-grow pt-24">
           {children}
         </main>
         <Footer />
