@@ -8,25 +8,17 @@ interface AdcashAdProps {
 
 export default function AdcashAd({ zoneId }: AdcashAdProps) {
   useEffect(() => {
-    // Load Adcash script
-    const script = document.createElement('script');
-    script.src = 'https://aclib.net/libs/aclib.js';
-    script.async = true;
-    document.head.appendChild(script);
-
-    script.onload = () => {
+    // Initialize Adcash
+    // @ts-ignore
+    if (window.aclib) {
       // @ts-ignore
-      if (window.aclib) {
-        // @ts-ignore
-        window.aclib.runAutoTag({
-          zoneId: zoneId,
-        });
-      }
-    };
+      window.aclib.runAutoTag({
+        zoneId: zoneId,
+      });
+    }
 
     return () => {
-      // Cleanup
-      document.head.removeChild(script);
+      // No cleanup needed as the main script handles this
     };
   }, [zoneId]);
 

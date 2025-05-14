@@ -164,7 +164,7 @@ export default function SearchPage() {
 
           {/* Top Ad */}
           <div className="my-8">
-            <AdcashAd zoneId="xbn7o8wv2p" />
+            <AdcashAd zoneId="u9uwxc5l0y" />
           </div>
         </div>
 
@@ -204,7 +204,7 @@ export default function SearchPage() {
             {/* Middle Ad */}
             {results.length > 10 && (
               <div className="my-8">
-                <AdcashAd zoneId="xbn7o8wv2p" />
+                <AdcashAd zoneId="u9uwxc5l0y" />
               </div>
             )}
           </div>
