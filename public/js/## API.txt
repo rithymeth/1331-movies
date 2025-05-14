@@ -1,0 +1,209 @@
+## API
+
+Documentation
+
+##### Movie Embed URL
+
+###### Endpoint
+
+###### Valid parameters:
+- {version} 
+
+                          required
+
+                        determines embed version - v2 or v3.
+- {id}
+
+                          required
+
+                        - from
+
+                          imdb.com
+
+                        or
+                        [themoviedb.org](https://themoviedb.org/)
+                        , imdb id must have
+
+                          tt
+
+                        prefix.
+
+###### Customization Parameters:
+- poster: Determines if the poster image is shown.
+- autoPlay: Controls whether the media starts playing automatically.
+
+###### Examples
+https://vidsrc.cc/v2/embed/movie/533535
+https://vidsrc.cc/v2/embed/movie/tt6263850
+https://vidsrc.cc/v3/embed/movie/533535?autoPlay=false
+
+##### TV Shows Embed URL
+
+###### Endpoint
+
+###### Valid parameters:
+- {version} 
+
+                          required
+
+                        determines embed version - v2 or v3.
+- {id}
+
+                          required
+
+                        - from
+
+                          imdb.com
+
+                        or
+                        [themoviedb.org](https://themoviedb.org/)
+                        , imdb id must have
+
+                          tt
+
+                        prefix.
+
+###### Customization Parameters:
+- poster: Determines if the poster image is shown.
+- autoPlay: Controls whether the media starts playing automatically.
+
+###### Examples
+https://vidsrc.cc/v2/embed/tv/1399
+https://vidsrc.cc/v2/embed/tv/tt0944947
+https://vidsrc.cc/v3/embed/tv/tt0944947?autoPlay=false
+
+##### TV Shows Season Embed URL
+
+###### Endpoint
+
+###### Valid parameters:
+- {version} 
+
+                          required
+
+                        determines embed version - v2 or v3.
+- {id}
+
+                          required
+
+                        - from
+
+                          imdb.com
+
+                        or
+                        [themoviedb.org](https://themoviedb.org/)
+                        , imdb id must have
+
+                          tt
+
+                        prefix.
+- {season}
+
+                          required
+
+                        - the season number.
+
+###### Customization Parameters:
+- poster: Determines if the poster image is shown.
+- autoPlay: Controls whether the media starts playing automatically.
+
+###### Examples
+https://vidsrc.cc/v2/embed/tv/1399/1
+https://vidsrc.cc/v2/embed/tv/tt0944947/1
+https://vidsrc.cc/v3/embed/tv/tt0944947/1?autoPlay=false
+
+##### TV Shows Episode Embed URL
+
+###### Endpoint
+
+###### Valid parameters:
+- {version} 
+
+                          required
+
+                        determines embed version - v2 or v3.
+- {id}
+
+                          required
+
+                        - from
+
+                          imdb.com
+
+                        or
+                        [themoviedb.org](https://themoviedb.org/)
+                        , imdb id must have
+
+                          tt
+
+                        prefix.
+- {season}
+
+                          required
+
+                        - the season number.
+- {episode}
+
+                          required
+
+                        - the episode number.
+
+###### Customization Parameters:
+- poster: Determines if the poster image is shown.
+- autoPlay: Controls whether the media starts playing automatically.
+
+###### Examples
+https://vidsrc.cc/v2/embed/tv/1399/1/2
+https://vidsrc.cc/v2/embed/tv/tt0944947/1/2
+https://vidsrc.cc/v3/embed/tv/tt0944947/1/3?autoPlay=false
+
+##### Anime Embed URL
+
+###### Endpoint
+
+###### Valid parameters:
+- {id}
+
+                          required
+
+                        - from
+
+                          anilist.co
+
+                        ,
+
+                          myanimelist.net
+
+                        ,
+
+                          imdb.com
+
+                        or
+                        [themoviedb.org.](https://themoviedb.org/)
+- anilist id must have ani prefix
+- imdb id must have imdb prefix
+- tmdb id must have tmdb prefix
+- {episode}
+
+                          required
+
+                        - the episode number.
+- {type}
+
+                          required
+
+                        - sub or dub.
+
+###### Customization Parameters:
+- autoPlay: Controls whether the media starts playing automatically.
+- autoSkipIntro: Determines skip intro or outro.
+
+###### Examples
+https://vidsrc.cc/v2/embed/anime/21/2/sub
+
+##### List Movies
+
+###### Endpoint
+
+###### Examples
+https://vidsrc.cc/api/list/movie
