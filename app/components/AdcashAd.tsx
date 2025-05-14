@@ -10,10 +10,10 @@ export default function AdcashAd({ zoneId }: AdcashAdProps) {
   return (
     <>
       <Script
-        src={`https://adcash.com/apu.php?zoneid=${zoneId}`}
+        src={`https://adcash.com/script/${zoneId}.js`}
         strategy="afterInteractive"
       />
-      <div id={`ac-${zoneId}`} className="adcash-container"></div>
+      <div className="adcash-zone" data-zone={zoneId}></div>
     </>
   );
 }
