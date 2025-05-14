@@ -60,9 +60,6 @@ export const metadata: Metadata = {
   verification: {
     google: 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
   },
-  other: {
-    'google-site-verification': 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
-  },
   robots: {
     index: true,
     follow: true,
@@ -74,7 +71,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  other: {}
+  other: {
+    'google-site-verification': 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
+  }
 };
 
 export default function RootLayout({
