@@ -66,7 +66,6 @@ export const metadata: Metadata = {
   },
   category: 'entertainment',
   other: {
-    'google-adsense-account': 'ca-pub-1318099833166063',
   },
 };
 
@@ -80,7 +79,6 @@ export default function RootLayout({
       <head>
         <script 
           async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1318099833166063"
           crossOrigin="anonymous"
         />
       </head>

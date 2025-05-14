@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
 import FilterButton from '../components/FilterButton';
-import GoogleAdsense from '../components/GoogleAdsense';
-import AdSenseDropdown from '../components/AdSenseDropdown';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -113,7 +111,6 @@ export default function SearchPage() {
   return (
     <main className="min-h-screen bg-gray-900 text-white">
       {/* Dropdown Ad */}
-      <AdSenseDropdown format="fluid" layout="in-article" />
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -166,7 +163,6 @@ export default function SearchPage() {
 
           {/* Top Ad */}
           <div className="my-8">
-            <GoogleAdsense />
           </div>
         </div>
 
@@ -206,8 +202,7 @@ export default function SearchPage() {
             {/* Middle Ad */}
             {results.length > 10 && (
               <div className="my-8">
-                <GoogleAdsense />
-              </div>
+                  </div>
             )}
           </div>
         ) : query ? (

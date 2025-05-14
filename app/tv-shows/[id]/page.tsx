@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
-import GoogleAdsense from '../../components/GoogleAdsense';
-import AdSenseDropdown from '../../components/AdSenseDropdown';
 
 interface TVShowDetails {
   id: number;
@@ -255,7 +253,6 @@ export default function TVShowPage({ params }: Props) {
 
       <div className="container mx-auto px-4 py-8">
         {/* Dropdown Ad */}
-        <AdSenseDropdown format="fluid" layout="in-article" />
 
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
@@ -321,7 +318,6 @@ export default function TVShowPage({ params }: Props) {
           <div className="mt-8 space-y-4">
             {/* Ad before video */}
             <div className="mb-4">
-              <GoogleAdsense />
             </div>
             <VideoPlayer embedUrl={embedUrl} fallbackUrls={fallbackUrls} />
             <div className="flex justify-center gap-4">
@@ -369,7 +365,6 @@ export default function TVShowPage({ params }: Props) {
 
         {/* Ad between video and episodes */}
         <div className="mt-8">
-          <GoogleAdsense />
         </div>
 
         <div className="mt-8">

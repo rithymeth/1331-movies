@@ -1,8 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
-import GoogleAdsense from '../../components/GoogleAdsense';
-import AdSenseDropdown from '../../components/AdSenseDropdown';
 
 interface MovieDetails {
   id: string;
@@ -82,7 +80,6 @@ export default async function MoviePage({ params }: Props) {
         {movie && (
           <div className="container mx-auto px-4 py-8">
             {/* Dropdown Ad */}
-            <AdSenseDropdown format="fluid" layout="in-article" />
           </div>
         )}
         <h1 className="text-2xl font-bold text-red-500">Movie Not Available</h1>
@@ -158,7 +155,6 @@ export default async function MoviePage({ params }: Props) {
               
               {/* Ad before video */}
               <div className="mb-4">
-                <GoogleAdsense />
               </div>
 
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
@@ -175,11 +171,9 @@ export default async function MoviePage({ params }: Props) {
 
               {/* Ad after video */}
               <div className="mt-4">
-                <GoogleAdsense />
               </div>
               {/* Ad before trailers */}
               <div className="mt-8 mb-4">
-                <GoogleAdsense />
               </div>
 
               {videos.length > 0 && (
@@ -204,7 +198,6 @@ export default async function MoviePage({ params }: Props) {
 
             {/* Ad before cast */}
             <div className="mt-8 mb-4">
-              <GoogleAdsense />
             </div>
 
             <div>
