@@ -58,7 +58,10 @@ export const metadata: Metadata = {
     userScalable: false,
   },
   verification: {
-    google: 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y',
+    google: 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
+  },
+  other: {
+    'google-site-verification': 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
   },
   robots: {
     index: true,
