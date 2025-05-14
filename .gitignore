@@ -32,7 +32,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# adcash
-public/js/aclib.js
-adblock.sh

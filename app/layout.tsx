@@ -81,7 +81,7 @@ export default function RootLayout({
         <script 
           id="aclib" 
           type="text/javascript" 
-          src="/js/aclib.js" 
+          src="//acscdn.com/script/aclib.js" 
           async
         />
       </head>
