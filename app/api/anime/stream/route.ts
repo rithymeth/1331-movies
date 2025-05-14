@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 const ANILIST_API = 'https://graphql.anilist.co';
 const JIKAN_API = 'https://api.jikan.moe/v4';
 
