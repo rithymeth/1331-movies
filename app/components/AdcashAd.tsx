@@ -10,8 +10,9 @@ export default function AdcashAd({ zoneId }: AdcashAdProps) {
   return (
     <>
       <Script
-        src={`https://adcash.com/script/${zoneId}.js`}
+        id={`adcash-${zoneId}`}
         strategy="afterInteractive"
+        src={`https://www.profitablecreativeformat.com/${zoneId}/invoke.js`}
       />
       <div className="adcash-zone" data-zone={zoneId}></div>
     </>
