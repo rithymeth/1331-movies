@@ -1,5 +1,7 @@
 import React from 'react';
+import Link from 'next/link';
 import MovieCard from './components/MovieCard';
+import AdcashAd from './components/AdcashAd';
 
 interface RawMovie {
   id: number;
@@ -40,49 +42,69 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="space-y-16 pt-20">
-      <section className="relative h-[70vh] flex items-center">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center">
         <div className="absolute inset-0 overflow-hidden">
           <div 
-            className="absolute inset-0 bg-cover bg-center" 
+            className="absolute inset-0 bg-cover bg-center animate-ken-burns" 
             style={{
               backgroundImage: `url(${popularMovies[0]?.poster})`,
-              filter: 'blur(10px)',
+              filter: 'blur(8px)',
               transform: 'scale(1.1)'
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/90 to-black/60" />
         </div>
         
         <div className="container mx-auto relative z-10 px-4">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
-              Welcome to 1331-Movie
+          <div className="max-w-4xl">
+            <h1 className="text-6xl md:text-7xl font-bold mb-6 animate-fade-in">
+              <span className="bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+                1331-Movie
+              </span>
             </h1>
-            <p className="text-2xl text-gray-300 mb-8">
-              Discover and watch your favorite movies and TV shows online
+            <p className="text-2xl md:text-3xl text-gray-300 mb-8 animate-fade-in-delay">
+              Your Ultimate Streaming Destination
             </p>
-            <div className="flex space-x-4">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-delay-2">
+              <Link href="/search?type=movie" 
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 
+                text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 text-center 
+                transform hover:scale-105 shadow-lg hover:shadow-red-500/25">
                 Browse Movies
-              </button>
-              <button className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+              </Link>
+              <Link href="/search?type=tv" 
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
+                text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 text-center 
+                transform hover:scale-105 shadow-lg hover:shadow-blue-500/25">
                 Explore TV Shows
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="container mx-auto px-4">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <svg className="w-6 h-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-          </svg>
-          Popular Movies
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {popularMovies.map((movie) => (
+      {/* Ad Section */}
+      <div className="container mx-auto px-4 py-8">
+        <AdcashAd />
+      </div>
+
+      {/* Popular Movies */}
+      <section className="container mx-auto px-4 py-16 relative overflow-hidden">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold flex items-center">
+            <span className="bg-gradient-to-r from-red-500 to-purple-500 text-transparent bg-clip-text">
+              Popular Movies
+            </span>
+          </h2>
+          <Link href="/search?type=movie&sort=popular" 
+            className="text-gray-400 hover:text-white transition-colors duration-300">
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-fade-in">
+          {popularMovies.slice(0, 10).map((movie) => (
             <MovieCard
               key={movie.id}
               id={movie.id}
@@ -97,15 +119,21 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <svg className="w-6 h-6 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          Now Playing
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {trendingMovies.map((movie) => (
+      {/* Now Playing */}
+      <section className="container mx-auto px-4 py-16 relative">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold flex items-center">
+            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-transparent bg-clip-text">
+              Now Playing
+            </span>
+          </h2>
+          <Link href="/search?type=movie&sort=now_playing" 
+            className="text-gray-400 hover:text-white transition-colors duration-300">
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-fade-in">
+          {trendingMovies.slice(0, 10).map((movie) => (
             <MovieCard
               key={movie.id}
               id={movie.id}
@@ -120,15 +148,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 pb-8">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <svg className="w-6 h-6 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
-          </svg>
-          Top Rated Movies
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {topRatedMovies.map((movie) => (
+      {/* Ad Section */}
+      <div className="container mx-auto px-4 py-8">
+        <AdcashAd />
+      </div>
+
+      {/* Top Rated */}
+      <section className="container mx-auto px-4 py-16 relative">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold flex items-center">
+            <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-transparent bg-clip-text">
+              Top Rated
+            </span>
+          </h2>
+          <Link href="/search?type=movie&sort=top_rated" 
+            className="text-gray-400 hover:text-white transition-colors duration-300">
+            View All →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-fade-in">
+          {topRatedMovies.slice(0, 10).map((movie) => (
             <MovieCard
               key={movie.id}
               id={movie.id}
@@ -142,6 +181,11 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Final Ad Section */}
+      <div className="container mx-auto px-4 py-8">
+        <AdcashAd />
+      </div>
     </div>
   );
 }

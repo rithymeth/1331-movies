@@ -77,16 +77,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js" />
-        <script 
-          dangerouslySetInnerHTML={{
+        <script type="text/javascript" dangerouslySetInnerHTML={{
             __html: `
-              aclib.runAutoTag({
-                zoneId: 'u9uwxc5l0y',
-              });
+              aclib = {
+                zoneid: 'u9uwxc5l0y',
+              };
             `
           }}
         />
+        <script async type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
       </head>
       <body 
         className={`${inter.className} bg-gray-900 text-white min-h-screen flex flex-col`}
