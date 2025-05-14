@@ -2,7 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
 import AdcashAd from '../../components/AdcashAd';
-import PropellerAd from '../../components/PropellerAd';
 
 interface MovieDetails {
   id: string;
@@ -94,10 +93,6 @@ export default async function MoviePage({ params }: Props) {
 
   return (
     <div>
-      {/* PropellerAds Push Notifications */}
-      <PropellerAd zoneId="5432109" adType="push" />
-      {/* PropellerAds Interstitial */}
-      <PropellerAd zoneId="5432110" adType="interstitial" />
       <div className="relative h-[400px] w-full">
         {movie.backdrop_path ? (
           <>

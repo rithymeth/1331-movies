@@ -109,7 +109,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="monetag" content="a8a81dae02629817cf0603cfc08098bb" />
         <script 
           id="aclib" 
           type="text/javascript" 
