@@ -13,7 +13,7 @@ async function getTVShows() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://1331-movies.netlify.app';
+  const baseUrl = 'https://1331-movies-kh.netlify.app';
 
   // Get dynamic routes
   const [movies, tvShows] = await Promise.all([getMovies(), getTVShows()]);

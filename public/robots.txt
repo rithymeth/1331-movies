@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/*
 Disallow: /private/*
 
-Sitemap: https://1331-movies.netlify.app/sitemap.xml
+Sitemap: https://1331-movies-kh.netlify.app/sitemap.xml
