@@ -367,7 +367,7 @@ export default function TVShowPage({ params }: Props) {
 
         {/* Ad between video and episodes */}
         <div className="mt-8">
-          <AdcashAd zoneId="lxlvor92mg" withAdblock={true} />
+          <AdcashAd zoneId="lxlvor92mg" />
         </div>
 
         <div className="mt-8">
