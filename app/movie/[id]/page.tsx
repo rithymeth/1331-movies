@@ -202,7 +202,6 @@ export default async function MoviePage({ params }: Props) {
 
             {/* Ad before cast */}
             <div className="mt-8 mb-4">
-              <AdcashAd zoneId="lxlvor92mg" />
             </div>
 
             <div>
