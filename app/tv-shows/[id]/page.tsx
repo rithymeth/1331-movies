@@ -319,7 +319,7 @@ export default function TVShowPage({ params }: Props) {
           <div className="mt-8 space-y-4">
             {/* Ad before video */}
             <div className="mb-4">
-              <AdcashAd zoneId="u9uwxc5l0y" />
+              <AdcashAd zoneId="m0ek2galiy" />
             </div>
             <VideoPlayer embedUrl={embedUrl} fallbackUrls={fallbackUrls} />
             <div className="flex justify-center gap-4">
