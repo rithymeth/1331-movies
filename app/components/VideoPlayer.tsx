@@ -120,44 +120,45 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
         onLoad={handleIframeLoad}
         onError={handleIframeError}
       />
-      <div className="absolute bottom-0 left-0 right-0 flex flex-col p-3 bg-gradient-to-t from-black/80 to-transparent">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowSources(!showSources)}
-              className="flex items-center gap-1 px-3 py-1 rounded text-sm bg-gray-700/80 text-gray-200 hover:bg-gray-600"
-            >
-              Source {sourceIndex + 1}
-              {showSources ? (
-                <ChevronDownIcon className="w-4 h-4" />
-              ) : (
-                <ChevronUpIcon className="w-4 h-4" />
-              )}
-            </button>
-            <button
-              onClick={() => handleSourceChange(sourceIndex)}
-              className="px-3 py-1 rounded text-sm bg-gray-700/80 text-gray-200 hover:bg-gray-600"
-              title="Retry current source"
-            >
-              ↻
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm text-white flex items-center">
-              <input
-                type="checkbox"
-                checked={autoSwitch}
-                onChange={(e) => setAutoSwitch(e.target.checked)}
-                className="mr-2"
-              />
-              Auto-switch
-            </label>
-          </div>
+      {/* Source Controls - Top */}
+      <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 bg-gradient-to-b from-black/80 to-transparent z-10">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSources(!showSources)}
+            className="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium bg-gray-900/90 text-white hover:bg-gray-800/90 transition-colors shadow-lg backdrop-blur-sm"
+          >
+            Source {sourceIndex + 1}
+            {showSources ? (
+              <ChevronDownIcon className="w-4 h-4" />
+            ) : (
+              <ChevronUpIcon className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            onClick={() => handleSourceChange(sourceIndex)}
+            className="px-3 py-1.5 rounded text-sm font-medium bg-gray-900/90 text-white hover:bg-gray-800/90 transition-colors shadow-lg backdrop-blur-sm"
+            title="Retry current source"
+          >
+            ↻
+          </button>
         </div>
+        <div className="flex items-center">
+          <label className="flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium bg-gray-900/90 text-white hover:bg-gray-800/90 transition-colors shadow-lg backdrop-blur-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={autoSwitch}
+              onChange={(e) => setAutoSwitch(e.target.checked)}
+              className="rounded border-gray-600 text-blue-600 focus:ring-blue-500"
+            />
+            <span>Auto-switch</span>
+          </label>
+        </div>
+      </div>
 
-        {/* Source dropdown */}
-        {showSources && (
-          <div className="mt-2 grid grid-cols-3 sm:grid-cols-5 gap-2">
+      {/* Source Dropdown */}
+      {showSources && (
+        <div className="absolute top-16 left-0 right-0 p-3 bg-black/90 backdrop-blur-sm z-10">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {allSources.map((_, index) => (
               <button
                 key={index}
@@ -165,20 +166,21 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
                   handleSourceChange(index);
                   setShowSources(false);
                 }}
-                className={`px-3 py-1 rounded text-sm ${sourceIndex === index ? 'bg-blue-600 text-white' : 'bg-gray-700/80 text-gray-200 hover:bg-gray-600'}`}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${sourceIndex === index 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
               >
                 Source {index + 1}
               </button>
             ))}
           </div>
-        )}
-
-        {sourceIndex > 0 && (
-          <div className="mt-2 text-sm text-gray-400">
-            Using backup source {sourceIndex + 1}
-          </div>
-        )}
-      </div>
+          {sourceIndex > 0 && (
+            <div className="mt-2 text-sm text-gray-400">
+              Using backup source {sourceIndex + 1}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
