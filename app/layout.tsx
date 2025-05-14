@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     userScalable: false,
   },
   verification: {
-    google: 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
+    google: 'google149b52c24d4d3410'
   },
   robots: {
     index: true,
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     },
   },
   other: {
-    'google-site-verification': 'Z2rgllQdL-OEpI-J2M-iJ5wfovixGcWykhhX3BmK_6Y'
+    'google-site-verification': 'google149b52c24d4d3410'
   }
 };
 
