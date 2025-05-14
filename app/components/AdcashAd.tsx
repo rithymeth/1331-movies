@@ -1,13 +1,39 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface AdcashAdProps {
-  zoneId?: string; // Optional since we're using global config
+  zoneId: string;
 }
 
-export default function AdcashAd() {
-  return (
-    <div className="adcash-ad-container min-h-[100px] w-full flex justify-center items-center">
-      <div id="AC_u9uwxc5l0y"></div>
-    </div>
-  );
+declare global {
+  interface Window {
+    aclib?: {
+      runAutoTag: (config: { zoneId: string }) => void;
+    };
+  }
+}
+
+export default function AdcashAd({ zoneId }: AdcashAdProps) {
+  useEffect(() => {
+    const initAd = () => {
+      if (window.aclib) {
+        window.aclib.runAutoTag({
+          zoneId: zoneId,
+        });
+      } else {
+        // If script is not loaded yet, wait and try again
+        setTimeout(initAd, 100);
+      }
+    };
+
+    // Start initialization process
+    initAd();
+
+    return () => {
+      // No cleanup needed as ads are managed by Adcash
+    };
+  }, [zoneId]);
+
+  return <div className="adcash-ad-container" data-zone={zoneId}></div>;
 }
