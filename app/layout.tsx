@@ -79,6 +79,7 @@ export default function RootLayout({
       <head>
         <script 
           async 
+          src="https://aclib.net/libs/aclib.js"
           crossOrigin="anonymous"
         />
       </head>

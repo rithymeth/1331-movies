@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
+import AdcashAd from '../../components/AdcashAd';
 
 interface MovieDetails {
   id: string;
@@ -155,6 +156,7 @@ export default async function MoviePage({ params }: Props) {
               
               {/* Ad before video */}
               <div className="mb-4">
+                <AdcashAd zoneId="xbn7o8wv2p" />
               </div>
 
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
@@ -171,9 +173,11 @@ export default async function MoviePage({ params }: Props) {
 
               {/* Ad after video */}
               <div className="mt-4">
+                <AdcashAd zoneId="xbn7o8wv2p" />
               </div>
               {/* Ad before trailers */}
               <div className="mt-8 mb-4">
+                <AdcashAd zoneId="xbn7o8wv2p" />
               </div>
 
               {videos.length > 0 && (

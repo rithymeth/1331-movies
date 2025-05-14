@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
 import FilterButton from '../components/FilterButton';
+import AdcashAd from '../components/AdcashAd';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -163,6 +164,7 @@ export default function SearchPage() {
 
           {/* Top Ad */}
           <div className="my-8">
+            <AdcashAd zoneId="xbn7o8wv2p" />
           </div>
         </div>
 
@@ -202,7 +204,8 @@ export default function SearchPage() {
             {/* Middle Ad */}
             {results.length > 10 && (
               <div className="my-8">
-                  </div>
+                <AdcashAd zoneId="xbn7o8wv2p" />
+              </div>
             )}
           </div>
         ) : query ? (
