@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+export const runtime = 'edge';
+
 async function getMovies() {
   const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&page=1`);
   const data = await res.json();
@@ -13,7 +15,11 @@ async function getTVShows() {
 }
 
 function formatDate(date: Date): string {
-  return date.toISOString();
+  // Ensure the date is valid and in W3C format (YYYY-MM-DD)
+  if (isNaN(date.getTime())) {
+    return new Date().toISOString().split('T')[0];
+  }
+  return date.toISOString().split('T')[0];
 }
 
 function getValidDate(dateStr?: string): Date {
