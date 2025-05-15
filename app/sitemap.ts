@@ -12,6 +12,18 @@ async function getTVShows() {
   return data.results;
 }
 
+function formatDate(date: Date): string {
+  return date.toISOString();
+}
+
+function getValidDate(dateStr?: string): Date {
+  if (!dateStr) {
+    return new Date();
+  }
+  const date = new Date(dateStr);
+  return isNaN(date.getTime()) ? new Date() : date;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'http://1331-movies-kh.com';
 
@@ -21,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes
   const routes = ['', '/search', '/movies', '/tv-shows'].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
+    lastModified: formatDate(new Date()),
     changeFrequency: 'daily',
     priority: 1,
   }));
@@ -29,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Movie routes
   const movieRoutes = movies.map((movie: any) => ({
     url: `${baseUrl}/movie/${movie.id}`,
-    lastModified: new Date(movie.release_date || new Date()),
+    lastModified: formatDate(getValidDate(movie.release_date)),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
@@ -37,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // TV Show routes
   const tvShowRoutes = tvShows.map((show: any) => ({
     url: `${baseUrl}/tv-shows/${show.id}`,
-    lastModified: new Date(show.first_air_date || new Date()),
+    lastModified: formatDate(getValidDate(show.first_air_date)),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
