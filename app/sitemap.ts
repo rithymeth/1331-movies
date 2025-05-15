@@ -27,9 +27,16 @@ function getValidDate(dateStr?: string): Date {
     return new Date();
   }
   const date = new Date(dateStr);
-  return isNaN(date.getTime()) ? new Date() : date;
+  
+  // If date is invalid or older than 2 years ago, return current date
+  if (isNaN(date.getTime()) || date.getTime() < Date.now() - (2 * 365 * 24 * 60 * 60 * 1000)) {
+    return new Date();
+  }
+  
+  return date;
 }
 
+// Remove script tags and ensure valid sitemap format
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'http://1331-movies-kh.com';
 
