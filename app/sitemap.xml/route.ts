@@ -4,7 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com';
 
   // Define your static routes with their update frequency
-  const routes = [
+  const routes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/movies`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${baseUrl}/tv-shows`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
