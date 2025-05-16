@@ -4,11 +4,11 @@ import VideoPlayer from '../../components/VideoPlayer';
 import AdcashAd from '../../components/AdcashAd';
 
 interface MovieDetails {
-  id: string;
+  id: number;
   title: string;
   overview: string;
-  poster_path: string;
-  backdrop_path: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
   release_date: string;
   imdb_id: string;
   runtime: number;
@@ -220,10 +220,6 @@ export default async function MoviePage({ params }: Props) {
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center">
                           <span className="text-gray-400 text-3xl">?</span>
-                          <VideoPlayer
-                            embedUrl={`https://www.youtube.com/embed/${videos[0].key}?autoplay=0&controls=1&modestbranding=1`}
-                            fallbackUrls={[]}
-                          />
                         </div>
                       )}
                     </div>

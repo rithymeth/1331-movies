@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://1331-movies-kh.netlify.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   title: {
     default: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
     template: '%s | 1331 Movies'
@@ -51,12 +51,7 @@ export const metadata: Metadata = {
     images: ['/og-image.jpg'],
     creator: '@moviestream',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
+  viewport: 'width=device-width, initial-scale=1',
   verification: {
     google: 'google149b52c24d4d3410'
   },
