@@ -9,70 +9,8 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://1331-movies-kh.com'),
-  title: {
-    default: '1331 Movies - Your Ultimate Movie & TV Show Streaming Destination',
-    template: '%s - 1331 Movies'
-  },
-  description: 'Discover and stream thousands of movies and TV shows in HD quality on 1331 Movies. New releases, classics, and exclusive content updated daily. Your premier destination for online entertainment.',
-  keywords: ['movie streaming', 'watch movies online', 'HD movies', 'TV shows online', '1331 movies', 'free streaming', 'latest releases', 'popular series', 'movie database', 'entertainment platform'],
-  authors: [{ name: '1331 Movies Team' }],
-  creator: '1331 Movies',
-  publisher: '1331 Movies Entertainment',
-  category: 'entertainment',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  alternates: {
-    canonical: 'https://1331-movies-kh.com',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com',
-    siteName: '1331 Movies',
-    title: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
-    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription or registration. New content added daily.',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: '1331 Movies - Watch Movies & TV Shows Online',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: '1331 Movies - Watch Movies & TV Shows Online Free',
-    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream your favorite content anytime, anywhere.',
-    images: ['/og-image.jpg'],
-    creator: '@1331movies',
-  },
-  viewport: 'width=device-width, initial-scale=1',
-  verification: {
-    google: 'google149b52c24d4d3410'
-  },
-
-  other: {
-    'google-site-verification': 'google149b52c24d4d3410',
-    'ezoic-site-verification': '0d9KD2TAp4eZni4nomxl3os3vvvoBP',
-    'google-adsense-account': 'ca-pub-1318099833166063'
-  }
+  title: '1331 Movies',
+  description: 'Watch Movies & TV Shows',
 };
 
 export default function RootLayout({

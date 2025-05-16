@@ -1,4 +1,3 @@
-# 1331 Movies Robots.txt Configuration
 User-agent: *
 Allow: /
 
@@ -10,32 +9,11 @@ Allow: /_next/image/
 Disallow: /api/*
 Disallow: /private/*
 Disallow: /admin/*
-Disallow: /backend/*
 
 # Allow Static Assets
 Allow: /*.js$
 Allow: /*.css$
 Allow: /*.jpg$
-Allow: /*.jpeg$
 Allow: /*.png$
-Allow: /*.gif$
 Allow: /*.svg$
 Allow: /*.ico$
-Allow: /*.woff$
-Allow: /*.woff2$
-
-# Crawl-delay
-Crawl-delay: 1
-
-# Sitemap Location
-Sitemap: https://1331-movies-kh.com/sitemap.xml
-
-# Additional Search Engine Specific Rules
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
