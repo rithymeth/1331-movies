@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/*', '/private/*'],
     },
-    sitemap: 'https://1331-movies.com/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/sitemap.xml`,
   };
 }
