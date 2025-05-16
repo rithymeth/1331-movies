@@ -9,6 +9,9 @@ Disallow: /private/*
 Allow: /*.js$
 Allow: /*.css$
 Allow: /*.jpg$
+
+# Sitemap
+Sitemap: https://1331-movies-kh.com/sitemap.xml
 Allow: /*.png$
 Allow: /*.gif$
 Allow: /*.svg$
