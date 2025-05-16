@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: 'https://1331-movies-kh.netlify.app',
+    canonical: 'https://1331-movies-kh.com',
   },
   openGraph: {
     type: 'website',
@@ -46,10 +46,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MovieStream - Watch Movies & TV Shows Online Free',
+    title: '1331 Movies - Watch Movies & TV Shows Online Free',
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream your favorite content anytime, anywhere.',
     images: ['/og-image.jpg'],
-    creator: '@moviestream',
+    creator: '@1331movies',
   },
   viewport: 'width=device-width, initial-scale=1',
   verification: {
@@ -84,7 +84,7 @@ export default function RootLayout({
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://1331-movies-kh.netlify.app/search?q={search_term_string}',
+      target: 'https://1331-movies-kh.com/search?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     }
   };
@@ -93,8 +93,8 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: '1331 Movies',
-    url: 'https://1331-movies-kh.netlify.app',
-    logo: 'https://1331-movies-kh.netlify.app/logo.png',
+    url: 'https://1331-movies-kh.com',
+    logo: 'https://1331-movies-kh.com/logo.png',
     sameAs: [
       'https://twitter.com/1331movies',
       'https://facebook.com/1331movies'
