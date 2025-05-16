@@ -8,3 +8,17 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Force redirect all Netlify subdomain traffic to custom domain
+[[redirects]]
+  from = "https://1331-movies-kh.netlify.app/*"
+  to = "https://1331-movies-kh.com/:splat"
+  status = 301
+  force = true
+
+# Ensure all requests use HTTPS
+[[redirects]]
+  from = "http://1331-movies-kh.com/*"
+  to = "https://1331-movies-kh.com/:splat"
+  status = 301
+  force = true

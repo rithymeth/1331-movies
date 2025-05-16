@@ -8,6 +8,22 @@ const nextConfig = {
       'img1.ak.crunchyroll.com',
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: '1331-movies-kh.netlify.app',
+            },
+          ],
+          destination: 'https://1331-movies-kh.com/:path*',
+        },
+      ],
+    };
+  },
   async headers() {
     return [
       {
