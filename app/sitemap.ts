@@ -1,23 +1,47 @@
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Base URL from environment variable or default
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'
 
   // Static routes
-  const routes = [
-    '',
-    '/movies',
-    '/tv-shows',
-    '/anime',
-    '/search',
-    '/privacy-policy'
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
-  }))
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 1
+    },
+    {
+      url: `${baseUrl}/movies`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/tv-shows`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/anime`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
+    },
+    {
+      url: `${baseUrl}/search`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.7
+    },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'monthly',
+      priority: 0.5
+    }
+  ]
 
-  return routes
+  return staticRoutes
 }
