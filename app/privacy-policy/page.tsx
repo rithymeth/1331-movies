@@ -68,7 +68,7 @@ export default function PrivacyPolicy() {
       <h2>Contact Us</h2>
       <p>For any questions about this privacy policy, please contact us at:</p>
       <ul>
-        <li>Email: privacy@1331-movies-kh.com</li>
+        <li>Email: rithy1331@gmail.com</li>
         <li>Website: https://1331-movies-kh.com</li>
       </ul>
     </div>
