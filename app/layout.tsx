@@ -68,7 +68,8 @@ export const metadata: Metadata = {
   },
   other: {
     'google-site-verification': 'google149b52c24d4d3410',
-    'ezoic-site-verification': '0d9KD2TAp4eZni4nomxl3os3vvvoBP'
+    'ezoic-site-verification': '0d9KD2TAp4eZni4nomxl3os3vvvoBP',
+    'google-adsense-account': 'ca-pub-1318099833166063'
   }
 };
 
