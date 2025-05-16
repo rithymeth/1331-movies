@@ -73,10 +73,6 @@ export const metadata: Metadata = {
   },
   other: {
     'google-site-verification': 'google149b52c24d4d3410'
-  },
-  icons: {
-    icon: '/logo.png',
-    apple: '/logo.png'
   }
 };
 
