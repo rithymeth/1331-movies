@@ -27,11 +27,25 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow'
+          },
+          {
+            key: 'Link',
+            value: '<https://1331-movies-kh.com>; rel="canonical"'
+          }
+        ]
+      },
+      {
         source: '/api/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS' },
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' }
         ],
       },
     ];
