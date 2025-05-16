@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
+  optimizeFonts: true,
+  swcMinify: true,
   images: {
     domains: [
       'image.tmdb.org',

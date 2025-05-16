@@ -1,6 +1,17 @@
 User-agent: *
 Allow: /
+Allow: /_next/static/
+Allow: /_next/image/
 Disallow: /api/*
 Disallow: /private/*
+
+# Allow specific static resources
+Allow: /*.js$
+Allow: /*.css$
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
 
 Sitemap: https://1331-movies-kh.com/sitemap.xml
