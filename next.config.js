@@ -18,19 +18,6 @@ const nextConfig = {
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type' },
         ],
       },
-      {
-        source: '/:path*',
-        headers: [
-          { 
-            key: 'Link',
-            value: `<${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/:path*>; rel="canonical"`,
-          },
-          {
-            key: 'X-Robots-Tag',
-            value: 'index, follow',
-          },
-        ],
-      },
     ];
   },
 }
