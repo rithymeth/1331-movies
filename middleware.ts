@@ -2,32 +2,30 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers);
-  const canonicalUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}${request.nextUrl.pathname}`;
+  // Get the current hostname and pathname
+  const hostname = request.headers.get('host') || '';
+  const pathname = request.nextUrl.pathname;
+  
+  // Define target domain and canonical URL
+  const targetDomain = 'https://1331-movies-kh.com';
+  const canonicalUrl = `${targetDomain}${pathname}`;
 
-  // Add canonical URL header
-  requestHeaders.set('Link', `<${canonicalUrl}>; rel="canonical"`);
-
-  // Add X-Robots-Tag header
-  requestHeaders.set('X-Robots-Tag', 'index, follow');
+  // Create response object
+  let response: NextResponse;
 
   // If accessing from Netlify subdomain, redirect to custom domain
-  if (request.headers.get('host')?.includes('netlify.app')) {
-    return NextResponse.redirect(canonicalUrl, {
-      status: 301,
-      headers: {
-        'Link': `<${canonicalUrl}>; rel="canonical"`,
-        'X-Robots-Tag': 'index, follow'
-      }
-    });
+  if (hostname.includes('netlify.app')) {
+    response = NextResponse.redirect(canonicalUrl, { status: 301 });
+  } else {
+    // Otherwise, continue with the request
+    response = NextResponse.next();
   }
 
-  // Return response with updated headers
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  // Add headers to all responses
+  response.headers.set('Link', `<${canonicalUrl}>; rel="canonical"`);
+  response.headers.set('X-Robots-Tag', 'index, follow');
+  
+  return response;
 }
 
 export const config = {
