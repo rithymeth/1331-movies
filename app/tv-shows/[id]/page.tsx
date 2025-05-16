@@ -156,7 +156,7 @@ export default function TVShowPage({ params }: Props) {
           setTVShow(data);
           // Set initial season and episode
           if (data.seasons && data.seasons.length > 0) {
-            const firstSeason = data.seasons.find(s => s.season_number === 1) || data.seasons[0];
+            const firstSeason = data.seasons.find((s: TVShowDetails['seasons'][0]) => s.season_number === 1) || data.seasons[0];
             setSelectedSeason(firstSeason.season_number);
             setSelectedEpisode(1);
           }
