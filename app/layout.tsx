@@ -11,14 +11,14 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://1331-movies-kh.com'),
   title: {
-    default: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
-    template: '%s | 1331 Movies'
+    default: '1331 Movies - Your Ultimate Movie & TV Show Streaming Destination',
+    template: '%s - 1331 Movies'
   },
-  description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription or registration. New content added daily.',
-  keywords: ['free movies', 'watch movies online', 'streaming', 'TV shows', 'HD movies', '1331 movies', 'free streaming', 'latest movies', 'watch series', 'no subscription'],
-  authors: [{ name: '1331 Movies' }],
+  description: 'Discover and stream thousands of movies and TV shows in HD quality on 1331 Movies. New releases, classics, and exclusive content updated daily. Your premier destination for online entertainment.',
+  keywords: ['movie streaming', 'watch movies online', 'HD movies', 'TV shows online', '1331 movies', 'free streaming', 'latest releases', 'popular series', 'movie database', 'entertainment platform'],
+  authors: [{ name: '1331 Movies Team' }],
   creator: '1331 Movies',
-  publisher: '1331 Movies',
+  publisher: '1331 Movies Entertainment',
   category: 'entertainment',
   formatDetection: {
     email: false,
@@ -26,8 +26,20 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: '/',
+    canonical: 'https://1331-movies-kh.com',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -55,18 +67,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'google149b52c24d4d3410'
   },
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+
   other: {
     'google-site-verification': 'google149b52c24d4d3410',
     'ezoic-site-verification': '0d9KD2TAp4eZni4nomxl3os3vvvoBP',
