@@ -7,7 +7,7 @@ import Link from 'next/link';
 interface MovieCardProps {
   id: string;
   title: string;
-  poster: string;
+  poster: string | null;
   year: string;
   rating?: number;
   voteCount?: number;
