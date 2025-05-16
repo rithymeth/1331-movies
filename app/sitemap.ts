@@ -38,7 +38,7 @@ function getValidDate(dateStr?: string): Date {
 
 // Remove script tags and ensure valid sitemap format
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'http://1331-movies-kh.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com';
 
   // Get dynamic routes
   const [movies, tvShows] = await Promise.all([getMovies(), getTVShows()]);
