@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
@@ -40,8 +41,17 @@ const Navbar = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo and Desktop Menu */}
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-2xl font-bold text-red-600 hover:text-red-500 transition-colors">
-              1331
+            <Link href="/" className="flex items-center space-x-2 group">
+              <Image
+                src="/logo.png"
+                alt="1331 Movies"
+                width={40}
+                height={40}
+                className="rounded-lg"
+              />
+              <span className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                1331
+              </span>
             </Link>
             <div className="hidden md:flex items-center space-x-6">
               <Link href="/" className="text-white/90 hover:text-white transition-colors text-sm">Home</Link>
