@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/*', '/private/*'],
     },
-    sitemap: 'https://1331-movies.netlify.app/sitemap.xml',
+    sitemap: 'https://1331-movies.com/sitemap.xml',
   };
 }
