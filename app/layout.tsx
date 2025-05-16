@@ -67,7 +67,8 @@ export const metadata: Metadata = {
     },
   },
   other: {
-    'google-site-verification': 'google149b52c24d4d3410'
+    'google-site-verification': 'google149b52c24d4d3410',
+    'ezoic-domain-verification': '0d9KD2TAp4eZni4nomxl3os3vvvoBP'
   }
 };
 
@@ -104,6 +105,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="ezoic-domain-verification" content="0d9KD2TAp4eZni4nomxl3os3vvvoBP" />
         <script 
           id="aclib" 
           type="text/javascript" 
