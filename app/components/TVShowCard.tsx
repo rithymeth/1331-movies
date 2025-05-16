@@ -7,7 +7,7 @@ import Link from 'next/link';
 interface TVShowCardProps {
   id: string;
   name: string;
-  poster: string;
+  poster: string | null;
   year: string;
   rating?: number;
   voteCount?: number;
