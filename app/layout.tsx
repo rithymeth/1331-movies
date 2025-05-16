@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'),
+  metadataBase: new URL('https://1331-movies-kh.com'),
   title: {
     default: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
     template: '%s | 1331 Movies'
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: 'https://1331-movies-kh.com',
+    canonical: '/',
   },
   openGraph: {
     type: 'website',
