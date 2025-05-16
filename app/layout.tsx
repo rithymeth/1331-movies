@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'),
   title: {
     default: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
     template: '%s | 1331 Movies'
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://1331-movies-kh.netlify.app',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com',
     siteName: '1331 Movies',
     title: '1331 Movies - Watch Free Movies & TV Shows Online in HD',
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription or registration. New content added daily.',
@@ -80,11 +80,11 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: '1331 Movies',
-    url: 'https://1331-movies-kh.netlify.app',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com',
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://1331-movies-kh.com/search?q={search_term_string}',
+      target: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   };
@@ -93,8 +93,8 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: '1331 Movies',
-    url: 'https://1331-movies-kh.com',
-    logo: 'https://1331-movies-kh.com/logo.png',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com',
+    logo: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/logo.png`,
     sameAs: [
       'https://twitter.com/1331movies',
       'https://facebook.com/1331movies'
