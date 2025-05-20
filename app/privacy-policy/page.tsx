@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
       <h1>Privacy Policy</h1>
       <p>Last updated: May 16, 2025</p>
 
-      <h2>Introduction</h2>
+      {/* <h2>Introduction</h2>
       <p>Welcome to 1331 Movies. We respect your privacy and are committed to protecting your personal data.</p>
 
       <h2>Information We Collect</h2>
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
       <ul>
         <li>Email: rithy1331@gmail.com</li>
         <li>Website: https://1331-movies-kh.com</li>
-      </ul>
+      </ul> */}
     </div>
   );
 }
