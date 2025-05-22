@@ -1,3 +1,56 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+}
+
+/* Custom Swiper Styles */
+.movie-swiper {
+  padding: 1rem 0.5rem;
+  margin: -1rem -0.5rem;
+}
+
+.movie-swiper .swiper-slide {
+  width: auto;
+  height: auto;
+}
+
+.movie-swiper .swiper-button-prev,
+.movie-swiper .swiper-button-next {
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.movie-swiper .swiper-button-prev:after,
+.movie-swiper .swiper-button-next:after {
+  font-size: 18px;
+}
+
+.movie-swiper .swiper-button-prev {
+  left: 10px;
+}
+
+.movie-swiper .swiper-button-next {
+  right: 10px;
+}
+
+.movie-swiper .swiper-button-disabled {
+  opacity: 0 !important;
+}

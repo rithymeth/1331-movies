@@ -1,7 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import MovieCard from './components/MovieCard';
+import MovieCarousel from './components/MovieCarousel';
 import HeroCarousel from './components/HeroCarousel';
 
 interface RawMovie {
@@ -73,39 +71,21 @@ export default async function Home() {
           <section>
             <h2 className="text-3xl font-bold mb-8 text-white">Now Playing</h2>
             <div className="relative">
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {nowPlaying.map((movie) => (
-                  <div key={movie.id} className="flex-none w-[200px]">
-                    <MovieCard {...movie} />
-                  </div>
-                ))}
-              </div>
+              <MovieCarousel movies={nowPlaying} />
             </div>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Popular Movies</h2>
+            <h2 className="text-3xl font-bold mb-8 text-white">Popular Movies</h2>
             <div className="relative">
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {popular.map((movie) => (
-                  <div key={movie.id} className="flex-none w-[200px]">
-                    <MovieCard {...movie} />
-                  </div>
-                ))}
-              </div>
+              <MovieCarousel movies={popular} />
             </div>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Top Rated</h2>
+            <h2 className="text-3xl font-bold mb-8 text-white">Top Rated</h2>
             <div className="relative">
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {topRated.map((movie) => (
-                  <div key={movie.id} className="flex-none w-[200px]">
-                    <MovieCard {...movie} />
-                  </div>
-                ))}
-              </div>
+              <MovieCarousel movies={topRated} />
             </div>
           </section>
         </div>
@@ -118,19 +98,7 @@ export default async function Home() {
           </svg>
           Top Rated Movies
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {topRated.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              poster={movie.poster}
-              year={movie.year}
-              rating={movie.rating}
-              overview={movie.overview}
-            />
-          ))}
-        </div>
+        <MovieCarousel movies={topRated} />
       </div>
 
     </div>
