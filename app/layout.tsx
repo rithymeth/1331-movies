@@ -73,7 +73,7 @@ export default function RootLayout({
         />
         <Script
           src="https://fpyf8.com/88/tag.min.js"
-          data-zone="148667"
+          data-zone="148680"
           async
           data-cfasync="false"
           strategy="afterInteractive"
