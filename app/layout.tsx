@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     },
   },
   other: {
-    monetag: 'a8a81dae02629817cf0603cfc08098bb',
+    monetag: 'ea5b1f21a80c0f9747f48cfc61b114f4',
   },
 };
 
