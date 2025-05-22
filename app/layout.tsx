@@ -26,6 +26,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  other: {
+    monetag: 'a8a81dae02629817cf0603cfc08098bb',
+  },
 };
 
 export default function RootLayout({
