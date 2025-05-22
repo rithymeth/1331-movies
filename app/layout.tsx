@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
+import Script from 'next/script';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -69,6 +70,13 @@ export default function RootLayout({
           type="text/javascript" 
           src="//acscdn.com/script/aclib.js" 
           async
+        />
+        <Script
+          src="https://fpyf8.com/88/tag.min.js"
+          data-zone="148667"
+          async
+          data-cfasync="false"
+          strategy="afterInteractive"
         />
         <script 
           type="application/ld+json"
