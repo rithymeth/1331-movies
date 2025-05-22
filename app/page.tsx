@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import MovieCard from './components/MovieCard';
+import HeroCarousel from './components/HeroCarousel';
 
 interface RawMovie {
   id: number;
@@ -26,10 +27,18 @@ interface Movie {
 
 async function fetchMovies(endpoint: string): Promise<Movie[]> {
   const res = await fetch(
-    `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`
+    `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`,
+    {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+      },
+      next: { revalidate: 3600 } // Revalidate every hour
+    }
   );
 
   if (!res.ok) {
+    console.error('Failed to fetch movies:', await res.text());
     throw new Error('Failed to fetch movies');
   }
 
@@ -56,47 +65,13 @@ export default async function Home() {
 
   return (
     <div className="space-y-0">
-      {/* Hero Section */}
-      <section className="relative h-[80vh] w-full overflow-hidden">
-        {featuredMovie.backdrop && (
-          <>
-            <div className="absolute inset-0">
-              <Image
-                src={featuredMovie.backdrop}
-                alt={featuredMovie.title}
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-8 pb-16 space-y-4">
-              <h1 className="text-5xl font-bold">{featuredMovie.title}</h1>
-              <p className="text-lg max-w-xl text-gray-200">{featuredMovie.overview}</p>
-              <div className="flex items-center gap-4">
-                <Link 
-                  href={`/movie/${featuredMovie.id}`}
-                  className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition-colors inline-flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                  Play
-                </Link>
-                <button className="bg-gray-700/80 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors">
-                  More Info
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      </section>
-
+      {/* Hero Carousel Section */}
+      <HeroCarousel movies={nowPlaying.slice(0, 5)} />
       {/* Movie Sections */}
-      <div className="relative z-10 -mt-32 pb-8 space-y-8">
-        <div className="px-8 space-y-12">
+      <div className="relative z-10 pb-8 bg-gradient-to-b from-black to-gray-900">
+        <div className="px-8 space-y-16 max-w-7xl mx-auto py-12">
           <section>
-            <h2 className="text-xl font-semibold mb-4">Now Playing</h2>
+            <h2 className="text-3xl font-bold mb-8 text-white">Now Playing</h2>
             <div className="relative">
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {nowPlaying.map((movie) => (
