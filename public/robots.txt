@@ -10,6 +10,9 @@ Disallow: /api/*
 Disallow: /private/*
 Disallow: /admin/*
 
+# Sitemap
+Sitemap: /sitemap.xml
+
 # Allow Static Assets
 Allow: /*.js$
 Allow: /*.css$
