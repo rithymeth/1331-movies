@@ -1,37 +1,32 @@
-# 1331 Movies Robots.txt
-
 User-agent: *
 Allow: /
 
-# Next.js Static Resources
+# Next.js Static Resources - Ensure these are crawlable for proper rendering
 Allow: /_next/static/
 Allow: /_next/image/
 
-# API and Private Routes
-Disallow: /api/*
-Disallow: /private/*
-Disallow: /admin/*
+# Disallow access to API endpoints, private areas, and admin sections
+Disallow: /api/
+Disallow: /private/
+Disallow: /admin/
 
-# Allow Search Engines to Access Media Files
+# Explicitly allow common media file types for better indexing in image/media search
+# While "Allow: /" covers these, explicit allows can be clearer if complex Disallow rules are ever added.
 Allow: /*.jpg$
 Allow: /*.jpeg$
 Allow: /*.png$
 Allow: /*.gif$
 Allow: /*.webp$
-
-# Crawl Delay
-Crawl-delay: 1
-
-# Sitemaps
-Sitemap: https://1331-movies-kh.com/sitemap.xml
-
-# Sitemap
-Sitemap: /sitemap.xml
-
-# Allow Static Assets
-Allow: /*.js$
-Allow: /*.css$
-Allow: /*.jpg$
-Allow: /*.png$
 Allow: /*.svg$
 Allow: /*.ico$
+
+# Allow essential script and style files
+Allow: /*.js$
+Allow: /*.css$
+
+# Optional: Specify a crawl delay (in seconds) if your server is sensitive to rapid crawling.
+# Major bots like Googlebot often ignore this and use their own adaptive rates.
+Crawl-delay: 1
+
+# Sitemap location - provide the full URL
+Sitemap: https://1331-movies-kh.com/sitemap.xml
