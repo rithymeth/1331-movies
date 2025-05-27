@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'),
   title: '1331 Movies - Watch Movies & TV Shows Online Free',
   description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
+  keywords: 'movies online, free movies, watch movies online, tv shows online, streaming movies, latest movies, HD movies',
   alternates: {
     canonical: '/',
   },
@@ -26,6 +27,28 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com',
+    siteName: '1331 Movies',
+    title: '1331 Movies - Watch Movies & TV Shows Online Free',
+    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: '1331 Movies',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '1331 Movies - Watch Movies & TV Shows Online Free',
+    description: 'Watch the latest movies and TV shows online for free in HD quality.',
+    images: ['/og-image.jpg'],
   },
   other: {
     monetag: 'ea5b1f21a80c0f9747f48cfc61b114f4',

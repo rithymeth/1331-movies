@@ -1,3 +1,5 @@
+# 1331 Movies Robots.txt
+
 User-agent: *
 Allow: /
 
@@ -9,6 +11,19 @@ Allow: /_next/image/
 Disallow: /api/*
 Disallow: /private/*
 Disallow: /admin/*
+
+# Allow Search Engines to Access Media Files
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.webp$
+
+# Crawl Delay
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://1331-movies-kh.com/sitemap.xml
 
 # Sitemap
 Sitemap: /sitemap.xml
