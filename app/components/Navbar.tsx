@@ -85,6 +85,23 @@ const Navbar = () => {
               </svg>
             </form>
 
+            {/* Donation Button */}
+            <a
+              href="https://coff.ee/rithy1331"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>Donate</span>
+            </a>
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -169,6 +186,24 @@ const Navbar = () => {
                 />
               </svg>
             </form>
+
+            {/* Mobile Donation Button */}
+            <a
+              href="https://coff.ee/rithy1331"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex md:hidden items-center justify-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold px-4 py-3 rounded-lg transition-all duration-300 w-full"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>Support Us - Donate</span>
+            </a>
           </div>
         </div>
       </div>
