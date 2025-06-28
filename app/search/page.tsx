@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TVShowCard from '../components/TVShowCard';
 import FilterButton from '../components/FilterButton';
-import AdcashAd from '../components/AdcashAd';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -113,8 +112,6 @@ export default function SearchPage() {
 
   return (
     <main className="min-h-screen bg-gray-900 text-white">
-      {/* Dropdown Ad */}
-
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-6">
@@ -163,11 +160,6 @@ export default function SearchPage() {
               ))}
             </div>
           </div>
-
-          {/* Top Ad */}
-          <div className="my-8">
-            <AdcashAd zoneId="d7mnltzmtz" />
-          </div>
         </div>
 
         {isLoading ? (
@@ -206,7 +198,7 @@ export default function SearchPage() {
             {/* Middle Ad */}
             {results.length > 10 && (
               <div className="my-8">
-                <AdcashAd zoneId="d7mnltzmtz" />
+                {/* AdcashAd zoneId="d7mnltzmtz" */}
               </div>
             )}
           </div>

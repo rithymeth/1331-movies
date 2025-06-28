@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
-import AdcashAd from '../../components/AdcashAd';
 
 interface TVShowDetails {
   id: number;
@@ -140,10 +139,6 @@ export default function TVShowPage({ params }: Props) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigateEpisode]);
 
-
-
-
-
   useEffect(() => {
     const fetchTVShowDetails = async () => {
       try {
@@ -253,8 +248,6 @@ export default function TVShowPage({ params }: Props) {
       )}
 
       <div className="container mx-auto px-4 py-8">
-        {/* Dropdown Ad */}
-
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4">
             <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
@@ -317,10 +310,6 @@ export default function TVShowPage({ params }: Props) {
           </div>
         ) : embedUrl ? (
           <div className="mt-8 space-y-4">
-            {/* Ad before video */}
-            <div className="mb-4">
-              <AdcashAd zoneId="d7mnltzmtz" />
-            </div>
             <VideoPlayer embedUrl={embedUrl} fallbackUrls={fallbackUrls} />
             <div className="flex justify-center gap-4">
               <button
@@ -363,11 +352,6 @@ export default function TVShowPage({ params }: Props) {
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Ad between video and episodes */}
-        <div className="mt-8">
-          <AdcashAd zoneId="d7mnltzmtz" />
         </div>
 
         <div className="mt-8">

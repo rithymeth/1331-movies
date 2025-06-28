@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/VideoPlayer';
-import AdcashAd from '../../components/AdcashAd';
 
 interface MovieDetails {
   id: number;
@@ -154,11 +153,6 @@ export default async function MoviePage({ params }: Props) {
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">Watch Movie</h2>
               
-              {/* Ad before video */}
-              <div className="mb-4">
-                <AdcashAd zoneId="d7mnltzmtz" />
-              </div>
-
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <VideoPlayer
                   embedUrl={`https://vidsrc.cc/v2/embed/movie/${movie.imdb_id}`}
@@ -169,15 +163,6 @@ export default async function MoviePage({ params }: Props) {
                     `https://rapid-cloud.co/embed-6/movie?id=${movie.imdb_id}`
                   ]}
                 />
-              </div>
-
-              {/* Ad after video */}
-              <div className="mt-4">
-                <AdcashAd zoneId="d7mnltzmtz" />
-              </div>
-              {/* Ad before trailers */}
-              <div className="mt-8 mb-4">
-                <AdcashAd zoneId="d7mnltzmtz" />
               </div>
 
               {videos.length > 0 && (
@@ -198,10 +183,6 @@ export default async function MoviePage({ params }: Props) {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Ad before cast */}
-            <div className="mt-8 mb-4">
             </div>
 
             <div>

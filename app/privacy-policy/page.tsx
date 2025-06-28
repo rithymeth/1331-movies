@@ -27,7 +27,6 @@ export default function PrivacyPolicy() {
       <ul>
         <li>To provide and maintain our service</li>
         <li>To analyze and improve our website</li>
-        <li>To display personalized advertisements</li>
         <li>To detect and prevent fraud</li>
       </ul>
 
@@ -35,7 +34,6 @@ export default function PrivacyPolicy() {
       <p>We use the following third-party services:</p>
       <ul>
         <li>Google Analytics - for website analytics</li>
-        <li>Google AdSense - for displaying advertisements</li>
         <li>Ezoic - for website monetization and analytics</li>
       </ul>
 

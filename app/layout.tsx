@@ -89,19 +89,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script 
-          id="aclib" 
-          type="text/javascript" 
-          src="//acscdn.com/script/aclib.js" 
-          async
-        />
-        <Script
-          src="https://fpyf8.com/88/tag.min.js"
-          data-zone="148680"
-          async
-          data-cfasync="false"
-          strategy="afterInteractive"
-        />
-        <script 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
