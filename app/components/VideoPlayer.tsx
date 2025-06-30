@@ -116,9 +116,10 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
         src={currentUrl}
         className="w-full h-full absolute inset-0"
         allowFullScreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; playsinline"
         onLoad={handleIframeLoad}
         onError={handleIframeError}
+        loading="lazy"
       />
       {/* Top controls */}
       <div className="absolute top-0 left-0 right-0 p-3 bg-gradient-to-b from-black/80 to-transparent z-20">

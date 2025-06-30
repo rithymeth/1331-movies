@@ -31,11 +31,17 @@ body {
 .movie-swiper .swiper-button-prev,
 .movie-swiper .swiper-button-next {
   color: white;
-  background: rgba(0, 0, 0, 0.5);
   width: 40px;
   height: 40px;
   border-radius: 50%;
   transform: translateY(-50%);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.movie-swiper .swiper-button-prev:hover,
+.movie-swiper .swiper-button-next:hover {
+  opacity: 1;
 }
 
 .movie-swiper .swiper-button-prev:after,

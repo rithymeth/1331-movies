@@ -111,65 +111,82 @@ export default function SearchPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-6">
-            {type === 'all' ? 'All Content' : type === 'movie' ? 'Movies' : 'TV Shows'}
-          </h1>
+    <main className="min-h-screen bg-black text-white py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-white mb-8 text-center">
+          Explore Movies & TV Shows
+        </h1>
 
-          {/* Filters */}
-          <div className="space-y-4 bg-gray-800 p-4 rounded-lg">
-            {/* Type and Sort Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Filters */}
+        <div className="bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="relative">
               <select
                 value={type}
                 onChange={(e) => updateSearchParams({ type: e.target.value })}
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                className="block w-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none transition duration-150 ease-in-out"
               >
                 <option value="all">All Types</option>
                 <option value="movie">Movies</option>
                 <option value="tv">TV Shows</option>
               </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L10 10.586 6.707 7.293a1 1 0 00-1.414 1.414l4 4z"/></svg>
+              </div>
+            </div>
 
+            <div className="relative">
               <select
                 value={sort}
                 onChange={(e) => updateSearchParams({ sort: e.target.value })}
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                className="block w-full bg-gray-700 text-white rounded-lg px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none transition duration-150 ease-in-out"
               >
                 <option value="popularity.desc">Most Popular</option>
                 <option value="rating.desc">Highest Rated</option>
                 <option value="date.desc">Latest Release</option>
               </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L10 10.586 6.707 7.293a1 1 0 00-1.414 1.414l4 4z"/></svg>
+              </div>
             </div>
 
-            {/* Genre Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
-              <FilterButton
-                label="All Genres"
-                isActive={!genre}
-                onClick={() => updateSearchParams({ genre: '' })}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by keyword..."
+                value={query}
+                onChange={(e) => updateSearchParams({ q: e.target.value })}
+                className="block w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
               />
-              {genres.map((g) => (
-                <FilterButton
-                  key={g.id}
-                  label={g.name}
-                  isActive={genre === g.id.toString()}
-                  onClick={() => updateSearchParams({ genre: g.id.toString() })}
-                />
-              ))}
             </div>
+          </div>
+
+          {/* Genre Filter Buttons */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            <FilterButton
+              label="All Genres"
+              isActive={!genre}
+              onClick={() => updateSearchParams({ genre: '' })}
+            />
+            {genres.map((g) => (
+              <FilterButton
+                key={g.id}
+                label={g.name}
+                isActive={genre === g.id.toString()}
+                onClick={() => updateSearchParams({ genre: g.id.toString() })}
+              />
+            ))}
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : error ? (
-          <div className="text-red-500 text-center py-12">{error}</div>
+          <div className="text-red-500 text-center py-20 text-xl">{error}</div>
         ) : results.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {results.map((item) => (
               item.media_type === 'movie' ? (
                 <MovieCard
@@ -195,17 +212,17 @@ export default function SearchPage() {
                 />
               )
             ))}
-            {/* Middle Ad */}
+            {/* Middle Ad - Consider adding a proper ad component or remove if not needed */}
             {results.length > 10 && (
-              <div className="my-8">
-                {/* AdcashAd zoneId="d7mnltzmtz" */}
+              <div className="col-span-full my-8 text-center text-gray-500">
+                {/* Ad goes here */}
               </div>
             )}
           </div>
         ) : query ? (
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <svg
-              className="w-16 h-16 text-gray-600"
+              className="w-20 h-20 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -217,17 +234,17 @@ export default function SearchPage() {
                 d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z"
               />
             </svg>
-            <p className="text-xl text-gray-400">
+            <p className="text-2xl text-gray-400 font-semibold">
               No results found for "{query}"
             </p>
-            <p className="text-gray-500">
-              Try searching with different keywords or filters
+            <p className="text-lg text-gray-500">
+              Try searching with different keywords or filters.
             </p>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <svg
-              className="w-16 h-16 text-gray-600"
+              className="w-20 h-20 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -239,8 +256,11 @@ export default function SearchPage() {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <p className="text-xl text-gray-400">
-              Enter a search term to find movies and TV shows
+            <p className="text-2xl text-gray-400 font-semibold">
+              Start your search
+            </p>
+            <p className="text-lg text-gray-500">
+              Enter a keyword to find movies and TV shows.
             </p>
           </div>
         )}

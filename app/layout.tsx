@@ -53,6 +53,7 @@ export const metadata: Metadata = {
   other: {
     monetag: 'ea5b1f21a80c0f9747f48cfc61b114f4',
   },
+  viewport: 'width=device-width, initial-scale=1.0',
 };
 
 export default function RootLayout({

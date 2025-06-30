@@ -59,48 +59,28 @@ export default async function Home() {
     fetchMovies('top_rated')
   ]);
 
-  const featuredMovie = nowPlaying[0];
-
   return (
-    <div className="space-y-0">
+    <div className="min-h-screen bg-black text-white">
       {/* Hero Carousel Section */}
       <HeroCarousel movies={nowPlaying.slice(0, 5)} />
-      {/* Movie Sections */}
-      <div className="relative z-10 pb-8 bg-gradient-to-b from-black to-gray-900">
-        <div className="px-8 space-y-16 max-w-7xl mx-auto py-12">
-          <section>
-            <h2 className="text-3xl font-bold mb-8 text-white">Now Playing</h2>
-            <div className="relative">
-              <MovieCarousel movies={nowPlaying} />
-            </div>
-          </section>
 
-          <section>
-            <h2 className="text-3xl font-bold mb-8 text-white">Popular Movies</h2>
-            <div className="relative">
-              <MovieCarousel movies={popular} />
-            </div>
-          </section>
+      {/* Main Content Sections */}
+      <div className="relative z-10 -mt-20 px-4 sm:px-8 space-y-16 max-w-7xl mx-auto py-12 md:py-20">
+        <section>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-white tracking-tight">Now Playing</h2>
+          <MovieCarousel movies={nowPlaying} />
+        </section>
 
-          <section>
-            <h2 className="text-3xl font-bold mb-8 text-white">Top Rated</h2>
-            <div className="relative">
-              <MovieCarousel movies={topRated} />
-            </div>
-          </section>
-        </div>
+        <section>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-white tracking-tight">Popular Movies</h2>
+          <MovieCarousel movies={popular} />
+        </section>
+
+        <section>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-white tracking-tight">Top Rated Movies</h2>
+          <MovieCarousel movies={topRated} />
+        </section>
       </div>
-
-      <div className="container mx-auto px-4 pb-8">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <svg className="w-6 h-6 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
-          </svg>
-          Top Rated Movies
-        </h2>
-        <MovieCarousel movies={topRated} />
-      </div>
-
     </div>
   );
 }
