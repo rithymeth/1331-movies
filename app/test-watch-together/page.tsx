@@ -9,7 +9,6 @@ export default function TestWatchTogether() {
   const watchTogether = useWatchTogether({
     contentId: 'test-movie-123',
     contentType: 'movie',
-    contentTitle: 'Test Movie',
     userName: 'TestUser'
   });
 
@@ -115,7 +114,6 @@ export default function TestWatchTogether() {
               contentId="test-movie-123"
               contentType="movie"
               contentTitle="Test Movie"
-              userName="TestUser"
               onVideoCallbacks={{
                 onPlay: (time) => {
                   console.log('WatchTogether onPlay callback:', time);

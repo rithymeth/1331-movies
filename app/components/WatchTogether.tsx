@@ -9,7 +9,7 @@ import {
   PaperAirplaneIcon,
   ClipboardDocumentIcon,
   UserIcon,
-  CrownIcon
+  StarIcon
 } from '@heroicons/react/24/outline';
 
 interface WatchTogetherProps {
@@ -74,8 +74,10 @@ export default function WatchTogether({
   const handleCreateRoom = () => {
     if (!userName.trim()) return;
     const newRoomId = createRoom();
-    joinRoom(newRoomId);
-    setShowRoomSetup(false);
+    if (newRoomId) {
+      joinRoom(newRoomId);
+      setShowRoomSetup(false);
+    }
   };
 
   // Handle room joining
@@ -161,7 +163,9 @@ export default function WatchTogether({
               <button
                  onClick={() => {
                    const roomId = createRoom();
-                   setShowRoomSetup(false);
+                   if (roomId) {
+                     setShowRoomSetup(false);
+                   }
                  }}
                  disabled={!userName.trim()}
                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -185,8 +189,10 @@ export default function WatchTogether({
 
               <button
                  onClick={() => {
-                   createRandomRoom();
-                   setShowRoomSetup(false);
+                   const roomId = createRandomRoom();
+                   if (roomId) {
+                     setShowRoomSetup(false);
+                   }
                  }}
                  disabled={!userName.trim()}
                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
