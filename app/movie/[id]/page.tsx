@@ -1,6 +1,8 @@
 import React from 'react';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import VideoPlayer from '../../components/VideoPlayer';
+import { MovieClient } from './MovieClient';
+import type { Metadata } from 'next';
 
 interface MovieDetails {
   id: number;
@@ -34,6 +36,79 @@ interface CastMember {
 type Props = {
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await Promise.resolve(params);
+  
+  try {
+    const { movie } = await getMovieDetails(id);
+    
+    const title = `${movie.title} (${new Date(movie.release_date).getFullYear()}) - Watch Free | 1331 Movies`;
+    const description = movie.overview 
+      ? `Watch ${movie.title} (${new Date(movie.release_date).getFullYear()}) online for free in HD quality. ${movie.overview.slice(0, 120)}...`
+      : `Watch ${movie.title} (${new Date(movie.release_date).getFullYear()}) online for free in HD quality on 1331 Movies.`;
+    
+    const posterUrl = movie.poster_path 
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : '/og-image.jpg';
+    
+    const backdropUrl = movie.backdrop_path 
+      ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+      : posterUrl;
+    
+    const genres = movie.genres.map(g => g.name).join(', ');
+    const keywords = `${movie.title}, watch ${movie.title}, ${movie.title} online, ${movie.title} free, ${genres}, ${new Date(movie.release_date).getFullYear()} movies, HD movies, streaming`;
+    
+    return {
+      title,
+      description,
+      keywords,
+      openGraph: {
+        title,
+        description,
+        type: 'video.movie',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/movie/${id}`,
+        siteName: '1331 Movies',
+        images: [
+          {
+            url: backdropUrl,
+            width: 1920,
+            height: 1080,
+            alt: movie.title,
+          },
+          {
+            url: posterUrl,
+            width: 500,
+            height: 750,
+            alt: `${movie.title} poster`,
+          },
+        ],
+        locale: 'en_US',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [backdropUrl],
+      },
+      alternates: {
+        canonical: `/movie/${id}`,
+      },
+      other: {
+        'movie:release_date': movie.release_date,
+        'movie:duration': movie.runtime.toString(),
+        'movie:genre': genres,
+        'movie:rating': movie.vote_average.toString(),
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Movie - 1331 Movies',
+      description: 'Watch movies online for free in HD quality on 1331 Movies.',
+    };
+  }
 }
 
 async function getMovieDetails(id: string): Promise<{ movie: MovieDetails; cast: CastMember[]; videos: Video[] }> {
@@ -90,129 +165,41 @@ export default async function MoviePage({ params }: Props) {
     );
   }
 
+  // Structured data for SEO
+  const movieSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Movie',
+    name: movie.title,
+    description: movie.overview,
+    image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : undefined,
+    datePublished: movie.release_date,
+    duration: `PT${movie.runtime}M`,
+    genre: movie.genres.map(g => g.name),
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: movie.vote_average,
+      ratingCount: movie.vote_count,
+      bestRating: 10,
+      worstRating: 0
+    },
+    actor: cast.map(member => ({
+      '@type': 'Person',
+      name: member.name,
+      characterName: member.character
+    })),
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/movie/${id}`,
+    sameAs: movie.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : undefined
+  };
+
   return (
-    <div>
-      <div className="relative h-[400px] w-full">
-        {movie.backdrop_path ? (
-          <>
-            <Image
-              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-              alt={movie.title}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
-          </>
-        ) : (
-          <div className="w-full h-full bg-gradient-to-t from-gray-900 to-gray-800" />
-        )}
-      </div>
-
-      <div className="max-w-6xl mx-auto -mt-32 relative z-10 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
-          <div className="aspect-[2/3] relative rounded-lg overflow-hidden bg-gray-800 shadow-xl">
-            {movie.poster_path ? (
-              <Image
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                <span className="text-gray-400">No Image</span>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">{movie.title}</h1>
-              <div className="flex items-center gap-4 text-gray-400">
-                <p>{new Date(movie.release_date).getFullYear()}</p>
-                <p>•</p>
-                <p>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</p>
-                <p>•</p>
-                <div className="flex items-center gap-1">
-                  <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <span>{movie.vote_average.toFixed(1)}</span>
-                  <span className="text-gray-500">({movie.vote_count.toLocaleString()} votes)</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {movie.genres.map((genre) => (
-                  <span key={genre.id} className="px-3 py-1 bg-gray-800 rounded-full text-sm">
-                    {genre.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-semibold">Watch Movie</h2>
-              
-              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
-                <VideoPlayer
-                  embedUrl={`https://vidsrc.cc/v2/embed/movie/${movie.imdb_id}`}
-                  fallbackUrls={[
-                    `https://vidsrc.to/embed/movie/${movie.imdb_id}`,
-                    `https://2embed.org/embed/${movie.imdb_id}`,
-                    `https://streamtape.com/e/${movie.imdb_id}`,
-                    `https://rapid-cloud.co/embed-6/movie?id=${movie.imdb_id}`
-                  ]}
-                />
-              </div>
-
-              {videos.length > 0 && (
-                <div className="mt-8">
-                  <h2 className="text-xl font-semibold text-white mb-4">Trailers & Clips</h2>
-                  <div className="space-y-4">
-                    {videos.map((video) => (
-                      <div key={video.id} className="space-y-2">
-                        <h3 className="text-lg font-medium text-white">
-                          {video.name}
-                        </h3>
-                        <VideoPlayer
-                          embedUrl={`https://www.youtube.com/embed/${video.key}?autoplay=0&controls=1&modestbranding=1`}
-                          fallbackUrls={[]}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Cast</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {cast.map((member) => (
-                  <div key={member.id} className="text-center">
-                    <div className="aspect-[2/3] relative rounded-lg overflow-hidden bg-gray-800 mb-2">
-                      {member.profile_path ? (
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
-                          alt={member.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                          <span className="text-gray-400 text-3xl">?</span>
-                        </div>
-                      )}
-                    </div>
-                    <p className="font-medium truncate">{member.name}</p>
-                    <p className="text-sm text-gray-400 truncate">{member.character}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(movieSchema) }}
+      />
+      
+      <MovieClient movie={movie} cast={cast} videos={videos} />
+    </>
   );
 }
