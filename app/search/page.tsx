@@ -184,22 +184,7 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Genre Filter Buttons */}
-          <div className="flex flex-wrap gap-2 justify-center">
-            <FilterButton
-              label="All Genres"
-              isActive={!genre}
-              onClick={() => updateSearchParams({ genre: '' })}
-            />
-            {genres.map((g) => (
-              <FilterButton
-                key={g.id}
-                label={g.name}
-                isActive={genre === g.id.toString()}
-                onClick={() => updateSearchParams({ genre: g.id.toString() })}
-              />
-            ))}
-          </div>
+
         </div>
 
         {isLoading ? (
