@@ -30,13 +30,12 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinkClass = (path: string) => 
-    `hover:text-blue-400 transition-colors ${
-      pathname === path ? 'text-blue-400' : 'text-white'
-    }`;
-
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'glass-dark shadow-2xl border-b border-white/10' : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      isScrolled 
+        ? 'glass-dark shadow-glow-lg border-b border-white/10' 
+        : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent'
+    }`}>
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between py-5">
           {/* Logo and Desktop Menu */}
@@ -46,33 +45,63 @@ export default function Navbar() {
                 <Image
                   src="/logo.png"
                   alt="1331 Movies"
-                  width={44}
-                  height={44}
-                  className="rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow"
+                  width={48}
+                  height={48}
+                  className="rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow"
                 />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-400/20 to-accent-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <span className="text-3xl font-bold gradient-text group-hover:scale-105 transition-transform duration-300">
+              <span className="text-3xl font-black gradient-text group-hover:scale-105 transition-transform duration-300">
                 1331
               </span>
             </Link>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className={`relative px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm ${pathname === '/' ? 'text-primary-400 bg-primary-500/10' : 'text-white/80 hover:text-white'}`}>
-                <span className="relative z-10 font-medium">Home</span>
-                {pathname === '/' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-lg"></div>}
+            
+            <div className="hidden md:flex items-center space-x-2">
+              <Link 
+                href="/" 
+                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
+                  pathname === '/' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/80 hover:text-white'
+                }`}
+              >
+                <span className="relative z-10 font-semibold">Home</span>
+                {pathname === '/' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
-              <Link href="/movies" className={`relative px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm ${pathname === '/movies' ? 'text-primary-400 bg-primary-500/10' : 'text-white/80 hover:text-white'}`}>
-                <span className="relative z-10 font-medium">Movies</span>
-                {pathname === '/movies' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-lg"></div>}
+              
+              <Link 
+                href="/movies" 
+                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
+                  pathname === '/movies' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/80 hover:text-white'
+                }`}
+              >
+                <span className="relative z-10 font-semibold">Movies</span>
+                {pathname === '/movies' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
-              <Link href="/tv-shows" className={`relative px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm ${pathname === '/tv-shows' ? 'text-primary-400 bg-primary-500/10' : 'text-white/80 hover:text-white'}`}>
-                <span className="relative z-10 font-medium">TV Shows</span>
-                {pathname === '/tv-shows' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-lg"></div>}
+              
+              <Link 
+                href="/tv-shows" 
+                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
+                  pathname === '/tv-shows' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/80 hover:text-white'
+                }`}
+              >
+                <span className="relative z-10 font-semibold">TV Shows</span>
+                {pathname === '/tv-shows' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 sm:space-x-6">
+          <div className="flex items-center space-x-4">
             {/* Desktop Search */}
             <form onSubmit={handleSearch} className="hidden md:flex items-center relative group">
               <div className="relative">
@@ -81,10 +110,10 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search movies, shows, genres..."
-                  className="glass text-white text-sm px-5 py-3 pl-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:bg-white/10 w-72 placeholder-white/60 transition-all duration-300 hover:bg-white/5"
+                  className="input-modern w-80 pl-12 pr-4 py-3 text-white placeholder-white/60 focus:placeholder-white/40"
                 />
                 <svg
-                  className="absolute left-4 top-3.5 h-5 w-5 text-white/60 group-focus-within:text-primary-400 transition-colors duration-300"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 group-focus-within:text-purple-400 transition-colors duration-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -96,7 +125,7 @@ export default function Navbar() {
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/10 to-accent-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             </form>
 
@@ -134,33 +163,55 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-500 ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`md:hidden overflow-hidden transition-all duration-500 ${
+            isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
         >
-          <div className="py-6 border-t border-white/20 space-y-6 glass-dark mx-4 rounded-b-2xl">
+          <div className="py-6 border-t border-white/20 space-y-6 glass-dark mx-4 rounded-2xl mb-4">
             <div className="flex flex-col space-y-4 px-4">
               <Link
                 href="/"
-                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${pathname === '/' ? 'text-primary-400 bg-primary-500/10' : 'text-white/90 hover:text-white'}`}
+                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 group ${
+                  pathname === '/' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/90 hover:text-white'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <span className="font-medium">Home</span>
-                {pathname === '/' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-xl"></div>}
+                <span className="font-semibold">Home</span>
+                {pathname === '/' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
+              
               <Link
                 href="/movies"
-                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${pathname === '/movies' ? 'text-primary-400 bg-primary-500/10' : 'text-white/90 hover:text-white'}`}
+                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 group ${
+                  pathname === '/movies' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/90 hover:text-white'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <span className="font-medium">Movies</span>
-                {pathname === '/movies' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-xl"></div>}
+                <span className="font-semibold">Movies</span>
+                {pathname === '/movies' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
+              
               <Link
                 href="/tv-shows"
-                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${pathname === '/tv-shows' ? 'text-primary-400 bg-primary-500/10' : 'text-white/90 hover:text-white'}`}
+                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 group ${
+                  pathname === '/tv-shows' 
+                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    : 'text-white/90 hover:text-white'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <span className="font-medium">TV Shows</span>
-                {pathname === '/tv-shows' && <div className="absolute inset-0 bg-gradient-to-r from-primary-500/20 to-primary-400/20 rounded-xl"></div>}
+                <span className="font-semibold">TV Shows</span>
+                {pathname === '/tv-shows' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
+                )}
               </Link>
             </div>
             
@@ -172,10 +223,10 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search movies, shows, genres..."
-                  className="glass text-white text-sm px-5 py-3 pl-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:bg-white/10 w-full placeholder-white/60 transition-all duration-300"
+                  className="input-modern w-full pl-12 pr-4 py-3 text-white placeholder-white/60 focus:placeholder-white/40"
                 />
                 <svg
-                  className="absolute left-4 top-3.5 h-5 w-5 text-white/60 group-focus-within:text-primary-400 transition-colors duration-300"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 group-focus-within:text-purple-400 transition-colors duration-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -189,8 +240,6 @@ export default function Navbar() {
                 </svg>
               </form>
             </div>
-
-
           </div>
         </div>
       </div>
