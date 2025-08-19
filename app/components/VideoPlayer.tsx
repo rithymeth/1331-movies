@@ -30,78 +30,66 @@ export default function VideoPlayer({ embedUrl, fallbackUrls = [] }: VideoPlayer
     }
   }, [sourceIndex, allSources.length, autoSwitch]);
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    let errorTimeout: NodeJS.Timeout;
+    setIsLoading(true);
 
-    const checkIframeLoaded = () => {
-      if (iframeRef.current) {
-        try {
-          // Try to access iframe content - if blocked, source might be invalid
-          const iframeContent = iframeRef.current.contentWindow;
-          if (!iframeContent) {
-            tryNextSource();
-          }
-        } catch (error) {
-          // CORS error or other issue, try next source
-          tryNextSource();
-        }
+    // Clear any existing timeouts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+    }
+
+    // Set a timeout to automatically try next source if current one doesn't load
+    timeoutRef.current = setTimeout(() => {
+      if (autoSwitch && sourceIndex < allSources.length - 1) {
+        console.log(`Source ${sourceIndex + 1} took too long to load, trying next source...`);
+        tryNextSource();
+      } else {
+        setIsLoading(false);
       }
-    };
+    }, 8000); // Wait 8 seconds before trying next source
 
-    // Set a timeout to check if the source loads
-    errorTimeout = setTimeout(() => {
+    // Set loading to false after a reasonable time
+    loadTimeoutRef.current = setTimeout(() => {
       setIsLoading(false);
-      checkIframeLoaded();
-    }, 5000); // Wait 5 seconds before trying next source
+    }, 3000);
 
     return () => {
-      clearTimeout(errorTimeout);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+      }
     };
-  }, [currentUrl, tryNextSource]);
+  }, [currentUrl, tryNextSource, autoSwitch, sourceIndex, allSources.length]);
 
   const handleIframeLoad = () => {
     setIsLoading(false);
+    // Clear the auto-switch timeout since the iframe loaded successfully
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    console.log(`Source ${sourceIndex + 1} loaded successfully`);
   };
 
   const handleIframeError = () => {
     console.log(`Source ${sourceIndex + 1} failed to load`);
-    tryNextSource();
+    setIsLoading(false);
+    if (autoSwitch) {
+      tryNextSource();
+    }
   };
 
   const getVideoUrl = () => {
-    if (embedUrl.includes('youtube')) {
-      return embedUrl;
-    } else if (embedUrl.includes('vidsrc')) {
-      const url = new URL(embedUrl);
-      const params = new URLSearchParams(url.search);
-      const autoPlay = params.get('autoPlay') || 'true';
-      const poster = params.get('poster') || 'true';
-      const autoSkipIntro = params.get('autoSkipIntro') || 'false';
-
-      if (url.pathname.includes('/anime/')) {
-        // Anime episode
-        const [, , , id, episode, type] = url.pathname.split('/');
-        // Add proper prefix based on the source
-        const prefixedId = id.startsWith('tt') ? `imdb${id}` : 
-                          id.startsWith('ani') ? id :
-                          id.includes('mal') ? id.replace('mal', '') :
-                          id.startsWith('tmdb') ? id : `tmdb${id}`;
-        return `https://vidsrc.cc/v2/embed/anime/${prefixedId}/${episode}/${type}?autoPlay=${autoPlay}&autoSkipIntro=${autoSkipIntro}`;
-      } else if (url.pathname.includes('/tv')) {
-        // TV show episode
-        const tmdbId = params.get('tmdb');
-        const season = params.get('season');
-        const episode = params.get('episode');
-        return `https://vidsrc.cc/v2/embed/tv/${tmdbId}/${season}/${episode}?autoPlay=${autoPlay}&poster=${poster}`;
-      } else {
-        // Movie
-        const [, , , id] = url.pathname.split('/');
-        // Add tt prefix for IMDB IDs if not present
-        const movieId = id.startsWith('tt') ? id : id.match(/^\d+$/) ? id : `tt${id}`;
-        return `https://vidsrc.cc/v2/embed/movie/${movieId}?autoPlay=${autoPlay}&poster=${poster}`;
-      }
-    }
-    return '';
+    // Return the current URL as-is since we're now providing properly formatted URLs
+    return currentUrl;
   };
 
   return (

@@ -36,79 +36,129 @@ export default async function MoviesPage() {
   const { popular, topRated, upcoming } = await getMovies();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen animated-bg">
+      {/* Ambient background effects */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-primary-500/3 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-accent-500/3 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-3/4 left-1/2 w-64 h-64 bg-red-500/2 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+      </div>
+
       {/* Hero Section */}
-      <div className="relative h-[300px] sm:h-[400px] w-full">
+      <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
         <Image
           src={`https://image.tmdb.org/t/p/original${popular[0]?.backdrop_path}`}
           alt="Featured Movie"
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-[15s] ease-out scale-105 hover:scale-110"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
-        <div className="absolute inset-0 flex items-center justify-center px-4">
-          <div className="text-center space-y-2 sm:space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold">Movies</h1>
-            <p className="text-base sm:text-xl text-gray-200 max-w-md mx-auto">Discover the latest and greatest in cinema</p>
+        {/* Multi-layer gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+        
+        <div className="relative z-10 h-full flex items-center justify-center px-4">
+          <div className="text-center space-y-6 animate-slide-up">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black gradient-text leading-tight">
+              Movies
+            </h1>
+            <p className="text-xl sm:text-2xl text-gray-200 max-w-2xl mx-auto leading-relaxed font-light">
+              Discover the latest and greatest in cinema
+            </p>
+            <div className="flex items-center justify-center gap-4 pt-4">
+              <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
+                <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="text-white font-semibold">{popular.length}+ Popular</span>
+              </div>
+              <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
+                <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-white font-semibold">HD Quality</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 space-y-8 sm:space-y-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 sm:py-16 space-y-16">
         {/* Popular Movies */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Popular Movies</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-            {popular.map((movie: Movie) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id.toString()}
-                title={movie.title}
-                poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                year={movie.release_date?.split('-')[0]}
-                rating={movie.vote_average}
-                voteCount={movie.vote_count}
-                overview={movie.overview}
-              />
+        <section className="animate-fade-in">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-accent-500 to-primary-500 rounded-full"></div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white">Popular Movies</h2>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            {popular.map((movie: Movie, index: number) => (
+              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${index * 0.1}s`}}>
+                <MovieCard
+                  id={movie.id.toString()}
+                  title={movie.title}
+                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  year={movie.release_date?.split('-')[0]}
+                  rating={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  overview={movie.overview}
+                />
+              </div>
             ))}
           </div>
         </section>
 
         {/* Top Rated Movies */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Top Rated Movies</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-            {topRated.map((movie: Movie) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id.toString()}
-                title={movie.title}
-                poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                year={movie.release_date?.split('-')[0]}
-                rating={movie.vote_average}
-                voteCount={movie.vote_count}
-                overview={movie.overview}
-              />
+        <section className="animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-yellow-500 to-orange-500 rounded-full"></div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white">Top Rated Movies</h2>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            {topRated.map((movie: Movie, index: number) => (
+              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.3}s`}}>
+                <MovieCard
+                  id={movie.id.toString()}
+                  title={movie.title}
+                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  year={movie.release_date?.split('-')[0]}
+                  rating={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  overview={movie.overview}
+                />
+              </div>
             ))}
           </div>
         </section>
 
         {/* Upcoming Movies */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Upcoming Movies</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
-            {upcoming.map((movie: Movie) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id.toString()}
-                title={movie.title}
-                poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                year={movie.release_date?.split('-')[0]}
-                rating={movie.vote_average}
-                voteCount={movie.vote_count}
-                overview={movie.overview}
-              />
+        <section className="animate-fade-in" style={{animationDelay: '0.6s'}}>
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white">Upcoming Movies</h2>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            {upcoming.map((movie: Movie, index: number) => (
+              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.6}s`}}>
+                <MovieCard
+                  id={movie.id.toString()}
+                  title={movie.title}
+                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
+                  year={movie.release_date?.split('-')[0]}
+                  rating={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  overview={movie.overview}
+                />
+              </div>
             ))}
           </div>
         </section>
