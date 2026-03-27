@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import MovieCard from '../components/MovieCard';
-import TVShowCard from '../components/TVShowCard';
-import FilterButton from '../components/FilterButton';
+import React, { useState, useEffect, Suspense } from 'react';
+import MovieCard from '../components/movie/MovieCard';
+import TVShowCard from '../components/movie/TVShowCard';
+import FilterButton from '../components/ui/FilterButton';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface SearchResult {
@@ -19,7 +19,7 @@ interface SearchResult {
   media_type: 'movie' | 'tv';
 }
 
-export default function SearchPage() {
+function SearchClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -302,5 +302,23 @@ export default function SearchPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen animated-bg flex items-center justify-center">
+        <div className="flex flex-col justify-center items-center space-y-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500/20 border-t-purple-500"></div>
+            <div className="absolute inset-0 rounded-full bg-purple-500/10 animate-pulse"></div>
+          </div>
+          <p className="text-gray-300 font-medium">Loading search...</p>
+        </div>
+      </main>
+    }>
+      <SearchClient />
+    </Suspense>
   );
 }

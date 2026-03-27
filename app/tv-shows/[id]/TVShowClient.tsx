@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import VideoPlayer from '../../components/VideoPlayer';
+import VideoPlayer from '../../components/movie/VideoPlayer';
 
 interface TVShowDetails {
   id: number;

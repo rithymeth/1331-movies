@@ -2,9 +2,9 @@
 
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
-import VideoPlayer from '../../components/VideoPlayer';
-import SyncedVideoPlayer from '../../components/SyncedVideoPlayer';
-import WatchTogether from '../../components/WatchTogether';
+import VideoPlayer from '../../components/movie/VideoPlayer';
+import SyncedVideoPlayer from '../../components/movie/SyncedVideoPlayer';
+import WatchTogether from '../../components/movie/WatchTogether';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 
 interface MovieDetails {

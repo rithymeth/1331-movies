@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import AnimeCard from '../components/AnimeCard';
+import AnimeCard from '../components/movie/AnimeCard';
 
 interface Anime {
   id: number;

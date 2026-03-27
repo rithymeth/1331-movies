@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import VideoPlayer from '../../components/VideoPlayer';
+import VideoPlayer from '../../components/movie/VideoPlayer';
 import type { Metadata } from 'next';
 import TVShowClient from '@/app/tv-shows/[id]/TVShowClient';
 

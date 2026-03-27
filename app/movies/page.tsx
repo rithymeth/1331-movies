@@ -1,5 +1,5 @@
 import React from 'react';
-import MovieCard from '../components/MovieCard';
+import MovieCard from '../components/movie/MovieCard';
 import Image from 'next/image';
 
 interface Movie {

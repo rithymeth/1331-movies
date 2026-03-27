@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useWatchTogether } from '../hooks/useWatchTogether';
+import { useWatchTogether } from '../../hooks/useWatchTogether';
 import {
   UserGroupIcon,
   ChatBubbleLeftRightIcon,

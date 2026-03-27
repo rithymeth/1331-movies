@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import WatchTogether from '../components/WatchTogether';
-import SyncedVideoPlayer from '../components/SyncedVideoPlayer';
+import WatchTogether from '../components/movie/WatchTogether';
+import SyncedVideoPlayer from '../components/movie/SyncedVideoPlayer';
 import { useWatchTogether } from '../hooks/useWatchTogether';
 
 export default function TestWatchTogether() {

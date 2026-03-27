@@ -1,5 +1,5 @@
 import React from 'react';
-import TVShowCard from '../components/TVShowCard';
+import TVShowCard from '../components/movie/TVShowCard';
 import Image from 'next/image';
 
 interface TVShow {
