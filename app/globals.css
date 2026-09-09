@@ -4,8 +4,8 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 2, 6, 23;
-  --background-end-rgb: 15, 23, 42;
+  --background-start-rgb: 7, 10, 15;
+  --background-end-rgb: 14, 18, 25;
   --primary-glow: 14, 165, 233;
   --accent-glow: 239, 68, 68;
   --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,11 +26,7 @@ html {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    135deg,
-    rgb(var(--background-start-rgb)) 0%,
-    rgb(var(--background-end-rgb)) 100%
-  );
+  background: #080b10;
   background-attachment: fixed;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -189,23 +185,23 @@ body {
 
 /* Modern gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #d9e7ef 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
+  animation: none;
 }
 
 .gradient-text-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #b8c7d2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-accent {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #9ee8e2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -213,9 +209,9 @@ body {
 
 /* Enhanced animated background */
 .animated-bg {
-  background: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #334155, #475569);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: #080b10;
+  background-image: radial-gradient(circle at 80% 0%, rgba(45, 212, 191, 0.08), transparent 28rem);
+  animation: none;
 }
 
 .animated-bg-hero {
