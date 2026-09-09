@@ -11,43 +11,43 @@
                             http://www.google.com/schemas/sitemap-video/1.1/sitemap-video.xsd">
 
   <url>
-    <loc>https://1331-movies-kh.com/</loc>
+    <loc>https://1331-movies-kh.netlify.app/</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/search</loc>
+    <loc>https://1331-movies-kh.netlify.app/search</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/privacy-policy</loc>
+    <loc>https://1331-movies-kh.netlify.app/privacy-policy</loc>
     <lastmod>2025-05-01</lastmod> <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://1331-movies-kh.com/movies</loc>
+    <loc>https://1331-movies-kh.netlify.app/movies</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/tv-shows</loc>
+    <loc>https://1331-movies-kh.netlify.app/tv-shows</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/anime</loc>
+    <loc>https://1331-movies-kh.netlify.app/anime</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/trending</loc>
+    <loc>https://1331-movies-kh.netlify.app/trending</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://1331-movies-kh.com/latest</loc>
+    <loc>https://1331-movies-kh.netlify.app/latest</loc>
     <lastmod>2025-05-27</lastmod> <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -59,66 +59,66 @@
   -->
 
   <url>
-    <loc>https://1331-movies-kh.com/movies/your-awesome-movie-title-slug</loc>
+    <loc>https://1331-movies-kh.netlify.app/movies/your-awesome-movie-title-slug</loc>
     <lastmod>2025-05-20</lastmod> <changefreq>monthly</changefreq> <priority>0.8</priority>
     <image:image>
-      <image:loc>https://1331-movies-kh.com/images/movies/your-awesome-movie-poster.jpg</image:loc>
+      <image:loc>https://1331-movies-kh.netlify.app/images/movies/your-awesome-movie-poster.jpg</image:loc>
       <image:title>Your Awesome Movie Title Poster</image:title>
       <image:caption>Official movie poster for Your Awesome Movie Title.</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://1331-movies-kh.com/images/movies/your-awesome-movie-still-01.jpg</image:loc>
+      <image:loc>https://1331-movies-kh.netlify.app/images/movies/your-awesome-movie-still-01.jpg</image:loc>
       <image:title>Scene from Your Awesome Movie Title</image:title>
     </image:image>
     <!--
     <video:video>
-      <video:thumbnail_loc>https://1331-movies-kh.com/images/movies/your-awesome-movie-trailer-thumbnail.jpg</video:thumbnail_loc>
+      <video:thumbnail_loc>https://1331-movies-kh.netlify.app/images/movies/your-awesome-movie-trailer-thumbnail.jpg</video:thumbnail_loc>
       <video:title>Official Trailer: Your Awesome Movie Title</video:title>
       <video:description>Watch the official trailer for the movie Your Awesome Movie Title.</video:description>
-      <video:content_loc>https://1331-movies-kh.com/videos/trailers/your-awesome-movie-trailer.mp4</video:content_loc> Or URL to YouTube/Vimeo embed
-      <video:player_loc>https://1331-movies-kh.com/movies/your-awesome-movie-title-slug/trailer</video:player_loc> A URL to a player for this specific video.
+      <video:content_loc>https://1331-movies-kh.netlify.app/videos/trailers/your-awesome-movie-trailer.mp4</video:content_loc> Or URL to YouTube/Vimeo embed
+      <video:player_loc>https://1331-movies-kh.netlify.app/movies/your-awesome-movie-title-slug/trailer</video:player_loc> A URL to a player for this specific video.
       <video:duration>145</video:duration>
       <video:publication_date>2025-03-01T08:00:00+00:00</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
       <video:requires_subscription>no</video:requires_subscription>
-      <video:uploader info="https://1331-movies-kh.com/about">1331 Movies KH</video:uploader>
+      <video:uploader info="https://1331-movies-kh.netlify.app/about">1331 Movies KH</video:uploader>
     </video:video>
     -->
   </url>
 
   <url>
-    <loc>https://1331-movies-kh.com/tv-shows/epic-tv-series-name</loc>
+    <loc>https://1331-movies-kh.netlify.app/tv-shows/epic-tv-series-name</loc>
     <lastmod>2025-05-25</lastmod> <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://1331-movies-kh.com/images/tv-shows/epic-tv-series-poster.jpg</image:loc>
+      <image:loc>https://1331-movies-kh.netlify.app/images/tv-shows/epic-tv-series-poster.jpg</image:loc>
       <image:title>Epic TV Series Name Poster</image:title>
     </image:image>
   </url>
 
   <url>
-    <loc>https://1331-movies-kh.com/tv-shows/epic-tv-series-name/season-2/episode-5</loc>
+    <loc>https://1331-movies-kh.netlify.app/tv-shows/epic-tv-series-name/season-2/episode-5</loc>
     <lastmod>2025-05-10</lastmod> <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
-      <image:loc>https://1331-movies-kh.com/images/tv-shows/epic-tv-series-s02e05-thumbnail.jpg</image:loc>
+      <image:loc>https://1331-movies-kh.netlify.app/images/tv-shows/epic-tv-series-s02e05-thumbnail.jpg</image:loc>
       <image:title>Still from Epic TV Series Name S02E05</image:title>
     </image:image>
   </url>
 
   <url>
-    <loc>https://1331-movies-kh.com/anime/amazing-anime-adventure</loc>
+    <loc>https://1331-movies-kh.netlify.app/anime/amazing-anime-adventure</loc>
     <lastmod>2025-05-26</lastmod> <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://1331-movies-kh.com/images/anime/amazing-anime-adventure-cover.jpg</image:loc>
+      <image:loc>https://1331-movies-kh.netlify.app/images/anime/amazing-anime-adventure-cover.jpg</image:loc>
       <image:title>Amazing Anime Adventure Cover Art</image:title>
     </image:image>
   </url>
 
   <!-- If you have paginated category pages, include them too:
   <url>
-    <loc>https://1331-movies-kh.com/movies?page=2</loc>
+    <loc>https://1331-movies-kh.netlify.app/movies?page=2</loc>
     <lastmod>2025-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
