@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import VideoPlayer from '../../components/movie/VideoPlayer';
 import WatchTogether from '../../components/movie/WatchTogether';
 import WatchlistButton from '../../components/movie/WatchlistButton';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { getVidkingMovieUrl } from '@/app/lib/vidking';
+import { saveWatchHistory } from '@/app/lib/watchHistory';
 
 interface MovieDetails {
   id: number;
@@ -45,6 +46,16 @@ interface MovieClientProps {
 
 export function MovieClient({ movie, cast, videos }: MovieClientProps) {
   const [showWatchTogether, setShowWatchTogether] = useState(false);
+
+  useEffect(() => {
+    saveWatchHistory({
+      id: movie.id,
+      type: 'movie',
+      title: movie.title,
+      posterPath: movie.poster_path
+    });
+  }, [movie.id, movie.title, movie.poster_path]);
+
   if (!movie.imdb_id) {
     return (
       <div className="max-w-6xl mx-auto text-center py-12">

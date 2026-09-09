@@ -5,6 +5,7 @@ import Image from 'next/image';
 import VideoPlayer from '../../components/movie/VideoPlayer';
 import WatchlistButton from '../../components/movie/WatchlistButton';
 import { getVidkingEpisodeUrl } from '@/app/lib/vidking';
+import { saveWatchHistory } from '@/app/lib/watchHistory';
 
 interface TVShowDetails {
   id: number;
@@ -185,6 +186,22 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
     setEmbedUrl(getVidkingEpisodeUrl(tvShow.id, selectedSeason, selectedEpisode));
     setIsLoading(false);
   }, [selectedSeason, selectedEpisode, tvShow]);
+
+  useEffect(() => {
+    const season = tvShow?.seasons.find((entry) => entry.season_number === selectedSeason);
+    const episode = season?.episodes.find((entry) => entry.episode_number === selectedEpisode);
+    if (!tvShow || !episode) return;
+
+    saveWatchHistory({
+      id: tvShow.id,
+      type: 'tv',
+      title: tvShow.name,
+      posterPath: tvShow.poster_path,
+      season: selectedSeason,
+      episode: selectedEpisode,
+      episodeTitle: episode.name
+    });
+  }, [selectedEpisode, selectedSeason, tvShow]);
 
   const retryLoading = () => {
     if (tvShow && selectedSeason && selectedEpisode) {

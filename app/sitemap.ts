@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'
 
   // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [

@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: 'video.movie',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/movie/${id}`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/movie/${id}`,
         siteName: '1331 Movies',
         images: [
           {
@@ -187,7 +187,7 @@ export default async function MoviePage({ params }: Props) {
       name: member.name,
       characterName: member.character
     })),
-    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/movie/${id}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/movie/${id}`,
     sameAs: movie.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : undefined
   };
 
