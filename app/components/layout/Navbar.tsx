@@ -31,13 +31,13 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'glass-dark shadow-glow-lg border-b border-white/10' 
-        : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent'
+        ? 'bg-[#080b10]/95 shadow-2xl border-b border-white/10 backdrop-blur-xl'
+        : 'bg-gradient-to-b from-[#080b10]/90 to-transparent'
     }`}>
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between py-5">
+        <div className="flex items-center justify-between py-4">
           {/* Logo and Desktop Menu */}
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-3 group">
@@ -47,21 +47,25 @@ export default function Navbar() {
                   alt="1331 Movies"
                   width={48}
                   height={48}
-                  className="rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow"
+                  className="rounded-xl transition-all duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <span className="text-3xl font-black gradient-text group-hover:scale-105 transition-transform duration-300">
+              <span className="text-2xl font-black tracking-tight text-white group-hover:text-cyan-200 transition-colors duration-300">
                 1331
+              </span>
+              <span className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                Live
               </span>
             </Link>
             
             <div className="hidden md:flex items-center space-x-2">
               <Link 
                 href="/" 
-                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
+                className={`relative px-3 py-2 text-sm rounded-lg transition-all duration-300 hover:bg-white/10 group ${
                   pathname === '/' 
-                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    ? 'text-white bg-white/10 border border-white/10'
                     : 'text-white/80 hover:text-white'
                 }`}
               >
@@ -73,9 +77,9 @@ export default function Navbar() {
               
               <Link 
                 href="/movies" 
-                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
+                className={`relative px-3 py-2 text-sm rounded-lg transition-all duration-300 hover:bg-white/10 group ${
                   pathname === '/movies' 
-                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                    ? 'text-white bg-white/10 border border-white/10'
                     : 'text-white/80 hover:text-white'
                 }`}
               >
@@ -87,9 +91,9 @@ export default function Navbar() {
               
               <Link 
                 href="/tv-shows" 
-                className={`relative px-4 py-2 rounded-xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm group ${
-                  pathname === '/tv-shows' 
-                    ? 'text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30' 
+                className={`relative px-3 py-2 text-sm rounded-lg transition-all duration-300 hover:bg-white/10 group ${
+                  pathname === '/tv-shows'
+                    ? 'text-white bg-white/10 border border-white/10'
                     : 'text-white/80 hover:text-white'
                 }`}
               >

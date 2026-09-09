@@ -13,6 +13,10 @@ export async function GET(request: Request) {
   try {
     const baseUrl = 'https://api.themoviedb.org/3';
     const apiKey = process.env.TMDB_API_KEY;
+    if (!apiKey) {
+      console.error('TMDB_API_KEY is not configured');
+      return NextResponse.json({ results: [] });
+    }
 
     // Fetch TV shows
     let url = `${baseUrl}/search/tv?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(query)}&page=1`;

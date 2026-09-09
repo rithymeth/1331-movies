@@ -1,11 +1,13 @@
 import React from 'react';
 import MovieCard from '../components/movie/MovieCard';
 import Image from 'next/image';
+import { fetchTmdbList } from '@/app/lib/tmdb';
 
 interface Movie {
   id: number;
   title: string;
   poster_path: string;
+  backdrop_path?: string;
   release_date: string;
   vote_average: number;
   vote_count: number;
@@ -13,22 +15,10 @@ interface Movie {
 }
 
 async function getMovies() {
-  const [popularRes, topRatedRes, upcomingRes] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`)
-  ]);
-
-  const [popular, topRated, upcoming] = await Promise.all([
-    popularRes.json(),
-    topRatedRes.json(),
-    upcomingRes.json()
-  ]);
-
   return {
-    popular: popular.results,
-    topRated: topRated.results,
-    upcoming: upcoming.results
+    popular: await fetchTmdbList<Movie>('/movie/popular'),
+    topRated: await fetchTmdbList<Movie>('/movie/top_rated'),
+    upcoming: await fetchTmdbList<Movie>('/movie/upcoming')
   };
 }
 
@@ -46,13 +36,13 @@ export default async function MoviesPage() {
 
       {/* Hero Section */}
       <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
-        <Image
+        {popular[0]?.backdrop_path && <Image
           src={`https://image.tmdb.org/t/p/original${popular[0]?.backdrop_path}`}
           alt="Featured Movie"
           fill
           className="object-cover transition-transform duration-[15s] ease-out scale-105 hover:scale-110"
           priority
-        />
+        />}
         {/* Multi-layer gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />

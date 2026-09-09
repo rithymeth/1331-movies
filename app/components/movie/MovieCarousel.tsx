@@ -24,6 +24,14 @@ interface MovieCarouselProps {
 }
 
 export default function MovieCarousel({ movies }: MovieCarouselProps) {
+  if (movies.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-5 py-10 text-sm text-slate-500">
+        No titles available right now. Check back soon.
+      </div>
+    );
+  }
+
   return (
     <Swiper
       modules={[Navigation]}

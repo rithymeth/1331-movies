@@ -111,7 +111,7 @@ function SearchClient() {
   };
 
   return (
-    <main className="min-h-screen animated-bg">
+    <main className="min-h-screen bg-[#080b10]">
       {/* Ambient background effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-1/4 right-1/3 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl animate-float"></div>
@@ -119,29 +119,47 @@ function SearchClient() {
         <div className="absolute top-2/3 right-1/4 w-64 h-64 bg-indigo-500/2 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-12">
+      <div className="relative z-10 container mx-auto px-4 pb-20 pt-28">
         <div className="mb-12 animate-fade-in">
           <div className="text-center mb-8">
-            <h1 className="text-5xl sm:text-6xl font-black gradient-text mb-4">
+            <h1 className="text-4xl font-black tracking-[-0.04em] text-white sm:text-6xl mb-4">
               {query ? `Search Results` : (type === 'all' ? 'Discover Content' : type === 'movie' ? 'Discover Movies' : 'Discover TV Shows')}
             </h1>
             {query && (
-              <p className="text-xl text-gray-300 font-light">
+              <p className="text-sm text-slate-400">
                 Results for "{query}"
               </p>
             )}
           </div>
 
           {/* Filters */}
-          <div className="max-w-4xl mx-auto space-y-6 glass p-6 rounded-2xl border border-white/10">
+          <div className="max-w-4xl mx-auto space-y-6 rounded-2xl border border-white/10 bg-[#11161d] p-5">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                const input = event.currentTarget.elements.namedItem('search') as HTMLInputElement;
+                updateSearchParams({ q: input.value.trim() });
+              }}
+              className="flex gap-2"
+            >
+              <input
+                name="search"
+                defaultValue={query}
+                placeholder="Search titles..."
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/60"
+              />
+              <button type="submit" className="rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white">
+                Search
+              </button>
+            </form>
             {/* Type and Sort Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Content Type</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Content type</label>
                 <select
                   value={type}
                   onChange={(e) => updateSearchParams({ type: e.target.value })}
-                  className="w-full glass-dark text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300 border border-white/10"
+                  className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60"
                 >
                   <option value="all">All Types</option>
                   <option value="movie">Movies</option>
@@ -150,11 +168,11 @@ function SearchClient() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Sort By</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</label>
                 <select
                   value={sort}
                   onChange={(e) => updateSearchParams({ sort: e.target.value })}
-                  className="w-full glass-dark text-white rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300 border border-white/10"
+                  className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60"
                 >
                   <option value="popularity.desc">Most Popular</option>
                   <option value="rating.desc">Highest Rated</option>
@@ -165,7 +183,7 @@ function SearchClient() {
 
             {/* Genre Filter Buttons */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Genres</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Genres</label>
               <div className="flex flex-wrap gap-2">
                 <FilterButton
                   label="All Genres"
@@ -208,19 +226,18 @@ function SearchClient() {
           <div className="space-y-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold tracking-tight text-white">
                   {results.length} {results.length === 1 ? 'Result' : 'Results'} Found
                 </h2>
               </div>
-              <div className="glass px-4 py-2 rounded-full">
-                <span className="text-sm text-gray-300">
+              <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <span className="text-xs font-medium text-slate-400">
                   {type === 'all' ? 'Movies & TV Shows' : type === 'movie' ? 'Movies' : 'TV Shows'}
                 </span>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-5 xl:grid-cols-6">
               {results.map((item, index) => (
                 <div key={`${item.media_type}-${item.id}`} className="animate-scale-in" style={{animationDelay: `${index * 0.05}s`}}>
                   {item.media_type === 'movie' ? (
@@ -250,7 +267,7 @@ function SearchClient() {
           </div>
         ) : query ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-6">
-            <div className="glass-dark p-8 rounded-2xl border border-white/10 text-center max-w-md">
+            <div className="max-w-md rounded-2xl border border-white/10 bg-[#11161d] p-8 text-center">
               <svg
                 className="w-20 h-20 text-gray-500 mx-auto mb-6"
                 fill="none"

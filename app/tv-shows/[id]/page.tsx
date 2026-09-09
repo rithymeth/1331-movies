@@ -45,7 +45,7 @@ interface Props {
 }
 
 async function getTVShowDetails(id: string): Promise<TVShowDetails> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/tv/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.com'}/api/tv/${id}`, {
     next: { revalidate: 3600 } // Revalidate every hour
   });
   

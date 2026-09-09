@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import MovieCarousel from './components/movie/MovieCarousel';
 import HeroCarousel from './components/movie/HeroCarousel';
 
@@ -24,90 +25,51 @@ interface Movie {
 }
 
 async function fetchMovies(endpoint: string): Promise<Movie[]> {
-  const res = await fetch(
-    `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`,
-    {
-      method: 'GET',
-      headers: {
-        'accept': 'application/json',
-      },
-      next: { revalidate: 3600 } // Revalidate every hour
-    }
-  );
-
-  if (!res.ok) {
-    console.error('Failed to fetch movies:', await res.text());
-    throw new Error('Failed to fetch movies');
-  }
-
-  const data = await res.json();
-  return data.results.map((movie: RawMovie) => ({
-    id: movie.id.toString(),
-    title: movie.title,
-    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
-    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
-    rating: movie.vote_average,
-    overview: movie.overview
-  }));
+  return fetchTmdbMovies(`/movie/${endpoint}`);
 }
 
 async function fetchTrendingMovies(): Promise<Movie[]> {
-  const res = await fetch(
-    `http://localhost:3000/api/trending/movie?time_window=week`,
-    {
-      method: 'GET',
-      headers: {
-        'accept': 'application/json',
-      },
-      next: { revalidate: 3600 } // Revalidate every hour
-    }
-  );
-
-  if (!res.ok) {
-    console.error('Failed to fetch trending movies:', await res.text());
-    throw new Error('Failed to fetch trending movies');
-  }
-
-  const data = await res.json();
-  return data.results.map((movie: RawMovie) => ({
-    id: movie.id.toString(),
-    title: movie.title,
-    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
-    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
-    rating: movie.vote_average,
-    overview: movie.overview
-  }));
+  return fetchTmdbMovies('/trending/movie/week');
 }
 
 async function fetchUpcomingMovies(): Promise<Movie[]> {
-  const res = await fetch(
-    `http://localhost:3000/api/upcoming/movie`,
-    {
-      method: 'GET',
-      headers: {
-        'accept': 'application/json',
-      },
-      next: { revalidate: 3600 } // Revalidate every hour
-    }
-  );
+  return (await fetchTmdbMovies('/movie/upcoming')).slice(0, 10);
+}
 
-  if (!res.ok) {
-    console.error('Failed to fetch upcoming movies:', await res.text());
-    throw new Error('Failed to fetch upcoming movies');
+async function fetchTmdbMovies(endpoint: string): Promise<Movie[]> {
+  const apiKey = process.env.TMDB_API_KEY;
+  if (!apiKey) {
+    console.error('TMDB_API_KEY is not configured');
+    return [];
   }
 
-  const data = await res.json();
-  return data.results.slice(0, 10).map((movie: RawMovie) => ({
-    id: movie.id.toString(),
-    title: movie.title,
-    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
-    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
-    rating: movie.vote_average,
-    overview: movie.overview
-  }));
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3${endpoint}?api_key=${apiKey}&language=en-US&page=1`,
+      { headers: { accept: 'application/json' }, next: { revalidate: 3600 } }
+    );
+
+    if (!res.ok) {
+      console.error(`TMDB request failed for ${endpoint}: ${res.status}`);
+      return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data.results)
+      ? data.results.map((movie: RawMovie) => ({
+          id: movie.id.toString(),
+          title: movie.title,
+          poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+          backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
+          year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
+          rating: movie.vote_average,
+          overview: movie.overview
+        }))
+      : [];
+  } catch (error) {
+    console.error(`TMDB request error for ${endpoint}:`, error);
+    return [];
+  }
 }
 
 export default async function Home() {
@@ -130,70 +92,90 @@ export default async function Home() {
 
       {/* Hero Carousel Section */}
       <HeroCarousel movies={nowPlaying.slice(0, 5)} />
-      {/* Trending Movies Section */}
-      <div className="relative z-10 -mt-32 px-4 sm:px-8 mb-20">
-        <section className="animate-fade-in-up">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-glow">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-black gradient-text-warning tracking-tight">Trending This Week</h2>
+      <section className="relative z-10 mx-4 -mt-10 mb-14 sm:mx-8 md:-mt-14">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 rounded-2xl border border-white/10 bg-[#11161d] p-5 shadow-2xl sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-cyan-300">Your next watch</p>
+            <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+              Big stories. Zero clutter.
+            </h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
+              Discover what is trending, then settle in with our HD player powered by Vidking.
+            </p>
           </div>
+          <div className="flex shrink-0 flex-wrap gap-3">
+            <Link href="/movies" className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">
+              Browse movies
+            </Link>
+            <Link href="/tv-shows" className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10">
+              Explore series
+            </Link>
+          </div>
+        </div>
+      </section>
+      {/* Trending Movies Section */}
+      <div className="relative z-10 px-4 sm:px-8 mb-16">
+        <section className="animate-fade-in-up">
+            <div className="mb-6 flex items-end justify-between border-b border-white/10 pb-4">
+              <div>
+                <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">Curated for you</p>
+                <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Trending this week</h2>
+              </div>
+              <span className="text-xs font-medium text-slate-500">Updated daily</span>
+            </div>
           <MovieCarousel movies={trending} />
         </section>
       </div>
       {/* Main Content Sections */}
-      <div className="relative z-10 -mt-20 px-4 sm:px-8 space-y-20 max-w-7xl mx-auto py-12 md:py-20">
+      <div className="relative z-10 px-4 sm:px-8 space-y-16 max-w-7xl mx-auto py-4 md:py-10">
         {/* Now Playing Section */}
         <section className="animate-fade-in-up">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-glow">
+          <div className="mb-6 flex items-end justify-between border-b border-white/10 pb-4">
+            <div className="hidden w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl items-center justify-center shadow-glow">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l.707.707A1 1 0 0012.414 11H15m-3-3h3m-6 0h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h2 className="text-4xl sm:text-5xl font-black gradient-text tracking-tight">Now Playing</h2>
+            <div><p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">In theaters</p><h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Now playing</h2></div>
           </div>
           <MovieCarousel movies={nowPlaying} />
         </section>
 
         {/* Popular Movies Section */}
         <section className="animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center shadow-glow">
+          <div className="mb-6 flex items-end justify-between border-b border-white/10 pb-4">
+            <div className="hidden w-12 h-12 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl items-center justify-center shadow-glow">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h2 className="text-4xl sm:text-5xl font-black gradient-text-accent tracking-tight">Popular Movies</h2>
+            <div><p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">Most watched</p><h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Popular movies</h2></div>
           </div>
           <MovieCarousel movies={popular} />
         </section>
 
         {/* Top Rated Movies Section */}
         <section className="animate-fade-in-up" style={{animationDelay: '0.4s'}}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-glow">
+          <div className="mb-6 flex items-end justify-between border-b border-white/10 pb-4">
+            <div className="hidden w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl items-center justify-center shadow-glow">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               </svg>
             </div>
-            <h2 className="text-4xl sm:text-5xl font-black gradient-text-primary tracking-tight">Top Rated Movies</h2>
+            <div><p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">Audience favorites</p><h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Top rated</h2></div>
           </div>
           <MovieCarousel movies={topRated} />
         </section>
 
         {/* Upcoming Movies Section */}
         <section className="animate-fade-in-up" style={{animationDelay: '0.6s'}}>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-glow">
+          <div className="mb-6 flex items-end justify-between border-b border-white/10 pb-4">
+            <div className="hidden w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl items-center justify-center shadow-glow">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-4xl sm:text-5xl font-black gradient-text-success tracking-tight">Upcoming Movies</h2>
+            <div><p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">Coming soon</p><h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Upcoming movies</h2></div>
           </div>
           <MovieCarousel movies={upcoming} />
         </section>
