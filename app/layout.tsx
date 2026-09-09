@@ -10,7 +10,7 @@ import Footer from './components/layout/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'),
   title: '1331 Movies - Watch Movies & TV Shows Online Free',
   description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
   keywords: 'movies online, free movies, watch movies online, tv shows online, streaming movies, latest movies, HD movies',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
     siteName: '1331 Movies',
     title: '1331 Movies - Watch Movies & TV Shows Online Free',
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
@@ -65,11 +65,11 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: '1331 Movies',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app',
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
     description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/search?q={search_term_string}`,
+      target: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   };
@@ -78,8 +78,8 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: '1331 Movies',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app',
-    logo: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/logo.png`,
+    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
+    logo: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/logo.png`,
     sameAs: [
       'https://twitter.com/1331movies',
       'https://facebook.com/1331movies'

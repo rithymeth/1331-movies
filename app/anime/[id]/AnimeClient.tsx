@@ -421,7 +421,7 @@ export default function AnimeClient({ animeId }: AnimeClientProps) {
                 "@type": "Organization",
                 "name": studio.name
               })) || [],
-              "url": `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/anime/${anime.mal_id}`,
+              "url": `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/anime/${anime.mal_id}`,
               "sameAs": [
                 `https://myanimelist.net/anime/${anime.mal_id}`,
                 ...(anime.external?.filter(ext => ext.url) || []).map(ext => ext.url)

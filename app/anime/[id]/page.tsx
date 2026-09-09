@@ -4,7 +4,7 @@ import AnimeClient from './AnimeClient';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/api/anime/${params.id}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/api/anime/${params.id}`);
     const anime = await response.json();
     
     if (!response.ok) {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       : `Watch ${animeTitle} anime online for free on 1331 Movies.`;
     
     const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
-    const canonicalUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/anime/${params.id}`;
+    const canonicalUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/anime/${params.id}`;
 
     return {
       title,

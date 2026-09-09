@@ -45,7 +45,7 @@ interface Props {
 }
 
 async function getTVShowDetails(id: string): Promise<TVShowDetails> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/api/tv/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/api/tv/${id}`, {
     next: { revalidate: 3600 } // Revalidate every hour
   });
   
@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: 'video.tv_show',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/tv-shows/${id}`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/tv-shows/${id}`,
         siteName: '1331 Movies',
         images: [
           {
@@ -169,7 +169,7 @@ export default async function TVShowPage({ params }: Props) {
       bestRating: 10,
       worstRating: 0
     },
-    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies-kh.netlify.app'}/tv-shows/${id}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/tv-shows/${id}`,
   };
   
   return (
