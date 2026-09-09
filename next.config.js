@@ -24,7 +24,7 @@ const nextConfig = {
   //             value: '1331-movies-kh.netlify.app',
   //           },
   //         },
-  //         destination: 'https://1331-movies-kh.com/:path*',
+  //         destination: 'https://1331-movies-kh.netlify.app/:path*',
   //       },
   //     ],
   //   };
@@ -40,7 +40,7 @@ const nextConfig = {
   //         },
   //         {
   //           key: 'Link',
-  //           value: '<https://1331-movies-kh.com>; rel="canonical"'
+  //           value: '<https://1331-movies-kh.netlify.app>; rel="canonical"'
   //         }
   //       ]
   //     },

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,8 +10,55 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [suggestions, setSuggestions] = useState<Array<{ id: number; title: string; posterPath: string | null; type: 'movie' | 'tv'; year: string }>>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const [moviesResponse, tvResponse] = await Promise.all([
+          fetch(`/api/search/movie?query=${encodeURIComponent(query)}`, { signal: controller.signal }),
+          fetch(`/api/search/tv?query=${encodeURIComponent(query)}`, { signal: controller.signal })
+        ]);
+        const [movies, tv] = await Promise.all([moviesResponse.json(), tvResponse.json()]);
+        const movieResults = (movies.results || []).slice(0, 4).map((item: { id: number; title: string; poster_path: string | null; release_date?: string }) => ({
+          id: item.id, title: item.title, posterPath: item.poster_path, type: 'movie' as const, year: item.release_date?.slice(0, 4) || ''
+        }));
+        const tvResults = (tv.results || []).slice(0, 4).map((item: { id: number; name: string; poster_path: string | null; first_air_date?: string }) => ({
+          id: item.id, title: item.name, posterPath: item.poster_path, type: 'tv' as const, year: item.first_air_date?.slice(0, 4) || ''
+        }));
+        setSuggestions([...movieResults, ...tvResults].slice(0, 6));
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') setSuggestions([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const closeSuggestions = (event: MouseEvent) => {
+      if (!searchRef.current?.contains(event.target as Node)) setSuggestions([]);
+    };
+    document.addEventListener('mousedown', closeSuggestions);
+    return () => document.removeEventListener('mousedown', closeSuggestions);
+  }, []);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -102,12 +149,20 @@ export default function Navbar() {
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
                 )}
               </Link>
+              <Link
+                href="/library"
+                className={`relative px-3 py-2 text-sm rounded-lg transition-all duration-300 hover:bg-white/10 ${
+                  pathname === '/library' ? 'text-white bg-white/10 border border-white/10' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                <span className="relative z-10 font-semibold">Library</span>
+              </Link>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
             {/* Desktop Search */}
-            <form onSubmit={handleSearch} className="hidden md:flex items-center relative group">
+            <form onSubmit={handleSearch} className="hidden md:flex items-center relative group" ref={searchRef}>
               <div className="relative">
                 <input
                   type="text"
@@ -130,6 +185,33 @@ export default function Navbar() {
                   />
                 </svg>
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                {(isSearching || suggestions.length > 0) && (
+                  <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-white/10 bg-[#0d131c] shadow-2xl">
+                    {isSearching ? (
+                      <p className="px-4 py-4 text-sm text-gray-400">Searching...</p>
+                    ) : suggestions.map((suggestion) => (
+                      <Link
+                        key={`${suggestion.type}-${suggestion.id}`}
+                        href={suggestion.type === 'movie' ? `/movie/${suggestion.id}` : `/tv-shows/${suggestion.id}`}
+                        onClick={() => {
+                          setSuggestions([]);
+                          setSearchQuery('');
+                        }}
+                        className="flex items-center gap-3 border-b border-white/5 px-3 py-2.5 last:border-0 hover:bg-white/10"
+                      >
+                        <div className="relative h-12 w-8 shrink-0 overflow-hidden rounded bg-[#121923]">
+                          {suggestion.posterPath && (
+                            <Image src={`https://image.tmdb.org/t/p/w92${suggestion.posterPath}`} alt="" fill sizes="32px" className="object-cover" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-white">{suggestion.title}</p>
+                          <p className="text-xs text-gray-500">{suggestion.type === 'movie' ? 'Movie' : 'TV Show'}{suggestion.year ? ` · ${suggestion.year}` : ''}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </form>
 
@@ -216,6 +298,17 @@ export default function Navbar() {
                 {pathname === '/tv-shows' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl animate-pulse-slow"></div>
                 )}
+              </Link>
+              <Link
+                href="/library"
+                className={`relative px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 group ${
+                  pathname === '/library'
+                    ? 'text-white bg-gradient-to-r from-cyan-300/20 to-blue-500/20 border border-cyan-300/30'
+                    : 'text-white/90 hover:text-white'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="font-semibold">Library</span>
               </Link>
             </div>
             
