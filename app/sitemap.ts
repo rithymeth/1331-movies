@@ -43,42 +43,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   ]
 
-  const movieRoutes: MetadataRoute.Sitemap = await fetch(`${baseUrl}/api/discover/movie?page=1`).then(res => res.json()).then(data => data.results.map((movie: any) => ({
-    url: `${baseUrl}/movie/${movie.id}`,
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7
-  }))) as MetadataRoute.Sitemap
+  const fetchRoutes = async (url: string, init?: RequestInit): Promise<MetadataRoute.Sitemap> => {
+    try {
+      const response = await fetch(url, init);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return Array.isArray(data.results)
+        ? data.results.map((item: { id: number }) => ({
+            url: `${baseUrl}/movie/${item.id}`,
+            lastModified: new Date().toISOString(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.7
+          }))
+        : [];
+    } catch {
+      return [];
+    }
+  };
 
-  const tvRoutes: MetadataRoute.Sitemap = await fetch(`${baseUrl}/api/discover/tv?page=1`).then(res => res.json()).then(data => data.results.map((tv: any) => ({
-    url: `${baseUrl}/tv-shows/${tv.id}`,
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7
-  }))) as MetadataRoute.Sitemap
+  const movieRoutes = await fetchRoutes(`${baseUrl}/api/discover/movie?page=1`);
+  const tvRoutes = (await fetchRoutes(`${baseUrl}/api/discover/tv?page=1`)).map((route) => ({
+    ...route,
+    url: route.url.replace('/movie/', '/tv-shows/')
+  }));
 
-  const animeRoutes: MetadataRoute.Sitemap = await fetch(`${baseUrl}/api/anime`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query {
-          Page(page: 1, perPage: 50) {
-            media(type: ANIME) {
-              id
-            }
-          }
-        }
-      `,
-    }),
-  }).then(res => res.json()).then(data => data.data.Page.media.map((anime: any) => ({
-    url: `${baseUrl}/anime/${anime.id}`,
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7
-  }))) as MetadataRoute.Sitemap
+  let animeRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const response = await fetch(`${baseUrl}/api/anime`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: `query { Page(page: 1, perPage: 50) { media(type: ANIME) { id } } }`
+      })
+    });
+    const data = await response.json();
+    animeRoutes = (data.data?.Page?.media || []).map((anime: { id: number }) => ({
+      url: `${baseUrl}/anime/${anime.id}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7
+    }));
+  } catch {
+    animeRoutes = [];
+  }
 
   return [...staticRoutes, ...movieRoutes, ...tvRoutes, ...animeRoutes]
 }
