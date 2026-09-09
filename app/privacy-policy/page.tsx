@@ -67,7 +67,7 @@ export default function PrivacyPolicy() {
       <p>For any questions about this privacy policy, please contact us at:</p>
       <ul>
         <li>Email: rithy1331@gmail.com</li>
-        <li>Website: https://1331-movies-kh.netlify.app</li>
+        <li>Website: https://1331-movies.netlify.app</li>
       </ul> */}
     </div>
   );
