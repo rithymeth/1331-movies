@@ -1,6 +1,7 @@
 import React from 'react';
 import TVShowCard from '../components/movie/TVShowCard';
 import Image from 'next/image';
+import { fetchTmdbList } from '@/app/lib/tmdb';
 
 interface TVShow {
   id: number;
@@ -13,22 +14,10 @@ interface TVShow {
 }
 
 async function getTVShows() {
-  const [popularRes, topRatedRes, airingTodayRes] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`https://api.themoviedb.org/3/tv/top_rated?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`https://api.themoviedb.org/3/tv/airing_today?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`)
-  ]);
-
-  const [popular, topRated, airingToday] = await Promise.all([
-    popularRes.json(),
-    topRatedRes.json(),
-    airingTodayRes.json()
-  ]);
-
   return {
-    popular: popular.results,
-    topRated: topRated.results,
-    airingToday: airingToday.results
+    popular: await fetchTmdbList<TVShow>('/tv/popular'),
+    topRated: await fetchTmdbList<TVShow>('/tv/top_rated'),
+    airingToday: await fetchTmdbList<TVShow>('/tv/airing_today')
   };
 }
 
@@ -46,13 +35,13 @@ export default async function TVShowsPage() {
 
       {/* Hero Section */}
       <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
-        <Image
-          src={`https://image.tmdb.org/t/p/original${popular[0]?.poster_path}`}
+        {popular[0]?.poster_path && <Image
+          src={`https://image.tmdb.org/t/p/original${popular[0].poster_path}`}
           alt="Featured TV Show"
           fill
-          className="object-cover transition-transform duration-[15s] ease-out scale-105 hover:scale-110"
+          className="object-cover"
           priority
-        />
+        />}
         {/* Multi-layer gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
