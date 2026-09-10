@@ -4,32 +4,20 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import MovieCard from './MovieCard';
+import EmptyState from '@/app/components/ui/EmptyState';
+import { MediaCardItem } from '@/app/lib/media';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-interface Movie {
-  id: string;
-  title: string;
-  poster: string | null;
-  backdrop: string | null;
-  year: string;
-  rating: number;
-  overview: string;
-}
-
 interface MovieCarouselProps {
-  movies: Movie[];
+  movies: MediaCardItem[];
 }
 
 export default function MovieCarousel({ movies }: MovieCarouselProps) {
   if (movies.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-5 py-10 text-sm text-slate-500">
-        No titles available right now. Check back soon.
-      </div>
-    );
+    return <EmptyState title="No titles available" message="Check back soon for the latest catalog updates." compact />;
   }
 
   return (

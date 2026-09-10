@@ -8,6 +8,7 @@ import WatchlistButton from '../../components/movie/WatchlistButton';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { getVidkingMovieUrl } from '@/app/lib/vidking';
 import { saveWatchHistory } from '@/app/lib/watchHistory';
+import { getMediaYear, getTmdbImageUrl } from '@/app/lib/tmdb';
 
 interface MovieDetails {
   id: number;
@@ -75,7 +76,7 @@ export function MovieClient({ movie, cast, videos }: MovieClientProps) {
         {movie.backdrop_path ? (
           <>
             <Image
-              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+              src={getTmdbImageUrl(movie.backdrop_path, 'original') || ''}
               alt={movie.title}
               fill
               className="object-cover opacity-60"
@@ -98,7 +99,7 @@ export function MovieClient({ movie, cast, videos }: MovieClientProps) {
               {/* Glow Effect */}
               {movie.poster_path ? (
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  src={getTmdbImageUrl(movie.poster_path, 'w500') || ''}
                   alt={movie.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -127,7 +128,7 @@ export function MovieClient({ movie, cast, videos }: MovieClientProps) {
                   <svg className="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="font-medium">{new Date(movie.release_date).getFullYear()}</span>
+                  <span className="font-medium">{getMediaYear(movie.release_date)}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -263,7 +264,7 @@ export function MovieClient({ movie, cast, videos }: MovieClientProps) {
                     <div className="aspect-[2/3] relative rounded-lg overflow-hidden border border-white/10 bg-[#121923] mb-3 group-hover:border-cyan-300/40 transition-colors">
                       {member.profile_path ? (
                         <Image
-                          src={`https://image.tmdb.org/t/p/w185${member.profile_path}`}
+                          src={getTmdbImageUrl(member.profile_path, 'w185') || ''}
                           alt={member.name}
                           fill
                           className="object-cover transition-transform duration-300 group-hover:scale-105"

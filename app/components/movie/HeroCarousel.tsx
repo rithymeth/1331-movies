@@ -4,20 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
+import { MediaCardItem } from '@/app/lib/media';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-interface Movie {
-  id: string;
-  title: string;
-  backdrop: string | null;
-  overview: string;
-}
-
 interface HeroCarouselProps {
-  movies: Movie[];
+  movies: MediaCardItem[];
 }
 
 export default function HeroCarousel({ movies }: HeroCarouselProps) {

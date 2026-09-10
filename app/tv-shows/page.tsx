@@ -1,23 +1,15 @@
 import React from 'react';
-import TVShowCard from '../components/movie/TVShowCard';
 import Image from 'next/image';
+import MediaGrid from '../components/movie/MediaGrid';
 import { fetchTmdbList } from '@/app/lib/tmdb';
-
-interface TVShow {
-  id: number;
-  name: string;
-  poster_path: string;
-  first_air_date: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
-}
+import { mapTmdbMediaCollection } from '@/app/lib/media';
+import { TmdbMediaListItem } from '@/app/lib/tmdb';
 
 async function getTVShows() {
   return {
-    popular: await fetchTmdbList<TVShow>('/tv/popular'),
-    topRated: await fetchTmdbList<TVShow>('/tv/top_rated'),
-    airingToday: await fetchTmdbList<TVShow>('/tv/airing_today')
+    popular: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/tv/popular'), 'tv'),
+    topRated: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/tv/top_rated'), 'tv'),
+    airingToday: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/tv/airing_today'), 'tv')
   };
 }
 
@@ -35,8 +27,8 @@ export default async function TVShowsPage() {
 
       {/* Hero Section */}
       <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
-        {popular[0]?.poster_path && <Image
-          src={`https://image.tmdb.org/t/p/original${popular[0].poster_path}`}
+        {popular[0]?.backdrop && <Image
+          src={popular[0].backdrop}
           alt="Featured TV Show"
           fill
           className="object-cover"
@@ -83,21 +75,7 @@ export default async function TVShowsPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {popular.map((show: TVShow, index: number) => (
-              <div key={show.id} className="animate-scale-in" style={{animationDelay: `${index * 0.1}s`}}>
-                <TVShowCard
-                  id={show.id.toString()}
-                  name={show.name}
-                  poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
-                  year={new Date(show.first_air_date).getFullYear().toString()}
-                  rating={show.vote_average}
-                  voteCount={show.vote_count}
-                  overview={show.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={popular} emptyTitle="No popular series available" emptyMessage="Check back soon for the latest TV picks." />
         </section>
 
         {/* Top Rated TV Shows */}
@@ -109,21 +87,7 @@ export default async function TVShowsPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {topRated.map((show: TVShow, index: number) => (
-              <div key={show.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.3}s`}}>
-                <TVShowCard
-                  id={show.id.toString()}
-                  name={show.name}
-                  poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
-                  year={new Date(show.first_air_date).getFullYear().toString()}
-                  rating={show.vote_average}
-                  voteCount={show.vote_count}
-                  overview={show.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={topRated} emptyTitle="No top rated series available" emptyMessage="Try again later for refreshed TV rankings." />
         </section>
 
         {/* Airing Today */}
@@ -135,21 +99,7 @@ export default async function TVShowsPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {airingToday.map((show: TVShow, index: number) => (
-              <div key={show.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.6}s`}}>
-                <TVShowCard
-                  id={show.id.toString()}
-                  name={show.name}
-                  poster={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
-                  year={new Date(show.first_air_date).getFullYear().toString()}
-                  rating={show.vote_average}
-                  voteCount={show.vote_count}
-                  overview={show.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={airingToday} emptyTitle="No series airing today" emptyMessage="Airing episodes will show up here when the feed refreshes." />
         </section>
       </div>
     </div>

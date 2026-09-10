@@ -1,23 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import MovieCard from '../components/movie/MovieCard';
-import TVShowCard from '../components/movie/TVShowCard';
+import Link from 'next/link';
 import FilterButton from '../components/ui/FilterButton';
+import EmptyState from '../components/ui/EmptyState';
+import MediaGrid from '../components/movie/MediaGrid';
 import { useSearchParams, useRouter } from 'next/navigation';
-
-interface SearchResult {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path: string | null;
-  release_date?: string;
-  first_air_date?: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
-  media_type: 'movie' | 'tv';
-}
+import { mapTmdbMediaCollection, sortMediaCards, MediaCardItem } from '@/app/lib/media';
+import { MediaSort, TmdbMediaListItem } from '@/app/lib/tmdb';
 
 function SearchClient() {
   const router = useRouter();
@@ -25,9 +15,9 @@ function SearchClient() {
   const query = searchParams.get('q') || '';
   const type = searchParams.get('type') || 'all';
   const genre = searchParams.get('genre') || '';
-  const sort = searchParams.get('sort') || 'popularity.desc';
+  const sort = (searchParams.get('sort') as MediaSort | null) || 'popularity.desc';
 
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<MediaCardItem[]>([]);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -67,26 +57,12 @@ function SearchClient() {
         });
 
         const responses = await Promise.all(searchPromises);
-        const combinedResults = responses.flatMap((response, index) =>
-          response.results.map((item: SearchResult) => ({
-            ...item,
-            media_type: searchTypes[index] as 'movie' | 'tv'
-          }))
-        );
-
-        // Sort combined results if needed
-        const sortedResults = combinedResults.sort((a, b) => {
-          if (sort === 'popularity.desc') return b.vote_count - a.vote_count;
-          if (sort === 'rating.desc') return b.vote_average - a.vote_average;
-          if (sort === 'date.desc') {
-            const dateA = a.release_date || a.first_air_date || '';
-            const dateB = b.release_date || b.first_air_date || '';
-            return dateB.localeCompare(dateA);
-          }
-          return 0;
+        const combinedResults = responses.flatMap((response, index) => {
+          const mediaType = searchTypes[index] as 'movie' | 'tv';
+          return mapTmdbMediaCollection((response.results || []) as TmdbMediaListItem[], mediaType);
         });
 
-        setResults(sortedResults);
+        setResults(sortMediaCards(combinedResults, sort));
       } catch (error) {
         console.error('Error fetching content:', error);
         setError('Failed to fetch content. Please try again.');
@@ -236,85 +212,27 @@ function SearchClient() {
                 </span>
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-5 xl:grid-cols-6">
-              {results.map((item, index) => (
-                <div key={`${item.media_type}-${item.id}`} className="animate-scale-in" style={{animationDelay: `${index * 0.05}s`}}>
-                  {item.media_type === 'movie' ? (
-                    <MovieCard
-                      id={item.id.toString()}
-                      title={item.title || ''}
-                      poster={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null}
-                      year={item.release_date ? new Date(item.release_date).getFullYear().toString() : 'N/A'}
-                      rating={item.vote_average}
-                      voteCount={item.vote_count}
-                      overview={item.overview}
-                    />
-                  ) : (
-                    <TVShowCard
-                      id={item.id.toString()}
-                      name={item.name || ''}
-                      poster={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null}
-                      year={item.first_air_date ? new Date(item.first_air_date).getFullYear().toString() : 'N/A'}
-                      rating={item.vote_average}
-                      voteCount={item.vote_count}
-                      overview={item.overview}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+
+            <MediaGrid items={results} emptyTitle="No matching titles yet" emptyMessage="Adjust the filters or try a broader search." />
           </div>
         ) : query ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-6">
-            <div className="max-w-md rounded-2xl border border-white/10 bg-[#11161d] p-8 text-center">
-              <svg
-                className="w-20 h-20 text-gray-500 mx-auto mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 21a9 9 0 110-18 9 9 0 010 18z"
-                />
-              </svg>
-              <h3 className="text-2xl font-bold text-white mb-2">
-                No Results Found
-              </h3>
-              <p className="text-gray-400 mb-4">
-                No results found for "{query}"
-              </p>
-              <p className="text-sm text-gray-500">
-                Try searching with different keywords or adjusting your filters
-              </p>
-            </div>
+            <EmptyState
+              title="No results found"
+              message={`No titles matched "${query}". Try different keywords or fewer filters.`}
+            />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 space-y-6">
-            <div className="glass-dark p-8 rounded-2xl border border-white/10 text-center max-w-md">
-              <svg
-                className="w-20 h-20 text-gray-500 mx-auto mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <h3 className="text-2xl font-bold text-white mb-2">
-                Discover Amazing Content
-              </h3>
-              <p className="text-gray-400">
-                Use the search bar above or browse by genre to find your next favorite movie or TV show
-              </p>
-            </div>
+            <EmptyState
+              title="Discover amazing content"
+              message="Use the search bar above or browse by genre to find your next favorite movie or TV show."
+              action={
+                <Link href="/movies" className="inline-flex rounded-md bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200">
+                  Browse movies
+                </Link>
+              }
+            />
           </div>
         )}
       </div>

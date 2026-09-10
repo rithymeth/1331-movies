@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
+import { absoluteUrl, getBaseUrl } from '@/app/lib/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'
+  const baseUrl = getBaseUrl();
 
   // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -50,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const data = await response.json();
       return Array.isArray(data.results)
         ? data.results.map((item: { id: number }) => ({
-            url: `${baseUrl}/movie/${item.id}`,
+            url: absoluteUrl(`/movie/${item.id}`),
             lastModified: new Date().toISOString(),
             changeFrequency: 'weekly' as const,
             priority: 0.7
@@ -78,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     const data = await response.json();
     animeRoutes = (data.data?.Page?.media || []).map((anime: { id: number }) => ({
-      url: `${baseUrl}/anime/${anime.id}`,
+      url: absoluteUrl(`/anime/${anime.id}`),
       lastModified: new Date().toISOString(),
       changeFrequency: 'weekly' as const,
       priority: 0.7

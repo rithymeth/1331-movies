@@ -1,8 +1,8 @@
 import React from 'react';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { MovieClient } from './MovieClient';
 import type { Metadata } from 'next';
+import { absoluteUrl } from '@/app/lib/site';
+import { fetchTmdb, getMediaYear, getTmdbImageUrl } from '@/app/lib/tmdb';
 
 interface MovieDetails {
   id: number;
@@ -44,21 +44,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { movie } = await getMovieDetails(id);
     
-    const title = `${movie.title} (${new Date(movie.release_date).getFullYear()}) - Watch Free | 1331 Movies`;
+    const releaseYear = getMediaYear(movie.release_date);
+    const title = `${movie.title} (${releaseYear}) - Watch Free | 1331 Movies`;
     const description = movie.overview 
-      ? `Watch ${movie.title} (${new Date(movie.release_date).getFullYear()}) online for free in HD quality. ${movie.overview.slice(0, 120)}...`
-      : `Watch ${movie.title} (${new Date(movie.release_date).getFullYear()}) online for free in HD quality on 1331 Movies.`;
+      ? `Watch ${movie.title} (${releaseYear}) online for free in HD quality. ${movie.overview.slice(0, 120)}...`
+      : `Watch ${movie.title} (${releaseYear}) online for free in HD quality on 1331 Movies.`;
     
-    const posterUrl = movie.poster_path 
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-      : '/og-image.jpg';
+    const posterUrl = getTmdbImageUrl(movie.poster_path, 'w500') || '/og-image.jpg';
     
-    const backdropUrl = movie.backdrop_path 
-      ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-      : posterUrl;
+    const backdropUrl = getTmdbImageUrl(movie.backdrop_path, 'original') || posterUrl;
     
     const genres = movie.genres.map(g => g.name).join(', ');
-    const keywords = `${movie.title}, watch ${movie.title}, ${movie.title} online, ${movie.title} free, ${genres}, ${new Date(movie.release_date).getFullYear()} movies, HD movies, streaming`;
+    const keywords = `${movie.title}, watch ${movie.title}, ${movie.title} online, ${movie.title} free, ${genres}, ${releaseYear} movies, HD movies, streaming`;
     
     return {
       title,
@@ -68,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: 'video.movie',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/movie/${id}`,
+        url: absoluteUrl(`/movie/${id}`),
         siteName: '1331 Movies',
         images: [
           {
@@ -113,34 +110,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function getMovieDetails(id: string): Promise<{ movie: MovieDetails; cast: CastMember[]; videos: Video[] }> {
   const [movieRes, externalIdsRes, creditsRes, videosRes] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=${process.env.TMDB_API_KEY}`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.TMDB_API_KEY}&language=en-US`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${process.env.TMDB_API_KEY}&language=en-US`)
+    fetchTmdb<MovieDetails>(`/movie/${id}`),
+    fetchTmdb<{ imdb_id: string }>(`/movie/${id}/external_ids`),
+    fetchTmdb<{ cast: CastMember[] }>(`/movie/${id}/credits`),
+    fetchTmdb<{ results: Video[] }>(`/movie/${id}/videos`)
   ]);
 
-  if (!movieRes.ok || !externalIdsRes.ok || !creditsRes.ok || !videosRes.ok) {
+  if (!movieRes || !externalIdsRes || !creditsRes || !videosRes) {
     throw new Error('Failed to fetch movie data');
   }
 
-  const [movieData, externalIds, credits, videos] = await Promise.all([
-    movieRes.json(),
-    externalIdsRes.json(),
-    creditsRes.json(),
-    videosRes.json()
-  ]);
-
   // Filter for YouTube trailers and teasers
-  const filteredVideos = videos.results.filter(
+  const filteredVideos = (videosRes.results || []).filter(
     (video: Video) => video.site === 'YouTube' && ['Trailer', 'Teaser'].includes(video.type)
   );
 
   return {
     movie: {
-      ...movieData,
-      imdb_id: externalIds.imdb_id,
+      ...movieRes,
+      imdb_id: externalIdsRes.imdb_id,
     },
-    cast: credits.cast.slice(0, 6),
+    cast: (creditsRes.cast || []).slice(0, 6),
     videos: filteredVideos
   };
 }
@@ -171,7 +161,7 @@ export default async function MoviePage({ params }: Props) {
     '@type': 'Movie',
     name: movie.title,
     description: movie.overview,
-    image: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : undefined,
+    image: getTmdbImageUrl(movie.poster_path, 'w500') || undefined,
     datePublished: movie.release_date,
     duration: `PT${movie.runtime}M`,
     genre: movie.genres.map(g => g.name),
@@ -187,7 +177,7 @@ export default async function MoviePage({ params }: Props) {
       name: member.name,
       characterName: member.character
     })),
-    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/movie/${id}`,
+    url: absoluteUrl(`/movie/${id}`),
     sameAs: movie.imdb_id ? `https://www.imdb.com/title/${movie.imdb_id}` : undefined
   };
 

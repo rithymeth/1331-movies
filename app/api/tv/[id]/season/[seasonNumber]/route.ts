@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { fetchTmdb } from '@/app/lib/tmdb';
 
 export async function GET(
   request: Request,
@@ -7,16 +8,11 @@ export async function GET(
   const { id, seasonNumber } = params;
 
   try {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/tv/${id}/season/${seasonNumber}?api_key=${process.env.TMDB_API_KEY}&language=en-US`
-    );
-
-    if (!response.ok) {
+    const response = await fetchTmdb(`/tv/${id}/season/${seasonNumber}`);
+    if (!response) {
       throw new Error('Failed to fetch season data');
     }
-
-    const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(response);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch season data' },

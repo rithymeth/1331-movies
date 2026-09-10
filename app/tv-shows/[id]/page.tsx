@@ -1,8 +1,8 @@
 import React from 'react';
-import Image from 'next/image';
-import VideoPlayer from '../../components/movie/VideoPlayer';
 import type { Metadata } from 'next';
 import TVShowClient from '@/app/tv-shows/[id]/TVShowClient';
+import { absoluteUrl } from '@/app/lib/site';
+import { fetchTmdb, getMediaYear, getTmdbImageUrl } from '@/app/lib/tmdb';
 
 interface TVShowDetails {
   id: number;
@@ -45,15 +45,33 @@ interface Props {
 }
 
 async function getTVShowDetails(id: string): Promise<TVShowDetails> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/api/tv/${id}`, {
-    next: { revalidate: 3600 } // Revalidate every hour
+  const response = await fetchTmdb<TVShowDetails>(`/tv/${id}`, {
+    params: {
+      append_to_response: 'content_ratings'
+    }
   });
-  
-  if (!response.ok) {
+
+  if (!response) {
     throw new Error('Failed to fetch TV show details');
   }
-  
-  return response.json();
+
+  const seasons = await Promise.all(
+    (response.seasons || []).map(async (season) => {
+      const seasonData = await fetchTmdb<{ episodes?: TVShowDetails['seasons'][number]['episodes'] }>(
+        `/tv/${id}/season/${season.season_number}`
+      );
+
+      return {
+        ...season,
+        episodes: seasonData?.episodes || []
+      };
+    })
+  );
+
+  return {
+    ...response,
+    seasons
+  };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -62,21 +80,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const tvShow = await getTVShowDetails(id);
     
-    const title = `${tvShow.name} (${new Date(tvShow.first_air_date).getFullYear()}) - Watch Free | 1331 Movies`;
+    const releaseYear = getMediaYear(tvShow.first_air_date);
+    const title = `${tvShow.name} (${releaseYear}) - Watch Free | 1331 Movies`;
     const description = tvShow.overview 
-      ? `Watch ${tvShow.name} (${new Date(tvShow.first_air_date).getFullYear()}) online for free in HD quality. ${tvShow.overview.slice(0, 120)}...`
-      : `Watch ${tvShow.name} (${new Date(tvShow.first_air_date).getFullYear()}) online for free in HD quality on 1331 Movies.`;
+      ? `Watch ${tvShow.name} (${releaseYear}) online for free in HD quality. ${tvShow.overview.slice(0, 120)}...`
+      : `Watch ${tvShow.name} (${releaseYear}) online for free in HD quality on 1331 Movies.`;
     
-    const posterUrl = tvShow.poster_path 
-      ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}`
-      : '/og-image.jpg';
+    const posterUrl = getTmdbImageUrl(tvShow.poster_path, 'w500') || '/og-image.jpg';
     
-    const backdropUrl = tvShow.backdrop_path 
-      ? `https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`
-      : posterUrl;
+    const backdropUrl = getTmdbImageUrl(tvShow.backdrop_path, 'original') || posterUrl;
     
     const genres = tvShow.genres.map(g => g.name).join(', ');
-    const keywords = `${tvShow.name}, watch ${tvShow.name}, ${tvShow.name} online, ${tvShow.name} free, ${genres}, ${new Date(tvShow.first_air_date).getFullYear()} tv shows, HD tv shows, streaming, episodes`;
+    const keywords = `${tvShow.name}, watch ${tvShow.name}, ${tvShow.name} online, ${tvShow.name} free, ${genres}, ${releaseYear} tv shows, HD tv shows, streaming, episodes`;
     
     return {
       title,
@@ -86,7 +101,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         type: 'video.tv_show',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/tv-shows/${id}`,
+        url: absoluteUrl(`/tv-shows/${id}`),
         siteName: '1331 Movies',
         images: [
           {
@@ -158,7 +173,7 @@ export default async function TVShowPage({ params }: Props) {
     '@type': 'TVSeries',
     name: tvShow.name,
     description: tvShow.overview,
-    image: tvShow.poster_path ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}` : undefined,
+    image: getTmdbImageUrl(tvShow.poster_path, 'w500') || undefined,
     datePublished: tvShow.first_air_date,
     numberOfSeasons: tvShow.number_of_seasons,
     numberOfEpisodes: tvShow.number_of_episodes,
@@ -169,7 +184,7 @@ export default async function TVShowPage({ params }: Props) {
       bestRating: 10,
       worstRating: 0
     },
-    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/tv-shows/${id}`,
+    url: absoluteUrl(`/tv-shows/${id}`),
   };
   
   return (

@@ -5,15 +5,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowUpTrayIcon, BookmarkIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { clearWatchHistory, readWatchHistory, removeWatchHistory, WatchHistoryItem } from '@/app/lib/watchHistory';
-
-const STORAGE_KEY = '1331-movies-watchlist';
-
-interface WatchlistItem {
-  id: number;
-  type: 'movie' | 'tv';
-  title: string;
-  posterPath: string | null;
-}
+import { clearWatchlist, parseSharedWatchlist, readWatchlist, WatchlistItem, writeWatchlist } from '@/app/lib/watchlist';
 
 type Filter = 'all' | 'movie' | 'tv';
 
@@ -24,22 +16,18 @@ export default function LibraryPage() {
   const [shareMessage, setShareMessage] = useState('');
 
   useEffect(() => {
-    let stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as WatchlistItem[];
+    let stored = readWatchlist();
     const sharedValue = new URLSearchParams(window.location.search).get('watchlist');
 
     if (sharedValue) {
-      try {
-        const sharedItems = JSON.parse(decodeURIComponent(sharedValue)) as WatchlistItem[];
-        if (Array.isArray(sharedItems)) {
-          stored = [...stored, ...sharedItems].filter(
-            (item, index, all) =>
-              all.findIndex((entry) => entry.id === item.id && entry.type === item.type) === index
-          );
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
-          window.history.replaceState({}, '', '/library');
-          setShareMessage('Shared titles added to your library.');
-        }
-      } catch {
+      const sharedItems = parseSharedWatchlist(sharedValue);
+      if (sharedItems.length > 0) {
+        stored = [...stored, ...sharedItems];
+        writeWatchlist(stored);
+        stored = readWatchlist();
+        window.history.replaceState({}, '', '/library');
+        setShareMessage('Shared titles added to your library.');
+      } else {
         setShareMessage('This shared library link is not valid.');
       }
     }
@@ -55,7 +43,7 @@ export default function LibraryPage() {
 
   const removeItem = (item: WatchlistItem) => {
     const next = items.filter((entry) => !(entry.id === item.id && entry.type === item.type));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    writeWatchlist(next);
     setItems(next);
   };
 
@@ -74,7 +62,7 @@ export default function LibraryPage() {
 
   const clearLibrary = () => {
     if (!window.confirm('Remove all saved titles and continue-watching history?')) return;
-    localStorage.removeItem(STORAGE_KEY);
+    clearWatchlist();
     clearWatchHistory();
     setItems([]);
     setHistory([]);

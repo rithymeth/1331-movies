@@ -1,26 +1,22 @@
 import { NextResponse } from 'next/server';
+import { fetchTmdbList, MediaSort, sortTmdbMediaResults, TmdbMediaListItem } from '@/app/lib/tmdb';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const genre = searchParams.get('genre') || '';
-  const sort = searchParams.get('sort') || 'popularity.desc';
+  const sort = (searchParams.get('sort') as MediaSort | null) || 'popularity.desc';
 
   try {
-    let url = 'https://api.themoviedb.org/3/discover/movie?';
-    const params = new URLSearchParams({
-      api_key: process.env.TMDB_API_KEY || '',
-      language: 'en-US',
-      sort_by: sort,
-      include_adult: 'false',
-      include_video: 'false',
-      page: '1',
-      with_genres: genre
+    const results = await fetchTmdbList<TmdbMediaListItem>('/discover/movie', {
+      params: {
+        sort_by: sort,
+        include_adult: 'false',
+        include_video: 'false',
+        with_genres: genre
+      }
     });
 
-    const response = await fetch(url + params.toString());
-    const data = await response.json();
-
-    return NextResponse.json(data);
+    return NextResponse.json({ results: sortTmdbMediaResults(results, sort) });
   } catch (error) {
     console.error('Error fetching movies:', error);
     return NextResponse.json({ error: 'Failed to fetch movies' }, { status: 500 });
