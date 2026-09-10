@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import MovieCarousel from './components/movie/MovieCarousel';
 import HeroCarousel from './components/movie/HeroCarousel';
+import { fetchTmdbList } from './lib/tmdb';
 
 interface RawMovie {
   id: number;
@@ -24,52 +25,31 @@ interface Movie {
   overview: string;
 }
 
+function mapRawMovie(movie: RawMovie): Movie {
+  return {
+    id: movie.id.toString(),
+    title: movie.title,
+    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+    backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
+    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
+    rating: movie.vote_average,
+    overview: movie.overview
+  };
+}
+
 async function fetchMovies(endpoint: string): Promise<Movie[]> {
-  return fetchTmdbMovies(`/movie/${endpoint}`);
+  const movies = await fetchTmdbList<RawMovie>(`/movie/${endpoint}`);
+  return movies.map(mapRawMovie);
 }
 
 async function fetchTrendingMovies(): Promise<Movie[]> {
-  return fetchTmdbMovies('/trending/movie/week');
+  const movies = await fetchTmdbList<RawMovie>('/trending/movie/week');
+  return movies.map(mapRawMovie);
 }
 
 async function fetchUpcomingMovies(): Promise<Movie[]> {
-  return (await fetchTmdbMovies('/movie/upcoming')).slice(0, 10);
-}
-
-async function fetchTmdbMovies(endpoint: string): Promise<Movie[]> {
-  const apiKey = process.env.TMDB_API_KEY;
-  if (!apiKey) {
-    console.error('TMDB_API_KEY is not configured');
-    return [];
-  }
-
-  try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3${endpoint}?api_key=${apiKey}&language=en-US&page=1`,
-      { headers: { accept: 'application/json' }, next: { revalidate: 3600 } }
-    );
-
-    if (!res.ok) {
-      console.error(`TMDB request failed for ${endpoint}: ${res.status}`);
-      return [];
-    }
-
-    const data = await res.json();
-    return Array.isArray(data.results)
-      ? data.results.map((movie: RawMovie) => ({
-          id: movie.id.toString(),
-          title: movie.title,
-          poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-          backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
-          year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
-          rating: movie.vote_average,
-          overview: movie.overview
-        }))
-      : [];
-  } catch (error) {
-    console.error(`TMDB request error for ${endpoint}:`, error);
-    return [];
-  }
+  const movies = await fetchTmdbList<RawMovie>('/movie/upcoming');
+  return movies.map(mapRawMovie).slice(0, 10);
 }
 
 export default async function Home() {
