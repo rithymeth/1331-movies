@@ -1,13 +1,10 @@
 import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import { defaultMetadata } from './metadata';
 import { absoluteUrl, siteConfig } from '@/app/lib/site';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = defaultMetadata;
 
@@ -53,7 +50,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body className={`${inter.className} animated-bg text-white min-h-screen flex flex-col relative overflow-x-hidden`}>
+      <body className="animated-bg text-white min-h-screen flex flex-col relative overflow-x-hidden">
         {/* Ambient background effects */}
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>

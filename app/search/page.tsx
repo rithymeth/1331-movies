@@ -103,7 +103,7 @@ function SearchClient() {
             </h1>
             {query && (
               <p className="text-sm text-slate-400">
-                Results for "{query}"
+                Results for &quot;{query}&quot;
               </p>
             )}
           </div>
