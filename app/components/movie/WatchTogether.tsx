@@ -8,8 +8,7 @@ import {
   XMarkIcon,
   PaperAirplaneIcon,
   ClipboardDocumentIcon,
-  UserIcon,
-  StarIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 interface WatchTogetherProps {
@@ -46,7 +45,7 @@ export default function WatchTogether({
     users,
     messages,
     isHost,
-    syncState,
+    roomError,
     createRoom,
     joinRoom,
     leaveRoom,
@@ -71,22 +70,6 @@ export default function WatchTogether({
   }, [messages]);
 
   // Handle room creation
-  const handleCreateRoom = () => {
-    if (!userName.trim()) return;
-    const newRoomId = createRoom();
-    if (newRoomId) {
-      joinRoom(newRoomId);
-      setShowRoomSetup(false);
-    }
-  };
-
-  // Handle room joining
-  const handleJoinRoom = () => {
-    if (!userName.trim() || !roomIdInput.trim()) return;
-    joinRoom(roomIdInput.toUpperCase());
-    setShowRoomSetup(false);
-  };
-
   // Handle message sending
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +121,11 @@ export default function WatchTogether({
             <p className="text-gray-300 text-sm mb-4">
               Watch {contentTitle} with friends and family in real-time!
             </p>
+            {roomError && (
+              <p className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                {roomError}
+              </p>
+            )}
             <button
               onClick={() => setShowRoomSetup(true)}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
@@ -158,6 +146,11 @@ export default function WatchTogether({
                 maxLength={20}
               />
             </div>
+            {roomError && (
+              <p className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                {roomError}
+              </p>
+            )}
             
             <div className="grid grid-cols-1 gap-3">
               <button
@@ -165,6 +158,7 @@ export default function WatchTogether({
                    const roomId = createRoom();
                    if (roomId) {
                      setShowRoomSetup(false);
+                     setShowJoinRoom(false);
                    }
                  }}
                  disabled={!userName.trim()}
@@ -192,6 +186,7 @@ export default function WatchTogether({
                    const roomId = createRandomRoom();
                    if (roomId) {
                      setShowRoomSetup(false);
+                     setShowJoinRoom(false);
                    }
                  }}
                  disabled={!userName.trim()}

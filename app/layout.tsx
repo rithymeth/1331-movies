@@ -1,60 +1,12 @@
 import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import Link from 'next/link';
-import Script from 'next/script';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import { defaultMetadata } from './metadata';
+import { absoluteUrl, siteConfig } from '@/app/lib/site';
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'),
-  title: '1331 Movies - Watch Movies & TV Shows Online Free',
-  description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
-  keywords: 'movies online, free movies, watch movies online, tv shows online, streaming movies, latest movies, HD movies',
-  alternates: {
-    canonical: '/',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
-    siteName: '1331 Movies',
-    title: '1331 Movies - Watch Movies & TV Shows Online Free',
-    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: '1331 Movies',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: '1331 Movies - Watch Movies & TV Shows Online Free',
-    description: 'Watch the latest movies and TV shows online for free in HD quality.',
-    images: ['/og-image.jpg'],
-  },
-  other: {
-    monetag: 'ea5b1f21a80c0f9747f48cfc61b114f4',
-  },
-  viewport: 'width=device-width, initial-scale=1.0',
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
@@ -64,12 +16,12 @@ export default function RootLayout({
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: '1331 Movies',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
-    description: 'Watch the latest movies and TV shows online for free in HD quality. Stream unlimited movies, series, and entertainment without subscription.',
+    name: siteConfig.name,
+    url: absoluteUrl('/'),
+    description: siteConfig.description,
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/search?q={search_term_string}`,
+      target: `${absoluteUrl('/search')}?q={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   };
@@ -77,9 +29,9 @@ export default function RootLayout({
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: '1331 Movies',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app',
-    logo: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/logo.png`,
+    name: siteConfig.name,
+    url: absoluteUrl('/'),
+    logo: absoluteUrl('/logo.png'),
     sameAs: [
       'https://twitter.com/1331movies',
       'https://facebook.com/1331movies'
@@ -98,9 +50,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body 
-        className={`${inter.className} animated-bg text-white min-h-screen flex flex-col relative overflow-x-hidden`}
-      >
+      <body className="animated-bg text-white min-h-screen flex flex-col relative overflow-x-hidden">
         {/* Ambient background effects */}
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>

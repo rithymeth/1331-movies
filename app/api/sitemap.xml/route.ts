@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next'
+import { getBaseUrl } from '@/app/lib/site';
 
 export async function GET() {
-  // Get your base URL from environment variable or set it directly
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'
+  const baseUrl = getBaseUrl();
 
   // Generate the XML content with video sitemap namespace
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

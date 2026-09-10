@@ -3,53 +3,22 @@ import Link from 'next/link';
 import MovieCarousel from './components/movie/MovieCarousel';
 import HeroCarousel from './components/movie/HeroCarousel';
 import { fetchTmdbList } from './lib/tmdb';
+import { mapTmdbMediaCollection } from './lib/media';
+import { TmdbMediaListItem } from './lib/tmdb';
 
-interface RawMovie {
-  id: number;
-  title: string;
-  poster_path: string;
-  backdrop_path: string;
-  release_date: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
+async function fetchMovies(endpoint: string) {
+  const movies = await fetchTmdbList<TmdbMediaListItem>(`/movie/${endpoint}`);
+  return mapTmdbMediaCollection(movies, 'movie');
 }
 
-interface Movie {
-  id: string;
-  title: string;
-  poster: string | null;
-  backdrop: string | null;
-  year: string;
-  rating: number;
-  overview: string;
+async function fetchTrendingMovies() {
+  const movies = await fetchTmdbList<TmdbMediaListItem>('/trending/movie/week');
+  return mapTmdbMediaCollection(movies, 'movie');
 }
 
-function mapRawMovie(movie: RawMovie): Movie {
-  return {
-    id: movie.id.toString(),
-    title: movie.title,
-    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-    backdrop: movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : null,
-    year: movie.release_date ? new Date(movie.release_date).getFullYear().toString() : 'N/A',
-    rating: movie.vote_average,
-    overview: movie.overview
-  };
-}
-
-async function fetchMovies(endpoint: string): Promise<Movie[]> {
-  const movies = await fetchTmdbList<RawMovie>(`/movie/${endpoint}`);
-  return movies.map(mapRawMovie);
-}
-
-async function fetchTrendingMovies(): Promise<Movie[]> {
-  const movies = await fetchTmdbList<RawMovie>('/trending/movie/week');
-  return movies.map(mapRawMovie);
-}
-
-async function fetchUpcomingMovies(): Promise<Movie[]> {
-  const movies = await fetchTmdbList<RawMovie>('/movie/upcoming');
-  return movies.map(mapRawMovie).slice(0, 10);
+async function fetchUpcomingMovies() {
+  const movies = await fetchTmdbList<TmdbMediaListItem>('/movie/upcoming');
+  return mapTmdbMediaCollection(movies, 'movie').slice(0, 10);
 }
 
 export default async function Home() {

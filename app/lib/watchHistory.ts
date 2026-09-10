@@ -11,6 +11,56 @@ export interface WatchHistoryItem {
   episodeTitle?: string;
 }
 
+function isWatchHistoryItem(value: unknown): value is WatchHistoryItem {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+
+  return (
+    typeof item.id === 'number' &&
+    Number.isFinite(item.id) &&
+    (item.type === 'movie' || item.type === 'tv') &&
+    typeof item.title === 'string' &&
+    (typeof item.posterPath === 'string' || item.posterPath === null) &&
+    typeof item.watchedAt === 'number' &&
+    Number.isFinite(item.watchedAt) &&
+    (item.season === undefined || typeof item.season === 'number') &&
+    (item.episode === undefined || typeof item.episode === 'number') &&
+    (item.episodeTitle === undefined || typeof item.episodeTitle === 'string')
+  );
+}
+
+function normalizeWatchHistory(items: unknown[]) {
+  const dedupedItems = new Map<string, WatchHistoryItem>();
+
+  items.forEach((value) => {
+    if (!isWatchHistoryItem(value)) {
+      return;
+    }
+
+    const item: WatchHistoryItem = {
+      id: value.id,
+      type: value.type,
+      title: value.title.trim(),
+      posterPath: value.posterPath,
+      watchedAt: value.watchedAt,
+      season: value.season,
+      episode: value.episode,
+      episodeTitle: value.episodeTitle?.trim()
+    };
+
+    if (!item.title) {
+      return;
+    }
+
+    dedupedItems.set(`${item.type}-${item.id}`, item);
+  });
+
+  return [...dedupedItems.values()].sort((a, b) => b.watchedAt - a.watchedAt);
+}
+
 export function saveWatchHistory(item: Omit<WatchHistoryItem, 'watchedAt'>) {
   const stored = readWatchHistory().filter(
     (entry) => !(entry.id === item.id && entry.type === item.type)
@@ -24,7 +74,7 @@ export function saveWatchHistory(item: Omit<WatchHistoryItem, 'watchedAt'>) {
 export function readWatchHistory(): WatchHistoryItem[] {
   try {
     const value = JSON.parse(localStorage.getItem(WATCH_HISTORY_KEY) || '[]');
-    return Array.isArray(value) ? value : [];
+    return Array.isArray(value) ? normalizeWatchHistory(value) : [];
   } catch {
     return [];
   }

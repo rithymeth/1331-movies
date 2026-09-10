@@ -6,6 +6,7 @@ import VideoPlayer from '../../components/movie/VideoPlayer';
 import WatchlistButton from '../../components/movie/WatchlistButton';
 import { getVidkingEpisodeUrl } from '@/app/lib/vidking';
 import { saveWatchHistory } from '@/app/lib/watchHistory';
+import { getMediaYear, getTmdbImageUrl } from '@/app/lib/tmdb';
 
 interface TVShowDetails {
   id: number;
@@ -228,7 +229,7 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
       {tvShow.backdrop_path && (
         <div className="relative h-[28vh] min-h-[220px] w-full overflow-hidden">
           <Image
-            src={`https://image.tmdb.org/t/p/original${tvShow.backdrop_path}`}
+            src={getTmdbImageUrl(tvShow.backdrop_path, 'original') || ''}
             alt={tvShow.name}
             fill
             className="object-cover opacity-60"
@@ -244,7 +245,7 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
             <div className="aspect-[2/3] relative rounded-xl overflow-hidden bg-[#121923] border border-white/10 shadow-2xl">
               {tvShow.poster_path ? (
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500${tvShow.poster_path}`}
+                  src={getTmdbImageUrl(tvShow.poster_path, 'w500') || ''}
                   alt={tvShow.name}
                   fill
                   className="object-cover"
@@ -270,7 +271,7 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
               
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{new Date(tvShow.first_air_date).getFullYear()}</span>
+                  <span className="font-medium">{getMediaYear(tvShow.first_air_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{tvShow.number_of_seasons} Seasons</span>

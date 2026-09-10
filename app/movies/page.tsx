@@ -1,24 +1,15 @@
 import React from 'react';
-import MovieCard from '../components/movie/MovieCard';
 import Image from 'next/image';
+import MediaGrid from '../components/movie/MediaGrid';
 import { fetchTmdbList } from '@/app/lib/tmdb';
-
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  backdrop_path?: string;
-  release_date: string;
-  vote_average: number;
-  vote_count: number;
-  overview: string;
-}
+import { mapTmdbMediaCollection } from '@/app/lib/media';
+import { TmdbMediaListItem } from '@/app/lib/tmdb';
 
 async function getMovies() {
   return {
-    popular: await fetchTmdbList<Movie>('/movie/popular'),
-    topRated: await fetchTmdbList<Movie>('/movie/top_rated'),
-    upcoming: await fetchTmdbList<Movie>('/movie/upcoming')
+    popular: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/movie/popular'), 'movie'),
+    topRated: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/movie/top_rated'), 'movie'),
+    upcoming: mapTmdbMediaCollection(await fetchTmdbList<TmdbMediaListItem>('/movie/upcoming'), 'movie')
   };
 }
 
@@ -36,8 +27,8 @@ export default async function MoviesPage() {
 
       {/* Hero Section */}
       <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
-        {popular[0]?.backdrop_path && <Image
-          src={`https://image.tmdb.org/t/p/original${popular[0]?.backdrop_path}`}
+        {popular[0]?.backdrop && <Image
+          src={popular[0].backdrop}
           alt="Featured Movie"
           fill
           className="object-cover transition-transform duration-[15s] ease-out scale-105 hover:scale-110"
@@ -84,21 +75,7 @@ export default async function MoviesPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {popular.map((movie: Movie, index: number) => (
-              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${index * 0.1}s`}}>
-                <MovieCard
-                  id={movie.id.toString()}
-                  title={movie.title}
-                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                  year={movie.release_date?.split('-')[0]}
-                  rating={movie.vote_average}
-                  voteCount={movie.vote_count}
-                  overview={movie.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={popular} emptyTitle="No popular movies available" emptyMessage="Check back soon for the latest movie picks." />
         </section>
 
         {/* Top Rated Movies */}
@@ -110,21 +87,7 @@ export default async function MoviesPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {topRated.map((movie: Movie, index: number) => (
-              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.3}s`}}>
-                <MovieCard
-                  id={movie.id.toString()}
-                  title={movie.title}
-                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                  year={movie.release_date?.split('-')[0]}
-                  rating={movie.vote_average}
-                  voteCount={movie.vote_count}
-                  overview={movie.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={topRated} emptyTitle="No top rated movies available" emptyMessage="Try again later for refreshed movie rankings." />
         </section>
 
         {/* Upcoming Movies */}
@@ -136,21 +99,7 @@ export default async function MoviesPage() {
             </div>
             <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {upcoming.map((movie: Movie, index: number) => (
-              <div key={movie.id} className="animate-scale-in" style={{animationDelay: `${(index * 0.1) + 0.6}s`}}>
-                <MovieCard
-                  id={movie.id.toString()}
-                  title={movie.title}
-                  poster={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : ''}
-                  year={movie.release_date?.split('-')[0]}
-                  rating={movie.vote_average}
-                  voteCount={movie.vote_count}
-                  overview={movie.overview}
-                />
-              </div>
-            ))}
-          </div>
+          <MediaGrid items={upcoming} emptyTitle="No upcoming movies available" emptyMessage="Upcoming releases will appear here when TMDB data is available." />
         </section>
       </div>
     </div>

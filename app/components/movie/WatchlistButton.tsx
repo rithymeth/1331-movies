@@ -2,33 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { BookmarkIcon } from '@heroicons/react/24/outline';
-
-const STORAGE_KEY = '1331-movies-watchlist';
-
-interface WatchlistItem {
-  id: number;
-  type: 'movie' | 'tv';
-  title: string;
-  posterPath: string | null;
-}
+import { readWatchlist, toggleWatchlistItem, WatchlistItem } from '@/app/lib/watchlist';
 
 export default function WatchlistButton({ item }: { item: WatchlistItem }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as WatchlistItem[];
+    const stored = readWatchlist();
     setSaved(stored.some((entry) => entry.id === item.id && entry.type === item.type));
   }, [item.id, item.type]);
 
   const toggleSaved = () => {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') as WatchlistItem[];
-    const exists = stored.some((entry) => entry.id === item.id && entry.type === item.type);
-    const next = exists
-      ? stored.filter((entry) => !(entry.id === item.id && entry.type === item.type))
-      : [...stored, item];
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setSaved(!exists);
+    setSaved(toggleWatchlistItem(item));
   };
 
   return (

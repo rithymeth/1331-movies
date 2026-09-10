@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { absoluteUrl } from '@/app/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/*', '/private/*'],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://1331-movies.netlify.app'}/sitemap.xml`,
+    sitemap: absoluteUrl('/sitemap.xml'),
   };
 }
