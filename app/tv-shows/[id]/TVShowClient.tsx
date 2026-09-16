@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import VideoPlayer from '../../components/movie/VideoPlayer';
 import WatchlistButton from '../../components/movie/WatchlistButton';
+import CopyLinkButton from '../../components/ui/CopyLinkButton';
 import { getVidkingEpisodeUrl } from '@/app/lib/vidking';
 import { saveWatchHistory } from '@/app/lib/watchHistory';
 import { getMediaYear, getTmdbImageUrl } from '@/app/lib/tmdb';
@@ -214,7 +216,10 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
           <div className="space-y-7">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight">{tvShow.name}</h1>
-              <WatchlistButton item={{ id: tvShow.id, type: 'tv', title: tvShow.name, posterPath: tvShow.poster_path }} />
+              <div className="flex flex-wrap gap-2">
+                <WatchlistButton item={{ id: tvShow.id, type: 'tv', title: tvShow.name, posterPath: tvShow.poster_path }} />
+                <CopyLinkButton />
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-400">
               <span>{getMediaYear(tvShow.first_air_date)}</span>
@@ -224,7 +229,9 @@ export default function TVShowClient({ tvShowId, initialData }: Props) {
             </div>
             <div className="flex flex-wrap gap-2">
               {tvShow.genres.map((genre) => (
-                <span key={genre.id} className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300">{genre.name}</span>
+                <Link key={genre.id} href={`/tv-shows?genre=${genre.id}`} className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:border-cyan-300/40">
+                  {genre.name}
+                </Link>
               ))}
             </div>
             {tvShow.overview ? <p className="max-w-3xl text-gray-300 leading-relaxed">{tvShow.overview}</p> : null}

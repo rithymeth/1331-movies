@@ -2,7 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import MediaGrid from '../components/movie/MediaGrid';
 import GenreFilterBar from '../components/movie/GenreFilterBar';
-import { fetchTmdb, fetchTmdbList } from '@/app/lib/tmdb';
+import CatalogPager from '../components/movie/CatalogPager';
+import { clampTmdbPage, fetchTmdb, fetchTmdbList, fetchTmdbPage } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
 import { TmdbMediaListItem } from '@/app/lib/tmdb';
 
@@ -25,27 +26,27 @@ async function getTVShows() {
 export default async function TVShowsPage({
   searchParams
 }: {
-  searchParams: { genre?: string };
+  searchParams: { genre?: string; page?: string };
 }) {
   const genre = searchParams?.genre;
+  const page = clampTmdbPage(searchParams?.page);
   const [lists, genreData] = await Promise.all([
     getTVShows(),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 })
   ]);
   const genres = genreData?.genres || [];
   const selectedGenre = genres.find((item) => String(item.id) === genre);
-  const filtered = genre
-    ? mapTmdbMediaCollection(
-        await fetchTmdbList<TmdbMediaListItem>('/discover/tv', {
-          params: {
-            with_genres: genre,
-            sort_by: 'popularity.desc',
-            include_adult: 'false'
-          }
-        }),
-        'tv'
-      )
-    : [];
+  const filteredPage = genre
+    ? await fetchTmdbPage<TmdbMediaListItem>('/discover/tv', {
+        params: {
+          with_genres: genre,
+          sort_by: 'popularity.desc',
+          include_adult: 'false',
+          page
+        }
+      })
+    : { results: [], page: 1, totalPages: 1 };
+  const filtered = mapTmdbMediaCollection(filteredPage.results, 'tv');
   const hero = genre ? filtered[0] : lists.popular[0];
 
   return (
@@ -66,7 +67,10 @@ export default async function TVShowsPage({
       <div className="relative z-10 mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-8">
         <GenreFilterBar genres={genres} selected={genre} basePath="/tv-shows" />
         {genre ? (
-          <MediaGrid items={filtered} emptyTitle="No series in this genre" emptyMessage="Try another genre chip above." />
+          <>
+            <MediaGrid items={filtered} emptyTitle="No series in this genre" emptyMessage="Try another genre chip above." />
+            <CatalogPager basePath="/tv-shows" genre={genre} page={filteredPage.page} totalPages={filteredPage.totalPages} />
+          </>
         ) : (
           <>
             <section>
