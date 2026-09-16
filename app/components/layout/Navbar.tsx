@@ -10,7 +10,8 @@ const links = [
   { href: '/', label: 'Home' },
   { href: '/trending', label: 'Trending' },
   { href: '/movies', label: 'Movies' },
-  { href: '/tv-shows', label: 'TV Shows' },
+  { href: '/tv-shows', label: 'TV' },
+  { href: '/people', label: 'People' },
   { href: '/library', label: 'Library' }
 ];
 
@@ -107,18 +108,13 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event('open-command-search'))}
-              className="hidden lg:inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10"
-              aria-label="Open search palette"
-            >
+            <button type="button" onClick={() => window.dispatchEvent(new Event('open-command-search'))} className="hidden lg:inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10" aria-label="Open search palette">
               Search
               <kbd className="rounded border border-white/15 bg-black/40 px-1.5 py-0.5 text-[10px]">⌘K</kbd>
             </button>
             <form onSubmit={handleSearch} className="hidden md:flex items-center relative group" ref={searchRef}>
               <div className="relative">
-                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search titles..." className="input-modern w-72 pl-12 pr-4 py-3 text-white placeholder-white/60" />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search titles..." className="input-modern w-64 pl-12 pr-4 py-3 text-white placeholder-white/60" />
                 <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -152,7 +148,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-        <div className={`md:hidden overflow-hidden transition-all duration-500 ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className={`md:hidden overflow-hidden transition-all duration-500 ${isMenuOpen ? 'max-h-[28rem] opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="py-6 border-t border-white/20 space-y-4 glass-dark mx-4 rounded-2xl mb-4 px-4">
             {links.map((link) => (
               <Link key={link.href} href={link.href} className={`${linkClass(link.href)} block`} onClick={() => setIsMenuOpen(false)}>
