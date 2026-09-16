@@ -5,6 +5,7 @@ import Link from 'next/link';
 import FilterButton from '../components/ui/FilterButton';
 import EmptyState from '../components/ui/EmptyState';
 import MediaGrid from '../components/movie/MediaGrid';
+import PeopleGrid from '../components/movie/PeopleGrid';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { mapTmdbMediaCollection, sortMediaCards, MediaCardItem } from '@/app/lib/media';
 import { catalogYearOptions } from '@/app/lib/catalogQuery';
@@ -20,6 +21,7 @@ function SearchClient() {
   const sort = (searchParams.get('sort') as MediaSort | null) || 'popularity.desc';
 
   const [results, setResults] = useState<MediaCardItem[]>([]);
+  const [people, setPeople] = useState<{ id: number; name: string; profile_path: string | null; known_for_department?: string }[]>([]);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -81,10 +83,18 @@ function SearchClient() {
         const data = await fetchPage(1);
         setResults(data.items);
         setTotalPages(data.totalPages);
+        if (query.trim().length >= 2) {
+          const peopleResponse = await fetch(`/api/search/person?query=${encodeURIComponent(query)}`);
+          const peopleData = await peopleResponse.json();
+          setPeople((peopleData.results || []).slice(0, 6));
+        } else {
+          setPeople([]);
+        }
       } catch (fetchError) {
         console.error('Error fetching content:', fetchError);
         setError('Failed to fetch content. Please try again.');
         setResults([]);
+        setPeople([]);
       } finally {
         setIsLoading(false);
       }
@@ -148,24 +158,13 @@ function SearchClient() {
               }}
               className="flex gap-2"
             >
-              <input
-                name="search"
-                defaultValue={query}
-                placeholder="Search titles..."
-                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/60"
-              />
-              <button type="submit" className="rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white">
-                Search
-              </button>
+              <input name="search" defaultValue={query} placeholder="Search titles or people..." className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/60" />
+              <button type="submit" className="rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white">Search</button>
             </form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Content type</label>
-                <select
-                  value={type}
-                  onChange={(e) => updateSearchParams({ type: e.target.value })}
-                  className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60"
-                >
+                <select value={type} onChange={(e) => updateSearchParams({ type: e.target.value })} className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60">
                   <option value="all">All Types</option>
                   <option value="movie">Movies</option>
                   <option value="tv">TV Shows</option>
@@ -173,11 +172,7 @@ function SearchClient() {
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</label>
-                <select
-                  value={sort}
-                  onChange={(e) => updateSearchParams({ sort: e.target.value })}
-                  className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60"
-                >
+                <select value={sort} onChange={(e) => updateSearchParams({ sort: e.target.value })} className="w-full rounded-lg border border-white/10 bg-[#080b10] px-4 py-3 text-sm text-white outline-none focus:border-cyan-300/60">
                   <option value="popularity.desc">Most Popular</option>
                   <option value="rating.desc">Highest Rated</option>
                   <option value="date.desc">Latest Release</option>
@@ -189,12 +184,7 @@ function SearchClient() {
               <div className="flex flex-wrap gap-2">
                 <FilterButton label="Any year" isActive={!year} onClick={() => updateSearchParams({ year: '' })} />
                 {catalogYearOptions().map((value) => (
-                  <FilterButton
-                    key={value}
-                    label={value}
-                    isActive={year === value}
-                    onClick={() => updateSearchParams({ year: value })}
-                  />
+                  <FilterButton key={value} label={value} isActive={year === value} onClick={() => updateSearchParams({ year: value })} />
                 ))}
               </div>
             </div>
@@ -203,17 +193,22 @@ function SearchClient() {
               <div className="flex flex-wrap gap-2">
                 <FilterButton label="All Genres" isActive={!genre} onClick={() => updateSearchParams({ genre: '' })} />
                 {genres.map((g) => (
-                  <FilterButton
-                    key={g.id}
-                    label={g.name}
-                    isActive={genre === g.id.toString()}
-                    onClick={() => updateSearchParams({ genre: g.id.toString() })}
-                  />
+                  <FilterButton key={g.id} label={g.name} isActive={genre === g.id.toString()} onClick={() => updateSearchParams({ genre: g.id.toString() })} />
                 ))}
               </div>
             </div>
           </div>
         </div>
+
+        {people.length > 0 ? (
+          <section className="mb-12 space-y-4">
+            <div className="flex items-end justify-between">
+              <h2 className="text-2xl font-bold text-white">People</h2>
+              <Link href="/people" className="text-xs text-slate-500 hover:text-white">Browse popular people</Link>
+            </div>
+            <PeopleGrid people={people} />
+          </section>
+        ) : null}
 
         {isLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -226,35 +221,29 @@ function SearchClient() {
         ) : results.length > 0 ? (
           <div className="space-y-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight text-white">
-                {results.length} {results.length === 1 ? 'result' : 'results'}
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight text-white">{results.length} {results.length === 1 ? 'result' : 'results'}</h2>
               <span className="text-xs font-medium text-slate-400">Page {page} of {totalPages}</span>
             </div>
             <MediaGrid items={results} emptyTitle="No matching titles yet" emptyMessage="Adjust the filters or try a broader search." />
             {page < totalPages ? (
               <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={loadMore}
-                  disabled={isLoadingMore}
-                  className="rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white disabled:opacity-60"
-                >
+                <button type="button" onClick={loadMore} disabled={isLoadingMore} className="rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white disabled:opacity-60">
                   {isLoadingMore ? 'Loading...' : 'Load more'}
                 </button>
               </div>
             ) : null}
           </div>
         ) : query || year || genre ? (
-          <EmptyState title="No results found" message="No titles matched these filters. Try a different year, genre, or keyword." />
+          people.length === 0 ? <EmptyState title="No results found" message="No titles or people matched these filters." /> : null
         ) : (
           <EmptyState
             title="Discover titles"
             message="Use the search bar above or browse by genre to find your next favorite movie or TV show."
             action={
-              <Link href="/movies" className="inline-flex rounded-md bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200">
-                Browse movies
-              </Link>
+              <div className="flex gap-3">
+                <Link href="/movies" className="inline-flex rounded-md bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-200">Browse movies</Link>
+                <Link href="/people" className="inline-flex rounded-md border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">Browse people</Link>
+              </div>
             }
           />
         )}
