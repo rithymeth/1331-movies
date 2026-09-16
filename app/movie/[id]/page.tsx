@@ -1,8 +1,9 @@
 import React from 'react';
 import { MovieClient } from './MovieClient';
 import type { Metadata } from 'next';
+import WatchProviders from '@/app/components/movie/WatchProviders';
 import { absoluteUrl } from '@/app/lib/site';
-import { fetchTmdb, fetchTmdbList, getMediaYear, getTmdbImageUrl, TmdbMediaListItem } from '@/app/lib/tmdb';
+import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem, TmdbWatchProvider } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection, MediaCardItem } from '@/app/lib/media';
 
 interface MovieDetails {
@@ -93,13 +94,15 @@ async function getMovieDetails(id: string): Promise<{
   cast: CastMember[];
   videos: Video[];
   similar: MediaCardItem[];
+  providers: TmdbWatchProvider[];
 }> {
-  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes] = await Promise.all([
+  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers] = await Promise.all([
     fetchTmdb<MovieDetails>(`/movie/${id}`),
     fetchTmdb<{ imdb_id?: string }>(`/movie/${id}/external_ids`),
     fetchTmdb<{ cast: CastMember[] }>(`/movie/${id}/credits`),
     fetchTmdb<{ results: Video[] }>(`/movie/${id}/videos`),
     fetchTmdbList<TmdbMediaListItem>(`/movie/${id}/similar`),
+    fetchWatchProviders('movie', id),
   ]);
 
   if (!movieRes) {
@@ -118,12 +121,13 @@ async function getMovieDetails(id: string): Promise<{
     cast: (creditsRes?.cast || []).slice(0, 6),
     videos: filteredVideos,
     similar: mapTmdbMediaCollection(similarRes, 'movie').slice(0, 12),
+    providers,
   };
 }
 
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
-  const { movie, cast, videos, similar } = await getMovieDetails(id);
+  const { movie, cast, videos, similar, providers } = await getMovieDetails(id);
 
   const movieSchema = {
     '@context': 'https://schema.org',
@@ -157,6 +161,9 @@ export default async function MoviePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(movieSchema) }}
       />
       <MovieClient movie={movie} cast={cast} videos={videos} similar={similar} />
+      <div className="mx-auto max-w-6xl px-4 pb-16">
+        <WatchProviders providers={providers} tmdbUrl={`https://www.themoviedb.org/movie/${id}/watch`} />
+      </div>
     </>
   );
 }
