@@ -4,6 +4,7 @@ import MovieCarousel from './components/movie/MovieCarousel';
 import HeroCarousel from './components/movie/HeroCarousel';
 import ContinueWatching from './components/movie/ContinueWatching';
 import GenreRail from './components/movie/GenreRail';
+import PeopleGrid from './components/movie/PeopleGrid';
 import { fetchTmdb, fetchTmdbList } from './lib/tmdb';
 import { mapTmdbMediaCollection } from './lib/media';
 import { TmdbMediaListItem } from './lib/tmdb';
@@ -57,7 +58,7 @@ function CatalogSection({
 }
 
 export default async function Home() {
-  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, movieGenres, tvGenres] = await Promise.all([
+  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, movieGenres, tvGenres, people] = await Promise.all([
     fetchMovies('now_playing'),
     fetchMovies('popular'),
     fetchMovies('top_rated'),
@@ -66,6 +67,7 @@ export default async function Home() {
     fetchTrending('tv'),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/movie/list', { revalidate: 86400 }),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 }),
+    fetchTmdbList<{ id: number; name: string; profile_path: string | null; known_for_department?: string }>('/person/popular'),
   ]);
 
   return (
@@ -86,8 +88,8 @@ export default async function Home() {
             <Link href="/movies" className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">
               Browse movies
             </Link>
-            <Link href="/tv-shows" className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10">
-              Explore series
+            <Link href="/people" className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10">
+              Browse people
             </Link>
           </div>
         </div>
@@ -95,10 +97,22 @@ export default async function Home() {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-16 px-4 py-4 sm:px-8 md:py-10">
         <ContinueWatching />
+        {people.length > 0 ? (
+          <section className="animate-fade-in-up space-y-4">
+            <div className="flex items-end justify-between border-b border-white/10 pb-4">
+              <div>
+                <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">Faces behind the titles</p>
+                <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Popular people</h2>
+              </div>
+              <Link href="/people" className="text-xs font-medium text-slate-500 hover:text-white">View all</Link>
+            </div>
+            <PeopleGrid people={people.slice(0, 12)} />
+          </section>
+        ) : null}
         <GenreRail genres={movieGenres?.genres || []} title="Movie genres" hrefBase="/movies" />
         <GenreRail genres={tvGenres?.genres || []} title="TV genres" eyebrow="Series" hrefBase="/tv-shows" />
-        <CatalogSection eyebrow="Curated for you" title="Trending movies" items={trending} href="/movies" />
-        <CatalogSection eyebrow="This week" title="Trending series" items={trendingTv} href="/tv-shows" />
+        <CatalogSection eyebrow="Curated for you" title="Trending movies" items={trending} href="/trending?type=movie" />
+        <CatalogSection eyebrow="This week" title="Trending series" items={trendingTv} href="/trending?type=tv" />
         <CatalogSection eyebrow="In theaters" title="Now playing" items={nowPlaying} href="/movies" />
         <CatalogSection eyebrow="Most watched" title="Popular movies" items={popular} href="/movies" />
         <CatalogSection eyebrow="Audience favorites" title="Top rated" items={topRated} href="/movies?sort=rating" />
