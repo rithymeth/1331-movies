@@ -7,6 +7,7 @@ import CastRail from '@/app/components/movie/CastRail';
 import ReviewsList from '@/app/components/movie/ReviewsList';
 import KeywordChips from '@/app/components/movie/KeywordChips';
 import LinkChips from '@/app/components/movie/LinkChips';
+import ImageGallery from '@/app/components/movie/ImageGallery';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
@@ -124,12 +125,13 @@ export default async function TVShowPage({ params }: Props) {
     );
   }
 
-  const [similar, providers, credits, reviews, keywords] = await Promise.all([
+  const [similar, providers, credits, reviews, keywords, images] = await Promise.all([
     fetchTmdbList<TmdbMediaListItem>(`/tv/${id}/similar`),
     fetchWatchProviders('tv', id),
     fetchTmdb<{ cast?: { id: number; name: string; character: string; profile_path: string | null }[] }>(`/tv/${id}/credits`),
     fetchTmdb<{ results?: { id: string; author: string; content: string; created_at?: string }[] }>(`/tv/${id}/reviews`),
-    fetchTmdb<{ results?: { id: number; name: string }[] }>(`/tv/${id}/keywords`)
+    fetchTmdb<{ results?: { id: number; name: string }[] }>(`/tv/${id}/keywords`),
+    fetchTmdb<{ backdrops?: { file_path: string }[] }>(`/tv/${id}/images`)
   ]);
 
   const tvShowSchema = {
@@ -150,6 +152,7 @@ export default async function TVShowPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tvShowSchema) }} />
       <TVShowClient tvShowId={id} initialData={tvShow} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        <ImageGallery images={images?.backdrops || []} />
         <KeywordChips keywords={keywords?.results || []} />
         <LinkChips title="Networks" items={(tvShow.networks || []).map((network) => ({ id: network.id, name: network.name, href: `/network/${network.id}` }))} />
         <CastRail cast={credits?.cast || []} />

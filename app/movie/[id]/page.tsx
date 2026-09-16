@@ -7,6 +7,7 @@ import ReviewsList from '@/app/components/movie/ReviewsList';
 import MediaGrid from '@/app/components/movie/MediaGrid';
 import KeywordChips from '@/app/components/movie/KeywordChips';
 import LinkChips from '@/app/components/movie/LinkChips';
+import ImageGallery from '@/app/components/movie/ImageGallery';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem, TmdbWatchProvider } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection, MediaCardItem } from '@/app/lib/media';
@@ -105,8 +106,9 @@ async function getMovieDetails(id: string): Promise<{
   reviews: { id: string; author: string; content: string; created_at?: string }[];
   collectionParts: MediaCardItem[];
   keywords: { id: number; name: string }[];
+  images: { file_path: string }[];
 }> {
-  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers, reviewsRes, keywordsRes] = await Promise.all([
+  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers, reviewsRes, keywordsRes, imagesRes] = await Promise.all([
     fetchTmdb<MovieDetails>(`/movie/${id}`),
     fetchTmdb<{ imdb_id?: string }>(`/movie/${id}/external_ids`),
     fetchTmdb<{ cast: CastMember[] }>(`/movie/${id}/credits`),
@@ -115,6 +117,7 @@ async function getMovieDetails(id: string): Promise<{
     fetchWatchProviders('movie', id),
     fetchTmdb<{ results?: { id: string; author: string; content: string; created_at?: string }[] }>(`/movie/${id}/reviews`),
     fetchTmdb<{ keywords?: { id: number; name: string }[] }>(`/movie/${id}/keywords`),
+    fetchTmdb<{ backdrops?: { file_path: string }[] }>(`/movie/${id}/images`),
   ]);
 
   if (!movieRes) {
@@ -142,13 +145,14 @@ async function getMovieDetails(id: string): Promise<{
     collectionParts: mapTmdbMediaCollection(collection?.parts || [], 'movie')
       .filter((item) => item.id !== id)
       .slice(0, 12),
-    keywords: keywordsRes?.keywords || []
+    keywords: keywordsRes?.keywords || [],
+    images: imagesRes?.backdrops || []
   };
 }
 
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
-  const { movie, cast, videos, similar, providers, reviews, collectionParts, keywords } = await getMovieDetails(id);
+  const { movie, cast, videos, similar, providers, reviews, collectionParts, keywords, images } = await getMovieDetails(id);
 
   const movieSchema = {
     '@context': 'https://schema.org',
@@ -183,6 +187,7 @@ export default async function MoviePage({ params }: Props) {
       />
       <MovieClient movie={movie} cast={cast} videos={videos} similar={similar} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        <ImageGallery images={images} />
         <KeywordChips keywords={keywords} />
         <LinkChips title="Studios" items={(movie.production_companies || []).map((company) => ({ id: company.id, name: company.name, href: `/company/${company.id}` }))} />
         {movie.belongs_to_collection ? (

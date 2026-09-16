@@ -6,6 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     '/',
     '/trending',
+    '/airing',
     '/movies',
     '/tv-shows',
     '/people',
@@ -15,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((path) => ({
     url: absoluteUrl(path),
     lastModified: new Date(),
-    changeFrequency: path === '/' || path === '/trending' ? 'hourly' : 'daily',
+    changeFrequency: path === '/' || path === '/trending' || path === '/airing' ? 'hourly' : 'daily',
     priority: path === '/' ? 1 : 0.8
   }));
 
