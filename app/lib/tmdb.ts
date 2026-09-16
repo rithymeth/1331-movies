@@ -18,8 +18,22 @@ export interface TmdbMediaListItem {
   overview: string;
 }
 
+export interface TmdbWatchProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string | null;
+}
+
+export interface TmdbPage<T> {
+  results: T[];
+  page: number;
+  totalPages: number;
+}
+
 interface TmdbListResponse<T> {
   results?: T[];
+  page?: number;
+  total_pages?: number;
 }
 
 interface FetchTmdbOptions {
@@ -36,6 +50,14 @@ function getTmdbApiKey() {
   }
 
   return apiKey;
+}
+
+export function clampTmdbPage(value: string | null | undefined) {
+  const page = Number(value || '1');
+  if (!Number.isFinite(page) || page < 1) {
+    return 1;
+  }
+  return Math.min(Math.floor(page), 500);
 }
 
 export function getTmdbImageUrl(
@@ -99,10 +121,10 @@ export async function fetchTmdb<T>(
   }
 }
 
-export async function fetchTmdbList<T>(
+export async function fetchTmdbPage<T>(
   endpoint: string,
   options?: FetchTmdbOptions
-): Promise<T[]> {
+): Promise<TmdbPage<T>> {
   const data = await fetchTmdb<TmdbListResponse<T>>(endpoint, {
     ...options,
     params: {
@@ -110,7 +132,38 @@ export async function fetchTmdbList<T>(
       ...(options?.params || {})
     }
   });
-  return Array.isArray(data?.results) ? data.results : [];
+
+  return {
+    results: Array.isArray(data?.results) ? data.results : [],
+    page: data?.page || 1,
+    totalPages: Math.min(data?.total_pages || 1, 500)
+  };
+}
+
+export async function fetchTmdbList<T>(
+  endpoint: string,
+  options?: FetchTmdbOptions
+): Promise<T[]> {
+  const page = await fetchTmdbPage<T>(endpoint, options);
+  return page.results;
+}
+
+export async function fetchWatchProviders(mediaType: MediaType, id: string | number) {
+  const data = await fetchTmdb<{
+    results?: Record<string, { flatrate?: TmdbWatchProvider[]; buy?: TmdbWatchProvider[]; rent?: TmdbWatchProvider[] }>;
+  }>(`/${mediaType}/${id}/watch/providers`);
+
+  const regions = ['KH', 'US', 'GB'];
+  const providers = new Map<number, TmdbWatchProvider>();
+
+  regions.forEach((region) => {
+    const entry = data?.results?.[region];
+    [...(entry?.flatrate || []), ...(entry?.buy || []), ...(entry?.rent || [])].forEach((provider) => {
+      providers.set(provider.provider_id, provider);
+    });
+  });
+
+  return [...providers.values()].slice(0, 12);
 }
 
 export function sortTmdbMediaResults<T extends TmdbMediaListItem>(
