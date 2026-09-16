@@ -6,6 +6,7 @@ import WatchProviders from '@/app/components/movie/WatchProviders';
 import CastRail from '@/app/components/movie/CastRail';
 import ReviewsList from '@/app/components/movie/ReviewsList';
 import KeywordChips from '@/app/components/movie/KeywordChips';
+import LinkChips from '@/app/components/movie/LinkChips';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
@@ -23,6 +24,7 @@ interface TVShowDetails {
   number_of_seasons: number;
   status: string;
   genres: Array<{ id: number; name: string }>;
+  networks?: Array<{ id: number; name: string }>;
   seasons: Array<{
     id: number;
     name: string;
@@ -149,6 +151,7 @@ export default async function TVShowPage({ params }: Props) {
       <TVShowClient tvShowId={id} initialData={tvShow} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
         <KeywordChips keywords={keywords?.results || []} />
+        <LinkChips title="Networks" items={(tvShow.networks || []).map((network) => ({ id: network.id, name: network.name, href: `/network/${network.id}` }))} />
         <CastRail cast={credits?.cast || []} />
         <WatchProviders providers={providers} tmdbUrl={`https://www.themoviedb.org/tv/${id}/watch`} />
         <ReviewsList reviews={reviews?.results || []} />
