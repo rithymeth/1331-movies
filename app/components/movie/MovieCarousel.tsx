@@ -4,10 +4,10 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import MovieCard from './MovieCard';
+import TVShowCard from './TVShowCard';
 import EmptyState from '@/app/components/ui/EmptyState';
 import { MediaCardItem } from '@/app/lib/media';
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
@@ -28,9 +28,29 @@ export default function MovieCarousel({ movies }: MovieCarouselProps) {
       spaceBetween={24}
       className="movie-swiper"
     >
-      {movies.map((movie) => (
-        <SwiperSlide key={movie.id} className="!w-[200px]">
-          <MovieCard {...movie} />
+      {movies.map((item) => (
+        <SwiperSlide key={`${item.mediaType}-${item.id}`} className="!w-[200px]">
+          {item.mediaType === 'tv' ? (
+            <TVShowCard
+              id={item.id}
+              name={item.title}
+              poster={item.poster}
+              year={item.year}
+              rating={item.rating}
+              voteCount={item.voteCount}
+              overview={item.overview}
+            />
+          ) : (
+            <MovieCard
+              id={item.id}
+              title={item.title}
+              poster={item.poster}
+              year={item.year}
+              rating={item.rating}
+              voteCount={item.voteCount}
+              overview={item.overview}
+            />
+          )}
         </SwiperSlide>
       ))}
     </Swiper>
