@@ -80,20 +80,19 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
                     href={`/movie/${movie.id}`}
                     className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-white"
                   >
-                    <span className="text-base">▶</span>
-                    Watch now
+                    View title
                   </Link>
                   <Link
-                    href={`/movie/${movie.id}`}
+                    href="/search"
                     className="rounded-lg border border-white/20 bg-white/5 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:border-white/50 hover:bg-white/10"
                   >
-                    View details
+                    Browse catalog
                   </Link>
                 </div>
                 <div className="mt-8 flex items-center gap-5 text-xs font-medium text-slate-400">
-                  <span className="rounded border border-emerald-300/30 bg-emerald-300/10 px-2 py-1 text-emerald-200">HD</span>
-                  <span>Free to watch</span>
-                  <span>Powered by Vidking</span>
+                  {movie.year !== 'N/A' ? <span>{movie.year}</span> : null}
+                  {movie.rating > 0 ? <span>{movie.rating.toFixed(1)} TMDB</span> : null}
+                  <span className="rounded border border-white/15 px-2 py-1 text-slate-300">Catalog</span>
                 </div>
               </div>
             </div>
