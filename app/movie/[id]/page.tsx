@@ -1,7 +1,10 @@
 import React from 'react';
+import Link from 'next/link';
 import { MovieClient } from './MovieClient';
 import type { Metadata } from 'next';
 import WatchProviders from '@/app/components/movie/WatchProviders';
+import ReviewsList from '@/app/components/movie/ReviewsList';
+import MediaGrid from '@/app/components/movie/MediaGrid';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem, TmdbWatchProvider } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection, MediaCardItem } from '@/app/lib/media';
@@ -18,6 +21,7 @@ interface MovieDetails {
   vote_average: number;
   vote_count: number;
   genres: { id: number; name: string }[];
+  belongs_to_collection?: { id: number; name: string } | null;
 }
 
 interface Video {
@@ -95,19 +99,26 @@ async function getMovieDetails(id: string): Promise<{
   videos: Video[];
   similar: MediaCardItem[];
   providers: TmdbWatchProvider[];
+  reviews: { id: string; author: string; content: string; created_at?: string }[];
+  collectionParts: MediaCardItem[];
 }> {
-  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers] = await Promise.all([
+  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers, reviewsRes] = await Promise.all([
     fetchTmdb<MovieDetails>(`/movie/${id}`),
     fetchTmdb<{ imdb_id?: string }>(`/movie/${id}/external_ids`),
     fetchTmdb<{ cast: CastMember[] }>(`/movie/${id}/credits`),
     fetchTmdb<{ results: Video[] }>(`/movie/${id}/videos`),
     fetchTmdbList<TmdbMediaListItem>(`/movie/${id}/similar`),
     fetchWatchProviders('movie', id),
+    fetchTmdb<{ results?: { id: string; author: string; content: string; created_at?: string }[] }>(`/movie/${id}/reviews`),
   ]);
 
   if (!movieRes) {
     throw new Error('Failed to fetch movie data');
   }
+
+  const collection = movieRes.belongs_to_collection
+    ? await fetchTmdb<{ parts?: TmdbMediaListItem[] }>(`/collection/${movieRes.belongs_to_collection.id}`)
+    : null;
 
   const filteredVideos = (videosRes?.results || []).filter(
     (video: Video) => video.site === 'YouTube' && ['Trailer', 'Teaser'].includes(video.type)
@@ -122,12 +133,16 @@ async function getMovieDetails(id: string): Promise<{
     videos: filteredVideos,
     similar: mapTmdbMediaCollection(similarRes, 'movie').slice(0, 12),
     providers,
+    reviews: reviewsRes?.results || [],
+    collectionParts: mapTmdbMediaCollection(collection?.parts || [], 'movie')
+      .filter((item) => item.id !== id)
+      .slice(0, 12)
   };
 }
 
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
-  const { movie, cast, videos, similar, providers } = await getMovieDetails(id);
+  const { movie, cast, videos, similar, providers, reviews, collectionParts } = await getMovieDetails(id);
 
   const movieSchema = {
     '@context': 'https://schema.org',
@@ -161,8 +176,20 @@ export default async function MoviePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(movieSchema) }}
       />
       <MovieClient movie={movie} cast={cast} videos={videos} similar={similar} />
-      <div className="mx-auto max-w-6xl px-4 pb-16">
+      <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        {movie.belongs_to_collection ? (
+          <section className="space-y-4">
+            <div className="flex items-end justify-between">
+              <h2 className="text-2xl font-bold text-white">Part of {movie.belongs_to_collection.name}</h2>
+              <Link href={`/collection/${movie.belongs_to_collection.id}`} className="text-xs text-slate-500 hover:text-white">
+                View collection
+              </Link>
+            </div>
+            <MediaGrid items={collectionParts} emptyTitle="No other titles yet" emptyMessage="This collection does not list additional movies." />
+          </section>
+        ) : null}
         <WatchProviders providers={providers} tmdbUrl={`https://www.themoviedb.org/movie/${id}/watch`} />
+        <ReviewsList reviews={reviews} />
       </div>
     </>
   );
