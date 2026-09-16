@@ -6,6 +6,7 @@ import WatchProviders from '@/app/components/movie/WatchProviders';
 import ReviewsList from '@/app/components/movie/ReviewsList';
 import MediaGrid from '@/app/components/movie/MediaGrid';
 import KeywordChips from '@/app/components/movie/KeywordChips';
+import LinkChips from '@/app/components/movie/LinkChips';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem, TmdbWatchProvider } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection, MediaCardItem } from '@/app/lib/media';
@@ -23,6 +24,7 @@ interface MovieDetails {
   vote_count: number;
   genres: { id: number; name: string }[];
   belongs_to_collection?: { id: number; name: string } | null;
+  production_companies?: { id: number; name: string }[];
 }
 
 interface Video {
@@ -182,6 +184,7 @@ export default async function MoviePage({ params }: Props) {
       <MovieClient movie={movie} cast={cast} videos={videos} similar={similar} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
         <KeywordChips keywords={keywords} />
+        <LinkChips title="Studios" items={(movie.production_companies || []).map((company) => ({ id: company.id, name: company.name, href: `/company/${company.id}` }))} />
         {movie.belongs_to_collection ? (
           <section className="space-y-4">
             <div className="flex items-end justify-between">
