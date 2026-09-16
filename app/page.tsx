@@ -58,7 +58,7 @@ function CatalogSection({
 }
 
 export default async function Home() {
-  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, movieGenres, tvGenres, people] = await Promise.all([
+  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, movieGenres, tvGenres, people, airingToday, onTheAir] = await Promise.all([
     fetchMovies('now_playing'),
     fetchMovies('popular'),
     fetchMovies('top_rated'),
@@ -68,6 +68,8 @@ export default async function Home() {
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/movie/list', { revalidate: 86400 }),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 }),
     fetchTmdbList<{ id: number; name: string; profile_path: string | null; known_for_department?: string }>('/person/popular'),
+    fetchTmdbList<TmdbMediaListItem>('/tv/airing_today').then((items) => mapTmdbMediaCollection(items, 'tv')),
+    fetchTmdbList<TmdbMediaListItem>('/tv/on_the_air').then((items) => mapTmdbMediaCollection(items, 'tv')),
   ]);
 
   return (
@@ -85,11 +87,11 @@ export default async function Home() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <Link href="/movies" className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">
-              Browse movies
+            <Link href="/airing" className="rounded-xl bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">
+              What is airing
             </Link>
-            <Link href="/people" className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10">
-              Browse people
+            <Link href="/trending" className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/50 hover:bg-cyan-300/10">
+              Trending now
             </Link>
           </div>
         </div>
@@ -97,6 +99,8 @@ export default async function Home() {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-16 px-4 py-4 sm:px-8 md:py-10">
         <ContinueWatching />
+        <CatalogSection eyebrow="Schedule" title="Airing today" items={airingToday} href="/airing" />
+        <CatalogSection eyebrow="On now" title="Currently on the air" items={onTheAir} href="/airing" />
         {people.length > 0 ? (
           <section className="animate-fade-in-up space-y-4">
             <div className="flex items-end justify-between border-b border-white/10 pb-4">
