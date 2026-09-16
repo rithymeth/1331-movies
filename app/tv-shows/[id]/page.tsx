@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import TVShowClient from '@/app/tv-shows/[id]/TVShowClient';
 import MovieCarousel from '@/app/components/movie/MovieCarousel';
 import WatchProviders from '@/app/components/movie/WatchProviders';
+import CastRail from '@/app/components/movie/CastRail';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
@@ -119,9 +120,10 @@ export default async function TVShowPage({ params }: Props) {
     );
   }
 
-  const [similar, providers] = await Promise.all([
+  const [similar, providers, credits] = await Promise.all([
     fetchTmdbList<TmdbMediaListItem>(`/tv/${id}/similar`),
-    fetchWatchProviders('tv', id)
+    fetchWatchProviders('tv', id),
+    fetchTmdb<{ cast?: { id: number; name: string; character: string; profile_path: string | null }[] }>(`/tv/${id}/credits`)
   ]);
 
   const tvShowSchema = {
@@ -142,6 +144,7 @@ export default async function TVShowPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tvShowSchema) }} />
       <TVShowClient tvShowId={id} initialData={tvShow} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        <CastRail cast={credits?.cast || []} />
         <WatchProviders providers={providers} tmdbUrl={`https://www.themoviedb.org/tv/${id}/watch`} />
         {similar.length > 0 ? (
           <section className="space-y-4">

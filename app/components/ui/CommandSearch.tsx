@@ -9,7 +9,7 @@ interface Suggestion {
   id: number;
   title: string;
   posterPath: string | null;
-  type: 'movie' | 'tv';
+  type: 'movie' | 'tv' | 'person';
   year: string;
 }
 
@@ -60,26 +60,34 @@ export default function CommandSearch() {
     const timeout = window.setTimeout(async () => {
       setIsSearching(true);
       try {
-        const [moviesResponse, tvResponse] = await Promise.all([
+        const [moviesResponse, tvResponse, peopleResponse] = await Promise.all([
           fetch(`/api/search/movie?query=${encodeURIComponent(value)}`, { signal: controller.signal }),
-          fetch(`/api/search/tv?query=${encodeURIComponent(value)}`, { signal: controller.signal })
+          fetch(`/api/search/tv?query=${encodeURIComponent(value)}`, { signal: controller.signal }),
+          fetch(`/api/search/person?query=${encodeURIComponent(value)}`, { signal: controller.signal })
         ]);
-        const [movies, tv] = await Promise.all([moviesResponse.json(), tvResponse.json()]);
-        const movieResults = (movies.results || []).slice(0, 5).map((item: { id: number; title: string; poster_path: string | null; release_date?: string }) => ({
+        const [movies, tv, people] = await Promise.all([moviesResponse.json(), tvResponse.json(), peopleResponse.json()]);
+        const movieResults = (movies.results || []).slice(0, 4).map((item: { id: number; title: string; poster_path: string | null; release_date?: string }) => ({
           id: item.id,
           title: item.title,
           posterPath: item.poster_path,
           type: 'movie' as const,
           year: item.release_date?.slice(0, 4) || ''
         }));
-        const tvResults = (tv.results || []).slice(0, 5).map((item: { id: number; name: string; poster_path: string | null; first_air_date?: string }) => ({
+        const tvResults = (tv.results || []).slice(0, 4).map((item: { id: number; name: string; poster_path: string | null; first_air_date?: string }) => ({
           id: item.id,
           title: item.name,
           posterPath: item.poster_path,
           type: 'tv' as const,
           year: item.first_air_date?.slice(0, 4) || ''
         }));
-        setSuggestions([...movieResults, ...tvResults].slice(0, 8));
+        const peopleResults = (people.results || []).slice(0, 3).map((item: { id: number; name: string; profile_path: string | null; known_for_department?: string }) => ({
+          id: item.id,
+          title: item.name,
+          posterPath: item.profile_path,
+          type: 'person' as const,
+          year: item.known_for_department || 'Person'
+        }));
+        setSuggestions([...movieResults, ...tvResults, ...peopleResults].slice(0, 10));
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
           setSuggestions([]);
@@ -99,6 +107,12 @@ export default function CommandSearch() {
     return null;
   }
 
+  const hrefFor = (suggestion: Suggestion) => {
+    if (suggestion.type === 'movie') return `/movie/${suggestion.id}`;
+    if (suggestion.type === 'tv') return `/tv-shows/${suggestion.id}`;
+    return `/person/${suggestion.id}`;
+  };
+
   return (
     <div className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 px-4 pt-[12vh] backdrop-blur-sm" onClick={() => setOpen(false)}>
       <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-[#0d131c] shadow-2xl" onClick={(event) => event.stopPropagation()}>
@@ -115,19 +129,19 @@ export default function CommandSearch() {
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search movies and TV shows"
+            placeholder="Search movies, TV shows, and people"
             className="w-full bg-transparent px-5 py-4 text-base text-white outline-none placeholder:text-slate-500"
           />
         </form>
         <div className="max-h-[50vh] overflow-y-auto">
           {isSearching ? <p className="px-5 py-4 text-sm text-slate-500">Searching...</p> : null}
           {!isSearching && query.trim().length >= 2 && suggestions.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-slate-500">No matching titles.</p>
+            <p className="px-5 py-4 text-sm text-slate-500">No matching titles or people.</p>
           ) : null}
           {suggestions.map((suggestion) => (
             <Link
               key={`${suggestion.type}-${suggestion.id}`}
-              href={suggestion.type === 'movie' ? `/movie/${suggestion.id}` : `/tv-shows/${suggestion.id}`}
+              href={hrefFor(suggestion)}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-4 py-3 hover:bg-white/5"
             >
@@ -139,7 +153,7 @@ export default function CommandSearch() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-white">{suggestion.title}</p>
                 <p className="text-xs text-slate-500">
-                  {suggestion.type === 'movie' ? 'Movie' : 'TV show'}{suggestion.year ? ` · ${suggestion.year}` : ''}
+                  {suggestion.type === 'movie' ? 'Movie' : suggestion.type === 'tv' ? 'TV show' : 'Person'}{suggestion.year ? ` · ${suggestion.year}` : ''}
                 </p>
               </div>
             </Link>
