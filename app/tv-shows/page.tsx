@@ -6,7 +6,7 @@ import CatalogControls from '../components/movie/CatalogControls';
 import CatalogPager from '../components/movie/CatalogPager';
 import { clampTmdbPage, fetchTmdb, fetchTmdbList, fetchTmdbPage, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
-import { parseCatalogSort, parseCatalogYear, tmdbSortParam } from '@/app/lib/catalogQuery';
+import { parseCatalogCountry, parseCatalogSort, parseCatalogYear, tmdbSortParam } from '@/app/lib/catalogQuery';
 
 async function getTVShows() {
   const [popular, topRated, airingToday, onTheAir] = await Promise.all([
@@ -27,15 +27,16 @@ async function getTVShows() {
 export default async function TVShowsPage({
   searchParams
 }: {
-  searchParams: { genre?: string; page?: string; sort?: string; year?: string };
+  searchParams: { genre?: string; page?: string; sort?: string; year?: string; country?: string };
 }) {
   const query = {
     genre: searchParams?.genre,
     sort: parseCatalogSort(searchParams?.sort),
     year: parseCatalogYear(searchParams?.year),
+    country: parseCatalogCountry(searchParams?.country),
     page: clampTmdbPage(searchParams?.page)
   };
-  const filteredView = Boolean(query.genre || query.year || query.sort !== 'popular' || query.page > 1);
+  const filteredView = Boolean(query.genre || query.year || query.country || query.sort !== 'popular' || query.page > 1);
   const [lists, genreData, filteredPage] = await Promise.all([
     filteredView ? Promise.resolve(null) : getTVShows(),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 }),
@@ -45,6 +46,7 @@ export default async function TVShowsPage({
             with_genres: query.genre,
             sort_by: tmdbSortParam(query.sort, 'tv'),
             first_air_date_year: query.year,
+            with_origin_country: query.country,
             include_adult: 'false',
             'vote_count.gte': query.sort === 'rating' ? 80 : undefined,
             page: query.page
@@ -67,7 +69,7 @@ export default async function TVShowsPage({
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-cyan-300">Catalog</p>
             <h1 className="text-5xl font-black text-white sm:text-7xl">{selectedGenre ? selectedGenre.name : 'TV Shows'}</h1>
             <p className="mt-3 max-w-2xl text-slate-300">
-              Filter by genre, year, or sort order. Open a series for seasons, similar titles, and official watch options.
+              Filter by genre, year, country, or sort order. Open a series for seasons, similar titles, and official watch options.
             </p>
           </div>
         </div>
@@ -77,7 +79,7 @@ export default async function TVShowsPage({
         <CatalogControls basePath="/tv-shows" query={query} />
         {filteredView ? (
           <>
-            <MediaGrid items={filtered} emptyTitle="No series match these filters" emptyMessage="Try another year, sort, or genre." />
+            <MediaGrid items={filtered} emptyTitle="No series match these filters" emptyMessage="Try another year, country, sort, or genre." />
             <CatalogPager basePath="/tv-shows" query={query} page={filteredPage.page} totalPages={filteredPage.totalPages} />
           </>
         ) : (
