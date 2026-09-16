@@ -1,7 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
 import MediaGrid from '../components/movie/MediaGrid';
-import { fetchTmdbList } from '@/app/lib/tmdb';
+import GenreFilterBar from '../components/movie/GenreFilterBar';
+import { fetchTmdb, fetchTmdbList } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
 import { TmdbMediaListItem } from '@/app/lib/tmdb';
 
@@ -21,40 +22,71 @@ async function getTVShows() {
   };
 }
 
-export default async function TVShowsPage() {
-  const { popular, topRated, airingToday, onTheAir } = await getTVShows();
+export default async function TVShowsPage({
+  searchParams
+}: {
+  searchParams: { genre?: string };
+}) {
+  const genre = searchParams?.genre;
+  const [lists, genreData] = await Promise.all([
+    getTVShows(),
+    fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 })
+  ]);
+  const genres = genreData?.genres || [];
+  const selectedGenre = genres.find((item) => String(item.id) === genre);
+  const filtered = genre
+    ? mapTmdbMediaCollection(
+        await fetchTmdbList<TmdbMediaListItem>('/discover/tv', {
+          params: {
+            with_genres: genre,
+            sort_by: 'popularity.desc',
+            include_adult: 'false'
+          }
+        }),
+        'tv'
+      )
+    : [];
+  const hero = genre ? filtered[0] : lists.popular[0];
 
   return (
     <div className="min-h-screen animated-bg">
-      <div className="relative h-[400px] sm:h-[500px] w-full overflow-hidden">
-        {popular[0]?.backdrop && (
-          <Image src={popular[0].backdrop} alt="Featured TV Show" fill className="object-cover" priority />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
-        <div className="relative z-10 h-full flex items-center justify-center px-4">
-          <div className="text-center space-y-6">
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black gradient-text leading-tight">TV Shows</h1>
-            <p className="text-xl text-gray-200 max-w-2xl mx-auto">Discover your next series</p>
+      <div className="relative h-[360px] sm:h-[460px] w-full overflow-hidden">
+        {hero?.backdrop ? <Image src={hero.backdrop} alt="" fill className="object-cover" priority /> : null}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080b10] via-[#080b10]/70 to-black/30" />
+        <div className="relative z-10 flex h-full items-end px-4 pb-10 sm:px-8">
+          <div className="mx-auto w-full max-w-7xl">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-cyan-300">Catalog</p>
+            <h1 className="text-5xl font-black text-white sm:text-7xl">{selectedGenre ? selectedGenre.name : 'TV Shows'}</h1>
+            <p className="mt-3 max-w-2xl text-slate-300">
+              {selectedGenre ? `Popular ${selectedGenre.name.toLowerCase()} series from TMDB.` : 'Popular, top rated, airing today, and currently on the air.'}
+            </p>
           </div>
         </div>
       </div>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-12 sm:py-16 space-y-16">
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8">Popular TV Shows</h2>
-          <MediaGrid items={popular} emptyTitle="No popular series available" emptyMessage="Check back soon for the latest TV picks." />
-        </section>
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8">Top Rated TV Shows</h2>
-          <MediaGrid items={topRated} emptyTitle="No top rated series available" emptyMessage="Try again later for refreshed TV rankings." />
-        </section>
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8">Airing Today</h2>
-          <MediaGrid items={airingToday} emptyTitle="No series airing today" emptyMessage="Airing episodes will show up here when the feed refreshes." />
-        </section>
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8">On The Air</h2>
-          <MediaGrid items={onTheAir} emptyTitle="No series currently on the air" emptyMessage="Currently airing shows will appear here when TMDB data is available." />
-        </section>
+      <div className="relative z-10 mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-8">
+        <GenreFilterBar genres={genres} selected={genre} basePath="/tv-shows" />
+        {genre ? (
+          <MediaGrid items={filtered} emptyTitle="No series in this genre" emptyMessage="Try another genre chip above." />
+        ) : (
+          <>
+            <section>
+              <h2 className="mb-6 text-3xl font-bold text-white">Popular</h2>
+              <MediaGrid items={lists.popular} emptyTitle="No popular series available" emptyMessage="Check back soon for the latest TV picks." />
+            </section>
+            <section>
+              <h2 className="mb-6 text-3xl font-bold text-white">Top rated</h2>
+              <MediaGrid items={lists.topRated} emptyTitle="No top rated series available" emptyMessage="Try again later for refreshed TV rankings." />
+            </section>
+            <section>
+              <h2 className="mb-6 text-3xl font-bold text-white">Airing today</h2>
+              <MediaGrid items={lists.airingToday} emptyTitle="No series airing today" emptyMessage="Airing episodes will show up here when the feed refreshes." />
+            </section>
+            <section>
+              <h2 className="mb-6 text-3xl font-bold text-white">On the air</h2>
+              <MediaGrid items={lists.onTheAir} emptyTitle="No series currently on the air" emptyMessage="Currently airing shows will appear here when TMDB data is available." />
+            </section>
+          </>
+        )}
       </div>
     </div>
   );
