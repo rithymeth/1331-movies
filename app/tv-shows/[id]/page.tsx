@@ -8,6 +8,7 @@ import ReviewsList from '@/app/components/movie/ReviewsList';
 import KeywordChips from '@/app/components/movie/KeywordChips';
 import LinkChips from '@/app/components/movie/LinkChips';
 import ImageGallery from '@/app/components/movie/ImageGallery';
+import TrailerLightbox from '@/app/components/movie/TrailerLightbox';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
@@ -125,14 +126,19 @@ export default async function TVShowPage({ params }: Props) {
     );
   }
 
-  const [similar, providers, credits, reviews, keywords, images] = await Promise.all([
+  const [similar, providers, credits, reviews, keywords, images, videos] = await Promise.all([
     fetchTmdbList<TmdbMediaListItem>(`/tv/${id}/similar`),
     fetchWatchProviders('tv', id),
     fetchTmdb<{ cast?: { id: number; name: string; character: string; profile_path: string | null }[] }>(`/tv/${id}/credits`),
     fetchTmdb<{ results?: { id: string; author: string; content: string; created_at?: string }[] }>(`/tv/${id}/reviews`),
     fetchTmdb<{ results?: { id: number; name: string }[] }>(`/tv/${id}/keywords`),
-    fetchTmdb<{ backdrops?: { file_path: string }[] }>(`/tv/${id}/images`)
+    fetchTmdb<{ backdrops?: { file_path: string }[] }>(`/tv/${id}/images`),
+    fetchTmdb<{ results?: { id: string; key: string; name: string; site: string; type: string }[] }>(`/tv/${id}/videos`)
   ]);
+
+  const trailers = (videos?.results || []).filter(
+    (video) => video.site === 'YouTube' && ['Trailer', 'Teaser', 'Clip'].includes(video.type)
+  );
 
   const tvShowSchema = {
     '@context': 'https://schema.org',
@@ -152,6 +158,7 @@ export default async function TVShowPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tvShowSchema) }} />
       <TVShowClient tvShowId={id} initialData={tvShow} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        <TrailerLightbox videos={trailers} />
         <ImageGallery images={images?.backdrops || []} />
         <KeywordChips keywords={keywords?.results || []} />
         <LinkChips title="Networks" items={(tvShow.networks || []).map((network) => ({ id: network.id, name: network.name, href: `/network/${network.id}` }))} />
