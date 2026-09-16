@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import SiteChrome from './components/ui/SiteChrome';
 import { defaultMetadata } from './metadata';
 import { absoluteUrl, siteConfig } from '@/app/lib/site';
 
@@ -41,25 +42,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script 
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
-        <script 
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
       <body className="animated-bg text-white min-h-screen flex flex-col relative overflow-x-hidden">
-        {/* Ambient background effects */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-3/4 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
-        </div>
-        
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[90] focus:rounded-md focus:bg-cyan-300 focus:px-3 focus:py-2 focus:text-slate-950">
+          Skip to content
+        </a>
+        <SiteChrome />
         <Navbar />
-        <main className="relative z-10 flex-grow">
+        <main id="main-content" className="relative z-10 flex-grow">
           <div className="animate-fade-in">
             {children}
           </div>
