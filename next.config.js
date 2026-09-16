@@ -6,55 +6,25 @@ const nextConfig = {
   optimizeFonts: true,
   swcMinify: true,
   images: {
-    domains: [
-      'image.tmdb.org',
-      's4.anilist.co',
-      'media.kitsu.io',
-      'img1.ak.crunchyroll.com',
+    remotePatterns: [
+      { protocol: 'https', hostname: 'image.tmdb.org' },
+      { protocol: 'https', hostname: 's4.anilist.co' },
+      { protocol: 'https', hostname: 'media.kitsu.io' },
+      { protocol: 'https', hostname: 'img1.ak.crunchyroll.com' },
     ],
   },
-  // async rewrites() {
-  //   return {
-  //     beforeFiles: [
-  //       {
-  //         source: '/:path*',
-  //         has: [
-  //           {
-  //             type: 'host',
-  //             value: '1331-movies-kh.netlify.app',
-  //           },
-  //         },
-  //         destination: 'https://1331-movies-kh.netlify.app/:path*',
-  //       },
-  //     ],
-  //   };
-  // },
-  // async headers() {
-  //   return [
-  //     {
-  //       source: '/:path*',
-  //       headers: [
-  //         {
-  //           key: 'X-Robots-Tag',
-  //           value: 'index, follow'
-  //         },
-  //         {
-  //           key: 'Link',
-  //           value: '<https://1331-movies-kh.netlify.app>; rel="canonical"'
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       source: '/api/:path*',
-  //       headers: [
-  //         { key: 'Access-Control-Allow-Origin', value: '*' },
-  //         { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS' },
-  //         { key: 'Access-Control-Allow-Headers', value: 'Content-Type' },
-  //         { key: 'X-Robots-Tag', value: 'noindex, nofollow' }
-  //       ],
-  //     },
-  //   ];
-  // },
-}
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+        ],
+      },
+    ];
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
