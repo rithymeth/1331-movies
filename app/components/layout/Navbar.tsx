@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   { href: '/', label: 'Home' },
+  { href: '/trending', label: 'Trending' },
   { href: '/movies', label: 'Movies' },
   { href: '/tv-shows', label: 'TV Shows' },
   { href: '/library', label: 'Library' }
@@ -105,7 +106,6 @@ export default function Navbar() {
               ))}
             </div>
           </div>
-
           <div className="flex items-center space-x-3">
             <button
               type="button"
@@ -118,25 +118,14 @@ export default function Navbar() {
             </button>
             <form onSubmit={handleSearch} className="hidden md:flex items-center relative group" ref={searchRef}>
               <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search titles..."
-                  className="input-modern w-72 pl-12 pr-4 py-3 text-white placeholder-white/60"
-                />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search titles..." className="input-modern w-72 pl-12 pr-4 py-3 text-white placeholder-white/60" />
                 <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 {(isSearching || suggestions.length > 0) && (
                   <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-white/10 bg-[#0d131c] shadow-2xl">
                     {isSearching ? <p className="px-4 py-4 text-sm text-gray-400">Searching...</p> : suggestions.map((suggestion) => (
-                      <Link
-                        key={`${suggestion.type}-${suggestion.id}`}
-                        href={suggestion.type === 'movie' ? `/movie/${suggestion.id}` : `/tv-shows/${suggestion.id}`}
-                        onClick={() => { setSuggestions([]); setSearchQuery(''); }}
-                        className="flex items-center gap-3 border-b border-white/5 px-3 py-2.5 last:border-0 hover:bg-white/10"
-                      >
+                      <Link key={`${suggestion.type}-${suggestion.id}`} href={suggestion.type === 'movie' ? `/movie/${suggestion.id}` : `/tv-shows/${suggestion.id}`} onClick={() => { setSuggestions([]); setSearchQuery(''); }} className="flex items-center gap-3 border-b border-white/5 px-3 py-2.5 last:border-0 hover:bg-white/10">
                         <div className="relative h-12 w-8 shrink-0 overflow-hidden rounded bg-[#121923]">
                           {suggestion.posterPath && (
                             <Image src={`https://image.tmdb.org/t/p/w92${suggestion.posterPath}`} alt="" fill sizes="32px" className="object-cover" />
@@ -163,7 +152,6 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-
         <div className={`md:hidden overflow-hidden transition-all duration-500 ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="py-6 border-t border-white/20 space-y-4 glass-dark mx-4 rounded-2xl mb-4 px-4">
             {links.map((link) => (
@@ -172,13 +160,7 @@ export default function Navbar() {
               </Link>
             ))}
             <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search titles..."
-                className="input-modern w-full px-4 py-3 text-white"
-              />
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search titles..." className="input-modern w-full px-4 py-3 text-white" />
             </form>
           </div>
         </div>
