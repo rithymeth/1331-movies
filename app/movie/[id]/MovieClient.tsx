@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import VideoPlayer from '../../components/movie/VideoPlayer';
 import WatchTogether from '../../components/movie/WatchTogether';
 import WatchlistButton from '../../components/movie/WatchlistButton';
@@ -101,9 +102,9 @@ export function MovieClient({ movie, cast, videos, similar = [] }: MovieClientPr
             </div>
             <div className="flex flex-wrap gap-2">
               {movie.genres.map((genre) => (
-                <a key={genre.id} href={`/movies?genre=${genre.id}`} className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:border-cyan-300/40">
+                <Link key={genre.id} href={`/movies?genre=${genre.id}`} className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-gray-300 hover:border-cyan-300/40">
                   {genre.name}
-                </a>
+                </Link>
               ))}
             </div>
             {movie.overview ? <p className="max-w-3xl text-gray-300 leading-relaxed">{movie.overview}</p> : null}
@@ -138,13 +139,13 @@ export function MovieClient({ movie, cast, videos, similar = [] }: MovieClientPr
                 <h2 className="text-3xl font-bold text-white">Cast</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                   {cast.map((member) => (
-                    <div key={member.id} className="text-center">
+                    <Link key={member.id} href={`/person/${member.id}`} className="text-center hover:opacity-90">
                       <div className="aspect-[2/3] relative rounded-lg overflow-hidden border border-white/10 bg-[#121923] mb-3">
                         {member.profile_path ? <Image src={getTmdbImageUrl(member.profile_path, 'w185') || ''} alt={member.name} fill className="object-cover" /> : null}
                       </div>
                       <p className="font-semibold text-white truncate">{member.name}</p>
                       <p className="text-sm text-gray-400 truncate mt-1">{member.character}</p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
