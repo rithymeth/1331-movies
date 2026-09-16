@@ -7,6 +7,7 @@ import EmptyState from '../components/ui/EmptyState';
 import MediaGrid from '../components/movie/MediaGrid';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { mapTmdbMediaCollection, sortMediaCards, MediaCardItem } from '@/app/lib/media';
+import { catalogYearOptions } from '@/app/lib/catalogQuery';
 import { MediaSort, TmdbMediaListItem } from '@/app/lib/tmdb';
 
 function SearchClient() {
@@ -15,6 +16,7 @@ function SearchClient() {
   const query = searchParams.get('q') || '';
   const type = searchParams.get('type') || 'all';
   const genre = searchParams.get('genre') || '';
+  const year = searchParams.get('year') || '';
   const sort = (searchParams.get('sort') as MediaSort | null) || 'popularity.desc';
 
   const [results, setResults] = useState<MediaCardItem[]>([]);
@@ -48,7 +50,7 @@ function SearchClient() {
       searchTypes.map((mediaType) => {
         const endpoint = query
           ? `/api/search/${mediaType}?query=${encodeURIComponent(query)}&genre=${genre}&sort=${sort}&page=${nextPage}`
-          : `/api/discover/${mediaType}?genre=${genre}&sort=${sort}&page=${nextPage}`;
+          : `/api/discover/${mediaType}?genre=${genre}&sort=${sort}&year=${year}&page=${nextPage}`;
         return fetch(endpoint).then((res) => res.json());
       })
     );
@@ -56,7 +58,7 @@ function SearchClient() {
     const combinedResults = responses.flatMap((response, index) => {
       const mediaType = searchTypes[index] as 'movie' | 'tv';
       return mapTmdbMediaCollection((response.results || []) as TmdbMediaListItem[], mediaType);
-    });
+    }).filter((item) => !year || item.year === year);
 
     const nextTotalPages = Math.max(
       1,
@@ -89,7 +91,7 @@ function SearchClient() {
     };
 
     fetchContent();
-  }, [query, type, genre, sort]);
+  }, [query, type, genre, sort, year]);
 
   const loadMore = async () => {
     const nextPage = page + 1;
@@ -183,6 +185,20 @@ function SearchClient() {
               </div>
             </div>
             <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Year</label>
+              <div className="flex flex-wrap gap-2">
+                <FilterButton label="Any year" isActive={!year} onClick={() => updateSearchParams({ year: '' })} />
+                {catalogYearOptions().map((value) => (
+                  <FilterButton
+                    key={value}
+                    label={value}
+                    isActive={year === value}
+                    onClick={() => updateSearchParams({ year: value })}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
               <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Genres</label>
               <div className="flex flex-wrap gap-2">
                 <FilterButton label="All Genres" isActive={!genre} onClick={() => updateSearchParams({ genre: '' })} />
@@ -229,8 +245,8 @@ function SearchClient() {
               </div>
             ) : null}
           </div>
-        ) : query ? (
-          <EmptyState title="No results found" message={`No titles matched "${query}". Try different keywords or fewer filters.`} />
+        ) : query || year || genre ? (
+          <EmptyState title="No results found" message="No titles matched these filters. Try a different year, genre, or keyword." />
         ) : (
           <EmptyState
             title="Discover titles"
