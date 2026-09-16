@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import WatchProviders from '@/app/components/movie/WatchProviders';
 import ReviewsList from '@/app/components/movie/ReviewsList';
 import MediaGrid from '@/app/components/movie/MediaGrid';
+import KeywordChips from '@/app/components/movie/KeywordChips';
 import { absoluteUrl } from '@/app/lib/site';
 import { fetchTmdb, fetchTmdbList, fetchWatchProviders, getMediaYear, getTmdbImageUrl, TmdbMediaListItem, TmdbWatchProvider } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection, MediaCardItem } from '@/app/lib/media';
@@ -101,8 +102,9 @@ async function getMovieDetails(id: string): Promise<{
   providers: TmdbWatchProvider[];
   reviews: { id: string; author: string; content: string; created_at?: string }[];
   collectionParts: MediaCardItem[];
+  keywords: { id: number; name: string }[];
 }> {
-  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers, reviewsRes] = await Promise.all([
+  const [movieRes, externalIdsRes, creditsRes, videosRes, similarRes, providers, reviewsRes, keywordsRes] = await Promise.all([
     fetchTmdb<MovieDetails>(`/movie/${id}`),
     fetchTmdb<{ imdb_id?: string }>(`/movie/${id}/external_ids`),
     fetchTmdb<{ cast: CastMember[] }>(`/movie/${id}/credits`),
@@ -110,6 +112,7 @@ async function getMovieDetails(id: string): Promise<{
     fetchTmdbList<TmdbMediaListItem>(`/movie/${id}/similar`),
     fetchWatchProviders('movie', id),
     fetchTmdb<{ results?: { id: string; author: string; content: string; created_at?: string }[] }>(`/movie/${id}/reviews`),
+    fetchTmdb<{ keywords?: { id: number; name: string }[] }>(`/movie/${id}/keywords`),
   ]);
 
   if (!movieRes) {
@@ -136,13 +139,14 @@ async function getMovieDetails(id: string): Promise<{
     reviews: reviewsRes?.results || [],
     collectionParts: mapTmdbMediaCollection(collection?.parts || [], 'movie')
       .filter((item) => item.id !== id)
-      .slice(0, 12)
+      .slice(0, 12),
+    keywords: keywordsRes?.keywords || []
   };
 }
 
 export default async function MoviePage({ params }: Props) {
   const { id } = await Promise.resolve(params);
-  const { movie, cast, videos, similar, providers, reviews, collectionParts } = await getMovieDetails(id);
+  const { movie, cast, videos, similar, providers, reviews, collectionParts, keywords } = await getMovieDetails(id);
 
   const movieSchema = {
     '@context': 'https://schema.org',
@@ -177,6 +181,7 @@ export default async function MoviePage({ params }: Props) {
       />
       <MovieClient movie={movie} cast={cast} videos={videos} similar={similar} />
       <div className="mx-auto max-w-6xl space-y-10 px-4 pb-16">
+        <KeywordChips keywords={keywords} />
         {movie.belongs_to_collection ? (
           <section className="space-y-4">
             <div className="flex items-end justify-between">
