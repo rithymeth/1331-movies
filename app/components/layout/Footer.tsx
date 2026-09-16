@@ -23,19 +23,21 @@ export default function Footer() {
         <div>
           <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-slate-500">Explore</h4>
           <ul className="space-y-3 text-slate-300">
+            <li><Link href="/trending" className="hover:text-white">Trending</Link></li>
+            <li><Link href="/airing" className="hover:text-white">Airing</Link></li>
             <li><Link href="/movies" className="hover:text-white">Movies</Link></li>
             <li><Link href="/tv-shows" className="hover:text-white">TV Shows</Link></li>
-            <li><Link href="/search" className="hover:text-white">Search</Link></li>
+            <li><Link href="/people" className="hover:text-white">People</Link></li>
             <li><Link href="/library" className="hover:text-white">Library</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-slate-500">Genres</h4>
+          <h4 className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-slate-500">Browse</h4>
           <ul className="space-y-3 text-slate-300">
-            <li><Link href="/movies?genre=28" className="hover:text-white">Action movies</Link></li>
-            <li><Link href="/movies?genre=35" className="hover:text-white">Comedy movies</Link></li>
-            <li><Link href="/tv-shows?genre=18" className="hover:text-white">Drama series</Link></li>
-            <li><Link href="/tv-shows?genre=10759" className="hover:text-white">Action series</Link></li>
+            <li><Link href="/movies?country=KH" className="hover:text-white">Cambodia movies</Link></li>
+            <li><Link href="/movies?language=km" className="hover:text-white">Khmer language</Link></li>
+            <li><Link href="/tv-shows?country=KR" className="hover:text-white">Korean series</Link></li>
+            <li><Link href="/search" className="hover:text-white">Search catalog</Link></li>
           </ul>
         </div>
       </div>

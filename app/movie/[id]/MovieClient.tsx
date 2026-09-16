@@ -8,6 +8,7 @@ import WatchTogether from '../../components/movie/WatchTogether';
 import WatchlistButton from '../../components/movie/WatchlistButton';
 import CopyLinkButton from '../../components/ui/CopyLinkButton';
 import MovieCarousel from '../../components/movie/MovieCarousel';
+import TrailerLightbox from '../../components/movie/TrailerLightbox';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
 import { getVidkingMovieUrl } from '@/app/lib/vidking';
 import { saveWatchHistory } from '@/app/lib/watchHistory';
@@ -120,19 +121,7 @@ export function MovieClient({ movie, cast, videos, similar = [] }: MovieClientPr
                 <VideoPlayer embedUrl={getVidkingMovieUrl(movie.id)} />
               </div>
               {showWatchTogether ? <WatchTogether contentId={movie.id.toString()} contentType="movie" contentTitle={movie.title} /> : null}
-              {videos.length > 0 ? (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white">Trailers & Clips</h2>
-                  {videos.map((video) => (
-                    <div key={video.id} className="space-y-3">
-                      <h3 className="text-xl font-semibold text-white">{video.name}</h3>
-                      <div className="aspect-video rounded-lg overflow-hidden border border-white/10 bg-black shadow-xl">
-                        <VideoPlayer embedUrl={`https://www.youtube.com/embed/${video.key}?autoplay=0&controls=1&modestbranding=1`} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+              <TrailerLightbox videos={videos} />
             </div>
             {cast.length > 0 ? (
               <div className="space-y-6">
