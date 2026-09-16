@@ -5,6 +5,7 @@ export interface CatalogQuery {
   sort?: CatalogSort;
   year?: string;
   country?: string;
+  language?: string;
   page?: number;
 }
 
@@ -19,6 +20,19 @@ export const catalogCountries = [
   { code: 'TH', label: 'Thailand' },
   { code: 'KH', label: 'Cambodia' },
   { code: 'ES', label: 'Spain' }
+] as const;
+
+export const catalogLanguages = [
+  { code: 'en', label: 'English' },
+  { code: 'ko', label: 'Korean' },
+  { code: 'ja', label: 'Japanese' },
+  { code: 'hi', label: 'Hindi' },
+  { code: 'fr', label: 'French' },
+  { code: 'zh', label: 'Chinese' },
+  { code: 'th', label: 'Thai' },
+  { code: 'km', label: 'Khmer' },
+  { code: 'es', label: 'Spanish' },
+  { code: 'de', label: 'German' }
 ] as const;
 
 export function parseCatalogSort(value?: string): CatalogSort {
@@ -37,12 +51,17 @@ export function parseCatalogCountry(value?: string) {
   return catalogCountries.some((country) => country.code === value) ? value : undefined;
 }
 
+export function parseCatalogLanguage(value?: string) {
+  return catalogLanguages.some((language) => language.code === value) ? value : undefined;
+}
+
 export function catalogHref(basePath: string, query: CatalogQuery) {
   const params = new URLSearchParams();
   if (query.genre) params.set('genre', query.genre);
   if (query.sort && query.sort !== 'popular') params.set('sort', query.sort);
   if (query.year) params.set('year', query.year);
   if (query.country) params.set('country', query.country);
+  if (query.language) params.set('language', query.language);
   if (query.page && query.page > 1) params.set('page', String(query.page));
   const search = params.toString();
   return search ? `${basePath}?${search}` : basePath;
