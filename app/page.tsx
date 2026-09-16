@@ -57,7 +57,7 @@ function CatalogSection({
 }
 
 export default async function Home() {
-  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, genreData] = await Promise.all([
+  const [nowPlaying, popular, topRated, trending, upcoming, trendingTv, movieGenres, tvGenres] = await Promise.all([
     fetchMovies('now_playing'),
     fetchMovies('popular'),
     fetchMovies('top_rated'),
@@ -65,6 +65,7 @@ export default async function Home() {
     fetchUpcomingMovies(),
     fetchTrending('tv'),
     fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/movie/list', { revalidate: 86400 }),
+    fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 }),
   ]);
 
   return (
@@ -94,13 +95,14 @@ export default async function Home() {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-16 px-4 py-4 sm:px-8 md:py-10">
         <ContinueWatching />
-        <GenreRail genres={genreData?.genres || []} />
+        <GenreRail genres={movieGenres?.genres || []} title="Movie genres" hrefBase="/movies" />
+        <GenreRail genres={tvGenres?.genres || []} title="TV genres" eyebrow="Series" hrefBase="/tv-shows" />
         <CatalogSection eyebrow="Curated for you" title="Trending movies" items={trending} href="/movies" />
         <CatalogSection eyebrow="This week" title="Trending series" items={trendingTv} href="/tv-shows" />
         <CatalogSection eyebrow="In theaters" title="Now playing" items={nowPlaying} href="/movies" />
         <CatalogSection eyebrow="Most watched" title="Popular movies" items={popular} href="/movies" />
-        <CatalogSection eyebrow="Audience favorites" title="Top rated" items={topRated} href="/movies" />
-        <CatalogSection eyebrow="Coming soon" title="Upcoming movies" items={upcoming} href="/movies" />
+        <CatalogSection eyebrow="Audience favorites" title="Top rated" items={topRated} href="/movies?sort=rating" />
+        <CatalogSection eyebrow="Coming soon" title="Upcoming movies" items={upcoming} href="/movies?sort=date" />
       </div>
     </div>
   );
