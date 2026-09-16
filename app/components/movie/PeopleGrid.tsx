@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { getTmdbImageUrl } from '@/app/lib/tmdb';
@@ -8,7 +10,7 @@ export default function PeopleGrid({
   people: { id: number; name: string; profile_path: string | null; known_for_department?: string }[];
 }) {
   if (people.length === 0) {
-    return <p className="text-sm text-slate-500">No people found.</p>;
+    return null;
   }
 
   return (
