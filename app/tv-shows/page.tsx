@@ -2,10 +2,11 @@ import React from 'react';
 import Image from 'next/image';
 import MediaGrid from '../components/movie/MediaGrid';
 import GenreFilterBar from '../components/movie/GenreFilterBar';
+import CatalogControls from '../components/movie/CatalogControls';
 import CatalogPager from '../components/movie/CatalogPager';
-import { clampTmdbPage, fetchTmdb, fetchTmdbList, fetchTmdbPage } from '@/app/lib/tmdb';
+import { clampTmdbPage, fetchTmdb, fetchTmdbList, fetchTmdbPage, TmdbMediaListItem } from '@/app/lib/tmdb';
 import { mapTmdbMediaCollection } from '@/app/lib/media';
-import { TmdbMediaListItem } from '@/app/lib/tmdb';
+import { parseCatalogSort, parseCatalogYear, tmdbSortParam } from '@/app/lib/catalogQuery';
 
 async function getTVShows() {
   const [popular, topRated, airingToday, onTheAir] = await Promise.all([
@@ -26,28 +27,35 @@ async function getTVShows() {
 export default async function TVShowsPage({
   searchParams
 }: {
-  searchParams: { genre?: string; page?: string };
+  searchParams: { genre?: string; page?: string; sort?: string; year?: string };
 }) {
-  const genre = searchParams?.genre;
-  const page = clampTmdbPage(searchParams?.page);
-  const [lists, genreData] = await Promise.all([
-    getTVShows(),
-    fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 })
+  const query = {
+    genre: searchParams?.genre,
+    sort: parseCatalogSort(searchParams?.sort),
+    year: parseCatalogYear(searchParams?.year),
+    page: clampTmdbPage(searchParams?.page)
+  };
+  const filteredView = Boolean(query.genre || query.year || query.sort !== 'popular' || query.page > 1);
+  const [lists, genreData, filteredPage] = await Promise.all([
+    filteredView ? Promise.resolve(null) : getTVShows(),
+    fetchTmdb<{ genres?: { id: number; name: string }[] }>('/genre/tv/list', { revalidate: 86400 }),
+    filteredView
+      ? fetchTmdbPage<TmdbMediaListItem>('/discover/tv', {
+          params: {
+            with_genres: query.genre,
+            sort_by: tmdbSortParam(query.sort, 'tv'),
+            first_air_date_year: query.year,
+            include_adult: 'false',
+            'vote_count.gte': query.sort === 'rating' ? 80 : undefined,
+            page: query.page
+          }
+        })
+      : Promise.resolve({ results: [], page: 1, totalPages: 1 })
   ]);
   const genres = genreData?.genres || [];
-  const selectedGenre = genres.find((item) => String(item.id) === genre);
-  const filteredPage = genre
-    ? await fetchTmdbPage<TmdbMediaListItem>('/discover/tv', {
-        params: {
-          with_genres: genre,
-          sort_by: 'popularity.desc',
-          include_adult: 'false',
-          page
-        }
-      })
-    : { results: [], page: 1, totalPages: 1 };
+  const selectedGenre = genres.find((item) => String(item.id) === query.genre);
   const filtered = mapTmdbMediaCollection(filteredPage.results, 'tv');
-  const hero = genre ? filtered[0] : lists.popular[0];
+  const hero = filteredView ? filtered[0] : lists?.popular[0];
 
   return (
     <div className="min-h-screen animated-bg">
@@ -59,35 +67,36 @@ export default async function TVShowsPage({
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-cyan-300">Catalog</p>
             <h1 className="text-5xl font-black text-white sm:text-7xl">{selectedGenre ? selectedGenre.name : 'TV Shows'}</h1>
             <p className="mt-3 max-w-2xl text-slate-300">
-              {selectedGenre ? `Popular ${selectedGenre.name.toLowerCase()} series from TMDB.` : 'Popular, top rated, airing today, and currently on the air.'}
+              Filter by genre, year, or sort order. Open a series for seasons, similar titles, and official watch options.
             </p>
           </div>
         </div>
       </div>
-      <div className="relative z-10 mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-8">
-        <GenreFilterBar genres={genres} selected={genre} basePath="/tv-shows" />
-        {genre ? (
+      <div className="relative z-10 mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-8">
+        <GenreFilterBar genres={genres} query={query} basePath="/tv-shows" />
+        <CatalogControls basePath="/tv-shows" query={query} />
+        {filteredView ? (
           <>
-            <MediaGrid items={filtered} emptyTitle="No series in this genre" emptyMessage="Try another genre chip above." />
-            <CatalogPager basePath="/tv-shows" genre={genre} page={filteredPage.page} totalPages={filteredPage.totalPages} />
+            <MediaGrid items={filtered} emptyTitle="No series match these filters" emptyMessage="Try another year, sort, or genre." />
+            <CatalogPager basePath="/tv-shows" query={query} page={filteredPage.page} totalPages={filteredPage.totalPages} />
           </>
         ) : (
           <>
             <section>
               <h2 className="mb-6 text-3xl font-bold text-white">Popular</h2>
-              <MediaGrid items={lists.popular} emptyTitle="No popular series available" emptyMessage="Check back soon for the latest TV picks." />
+              <MediaGrid items={lists?.popular || []} emptyTitle="No popular series available" emptyMessage="Check back soon for the latest TV picks." />
             </section>
             <section>
               <h2 className="mb-6 text-3xl font-bold text-white">Top rated</h2>
-              <MediaGrid items={lists.topRated} emptyTitle="No top rated series available" emptyMessage="Try again later for refreshed TV rankings." />
+              <MediaGrid items={lists?.topRated || []} emptyTitle="No top rated series available" emptyMessage="Try again later for refreshed TV rankings." />
             </section>
             <section>
               <h2 className="mb-6 text-3xl font-bold text-white">Airing today</h2>
-              <MediaGrid items={lists.airingToday} emptyTitle="No series airing today" emptyMessage="Airing episodes will show up here when the feed refreshes." />
+              <MediaGrid items={lists?.airingToday || []} emptyTitle="No series airing today" emptyMessage="Airing episodes will show up here when the feed refreshes." />
             </section>
             <section>
               <h2 className="mb-6 text-3xl font-bold text-white">On the air</h2>
-              <MediaGrid items={lists.onTheAir} emptyTitle="No series currently on the air" emptyMessage="Currently airing shows will appear here when TMDB data is available." />
+              <MediaGrid items={lists?.onTheAir || []} emptyTitle="No series currently on the air" emptyMessage="Currently airing shows will appear here when TMDB data is available." />
             </section>
           </>
         )}
