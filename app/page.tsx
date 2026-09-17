@@ -3,6 +3,7 @@ import Link from 'next/link';
 import MovieCarousel from './components/movie/MovieCarousel';
 import HeroCarousel from './components/movie/HeroCarousel';
 import ContinueWatching from './components/movie/ContinueWatching';
+import BecauseYouWatched from './components/movie/BecauseYouWatched';
 import GenreRail from './components/movie/GenreRail';
 import PeopleGrid from './components/movie/PeopleGrid';
 import { fetchTmdb, fetchTmdbList } from './lib/tmdb';
@@ -99,6 +100,7 @@ export default async function Home() {
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-16 px-4 py-4 sm:px-8 md:py-10">
         <ContinueWatching />
+        <BecauseYouWatched />
         <CatalogSection eyebrow="Schedule" title="Airing today" items={airingToday} href="/airing" />
         <CatalogSection eyebrow="On now" title="Currently on the air" items={onTheAir} href="/airing" />
         {people.length > 0 ? (
